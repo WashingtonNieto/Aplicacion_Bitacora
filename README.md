@@ -407,7 +407,13 @@ plantilla, revisa esa función.
 desaparecía. La app la vuelve a insertar como imagen en la misma posición
 (`restaurarCuadroPublica()`). Los tres logos sí sobreviven sin ayuda.
 
-**Fechas.** Se escriben como objetos `Date` en UTC con formato `dd/mm/yy`. Usar fechas locales
+**Fechas en el formulario.** Los campos `<input type="date">` los dibuja el navegador con el
+formato de **su** idioma: en inglés se ven `07/15/2026` y en español `15/07/2026`. La página no
+puede cambiarlo. Por eso, bajo cada campo, la app muestra la fecha en `dd/mm/aa` — exactamente como
+va a quedar escrita en el formato oficial. Está en `comun.js` (`ecoDeFechas`) y funciona en los tres
+formularios.
+
+**Fechas en el archivo.** Se escriben como objetos `Date` en UTC con formato `dd/mm/yy`. Usar fechas locales
 hace que Excel muestre el día anterior; usar texto hace que dejen de ser fechas (el archivo de
 ejemplo tenía una escrita como `15/7/0206`).
 

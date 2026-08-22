@@ -416,6 +416,66 @@ async function obtenerPlantilla(nombre) {
 const RE_CORREO = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const RE_DIGITOS = /^\d{7,12}$/;
 
+/* -------------------------------------------------------------------------
+   ECO DE FECHAS
+   Los campos <input type="date"> los dibuja el navegador con el formato de SU
+   idioma: en inglés se ven como 07/15/2026 y en español como 15/07/2026. La
+   página no puede cambiarlo. Para que no quede duda de qué día se eligió, bajo
+   cada campo se muestra la fecha en dd/mm/aa, que es exactamente como va a
+   quedar escrita en el formato oficial.
+   ------------------------------------------------------------------------- */
+function fechaCortaVisible(iso) {
+  const f = aFechaUTC(iso);
+  if (!f) return '';
+  const dd = String(f.getUTCDate()).padStart(2, '0');
+  const mm = String(f.getUTCMonth() + 1).padStart(2, '0');
+  return `${dd}/${mm}/${String(f.getUTCFullYear()).slice(2)}`;
+}
+
+let ecoOcupado = false;
+function ecoDeFechas() {
+  if (ecoOcupado) return;
+  ecoOcupado = true;
+  document.querySelectorAll('input[type="date"]').forEach(campo => {
+    let eco = campo.nextElementSibling;
+    if (!eco || !eco.classList.contains('fecha-eco')) {
+      eco = document.createElement('span');
+      eco.className = 'fecha-eco';
+      eco.setAttribute('aria-hidden', 'true');   // el valor ya lo anuncia el propio campo
+      campo.insertAdjacentElement('afterend', eco);
+    }
+    const texto = fechaCortaVisible(campo.value);
+    if (eco.textContent !== texto) eco.textContent = texto;
+  });
+  ecoOcupado = false;
+}
+
+/* Se activa sola: al cargar, al escribir y cada vez que un formulario repinta
+   sus listas (actividades, aprendices, integrantes). */
+function activarEcoDeFechas() {
+  const estilo = document.createElement('style');
+  estilo.textContent =
+    '.fecha-eco{display:block;min-height:1em;margin-top:3px;font-size:.74rem;' +
+    'color:var(--suave,#5c665e);font-variant-numeric:tabular-nums;letter-spacing:.02em}' +
+    '.fecha-eco:not(:empty)::before{content:"→ ";opacity:.6}';
+  document.head.appendChild(estilo);
+
+  document.addEventListener('input', ecoDeFechas);
+  document.addEventListener('change', ecoDeFechas);
+  new MutationObserver(() => ecoDeFechas())
+    .observe(document.body, { childList: true, subtree: true });
+  ecoDeFechas();
+}
+// La comprobación de `document` va primero: este archivo también se ejecuta en
+// Node cuando corren las pruebas, y ahí no existe.
+if (typeof document !== 'undefined') {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', activarEcoDeFechas);
+  } else {
+    activarEcoDeFechas();
+  }
+}
+
 /* Muestra u oculta el mensaje de error de un campo */
 function marcarError(clave, mensaje) {
   const span = document.querySelector(`[data-error="${clave}"]`);
@@ -510,5 +570,5 @@ if (typeof module !== 'undefined' && module.exports) {
                      mesDeSecuencia, periodoDeBitacora, esc, CAMPOS_GRUPO,
                      CLAVE_GRUPOS, TIPO_ARCHIVO_GRUPO, VERSION_ARCHIVO_GRUPO, nuevoGrupo,
                      agregarIntegrante, quitarIntegrante, reindexarFirmasAprendices,
-                     RE_CORREO, RE_DIGITOS };
+                     RE_CORREO, RE_DIGITOS, fechaCortaVisible };
 }
