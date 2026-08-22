@@ -38,6 +38,11 @@
   .pasos li.hecho{border-top-color:var(--verde);opacity:.75}
   /* Formularios */
   .rejilla{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+  /* Renglones de ancho fijo: el navegador no los reacomoda según quepan */
+  .rejilla-2{grid-template-columns:repeat(2,1fr)}
+  .rejilla-3{grid-template-columns:repeat(3,1fr)}
+  .rejilla + .rejilla{margin-top:14px}
+  @media(max-width:720px){.rejilla-2,.rejilla-3{grid-template-columns:1fr}}
   .campo{display:flex;flex-direction:column;gap:4px}
   .campo.ancho{grid-column:1/-1}
   label{font-size:.82rem;font-weight:600}
@@ -128,7 +133,8 @@
     <section class="tarjeta paso" data-paso="0">
       <h2>1. Grado, bitácora y período</h2>
       <p class="sub" id="pistaCalendario">Al elegir el grado y el número, las fechas se calculan solas; puedes ajustarlas.</p>
-      <div class="rejilla">
+      <!-- Dos renglones fijos: arriba grado y número; abajo las tres fechas -->
+      <div class="rejilla rejilla-2">
         <div class="campo">
           <label for="grado">Grado escolar</label>
           <select id="grado" name="grado"></select>
@@ -139,6 +145,8 @@
           <select id="numeroBitacora" name="numeroBitacora"></select>
           <span class="msj-error" data-error="numeroBitacora"></span>
         </div>
+      </div>
+      <div class="rejilla rejilla-3">
         <div class="campo">
           <label for="fechaInicio">Desde <span class="pista">(inicio del período)</span></label>
           <input type="date" id="fechaInicio" name="fechaInicio">
