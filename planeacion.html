@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Planeación y Seguimiento GFPI-F-023 · Etapa productiva</title>
+<script src="comun.js"></script>
+<script src="fflate.min.js"></script>
+<script src="docx.js"></script>
+<script src="plantillas-023.js"></script>
+<style>
+  :root{
+    --verde:#39A900; --verde-osc:#2d8500; --gris:#f4f6f4; --borde:#d6dbd6;
+    --texto:#1f2420; --suave:#5c665e; --error:#c0392b; --aviso:#b7791f;
+    --radio:10px; --sombra:0 1px 3px rgba(0,0,0,.08),0 8px 24px rgba(0,0,0,.06);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font:16px/1.5 "Segoe UI",system-ui,sans-serif;color:var(--texto);background:var(--gris)}
+  header{background:var(--verde);color:#fff;padding:18px 20px}
+  header h1{margin:0;font-size:1.15rem}
+  header p{margin:4px 0 0;font-size:.85rem;opacity:.9}
+  .volver{color:#fff;text-decoration:none;font-size:.82rem;opacity:.9;display:inline-block;margin-bottom:6px}
+  .volver:hover{text-decoration:underline}
+  main{max-width:940px;margin:0 auto;padding:20px}
+  .tarjeta{background:#fff;border:1px solid var(--borde);border-radius:var(--radio);box-shadow:var(--sombra);padding:22px;margin-bottom:18px}
+  h2{font-size:1.05rem;margin:0 0 4px}
+  .sub{color:var(--suave);font-size:.87rem;margin:0 0 18px}
+  .rejilla{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+  .campo{display:flex;flex-direction:column;gap:4px}
+  .campo.ancho{grid-column:1/-1}
+  label{font-size:.82rem;font-weight:600}
+  .pista{font-size:.75rem;color:var(--suave);font-weight:400}
+  input,select,textarea{font:inherit;font-size:.92rem;padding:9px 10px;border:1px solid var(--borde);border-radius:8px;background:#fff;width:100%}
+  input:focus,select:focus,textarea:focus{outline:3px solid rgba(57,169,0,.35);border-color:var(--verde)}
+  input.malo,select.malo{border-color:var(--error);background:#fff6f5}
+  .msj-error{color:var(--error);font-size:.76rem;min-height:1em}
+  .msj-aviso{color:var(--aviso);font-size:.76rem}
+  button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid transparent;padding:10px 18px}
+  .btn{background:var(--verde);color:#fff;font-weight:600}
+  .btn:hover{background:var(--verde-osc)}
+  .btn-sec{background:#fff;border-color:var(--borde);color:var(--texto)}
+  .btn-sec:hover{background:var(--gris)}
+  .btn-min{background:none;border:none;color:var(--error);font-size:.8rem;padding:4px 6px;text-decoration:underline}
+  button:disabled{opacity:.45;cursor:not-allowed}
+  .acciones{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:14px}
+  .acciones button{font-size:.88rem;padding:8px 14px}
+  #tarjetaGrupo{border-left:4px solid var(--verde)}
+  .bloque{border:1px solid var(--borde);border-left:4px solid var(--verde);border-radius:8px;padding:14px;margin-bottom:12px;background:#fcfdfc}
+  .bloque-cab{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+  .bloque-cab strong{font-size:.9rem}
+  .firma-previa{display:block;max-height:80px;max-width:100%;background:#fff;border:1px solid var(--borde);border-radius:6px;padding:6px;margin-bottom:10px}
+  .firma-linea{border-bottom:2px solid var(--texto);width:220px;margin:0 0 10px}
+  .oculto{display:none!important}
+  table.resumen{width:100%;border-collapse:collapse;font-size:.85rem}
+  table.resumen th,table.resumen td{text-align:left;padding:7px 9px;border-bottom:1px solid var(--borde);vertical-align:top}
+  table.resumen th{width:250px;color:var(--suave);font-weight:600}
+  .ok-caja{border:1px solid var(--borde);border-left:4px solid var(--verde);background:#f5fbf2;padding:14px;border-radius:8px;font-size:.87rem}
+  .aviso-caja{border:1px solid var(--borde);border-left:4px solid var(--aviso);background:#fffdf5;padding:14px;border-radius:8px;font-size:.87rem;margin-bottom:16px}
+  code{background:#eef1ee;padding:1px 5px;border-radius:4px;font-size:.85em}
+  footer{text-align:center;color:var(--suave);font-size:.78rem;padding:10px 20px 30px}
+</style>
+</head>
+<body>
+
+<header>
+  <a class="volver" href="index.html">← Menú de formatos</a>
+  <h1>Planeación, Seguimiento y Evaluación de Etapa Productiva</h1>
+  <p>Formato GFPI-F-023 v06 · Articulación con la Educación Media · SENA</p>
+</header>
+
+<main>
+
+  <div id="cajaPlantilla" class="aviso-caja oculto">
+    <strong>Selecciona la plantilla oficial</strong>
+    <p style="margin:6px 0 10px">No se pudo cargar la plantilla automáticamente (pasa cuando la
+      página se abre con doble clic, sin servidor web). Búscala en tu computador.</p>
+    <input type="file" id="archivoPlantilla" accept=".docx">
+  </div>
+
+  <section class="tarjeta" id="tarjetaGrupo">
+    <h2>Grupo de trabajo</h2>
+    <p class="sub">Los mismos aprendices, colegio e instructor de los otros formatos. Si ya guardaste
+      el grupo, elígelo aquí y los datos se llenan solos.</p>
+    <div class="campo">
+      <label for="grupoGuardado">Grupo guardado</label>
+      <select id="grupoGuardado"></select>
+    </div>
+    <div class="acciones">
+      <button type="button" class="btn-sec" id="btnNuevoGrupo">Grupo nuevo</button>
+      <button type="button" class="btn-sec" id="btnGuardarGrupo">Guardar grupo actual</button>
+      <button type="button" class="btn-sec" id="btnExportarGrupo">Exportar a archivo</button>
+      <button type="button" class="btn-sec" id="btnImportarGrupo">Importar de archivo</button>
+      <input type="file" id="archivoGrupo" accept=".json,application/json" class="oculto">
+      <button type="button" class="btn-min" id="btnEliminarGrupo">Eliminar grupo</button>
+    </div>
+    <span class="msj-error" data-error="grupoGuardado"></span>
+    <span id="estadoGrupo" class="msj-aviso"></span>
+  </section>
+
+  <section class="tarjeta">
+    <h2>¿Para quién es este formato?</h2>
+    <p class="sub">El GFPI-F-023 es individual. Puedes generar el tuyo solo, o los de todo el grupo
+      de una vez si los datos de todos ya están cargados.</p>
+    <div class="campo">
+      <label for="destinatario">Aprendiz</label>
+      <select id="destinatario"></select>
+      <span class="msj-error" data-error="destinatario"></span>
+    </div>
+    <div class="acciones">
+      <button type="button" class="btn-sec" id="btnAgregarIntegrante">+ Agregar integrante</button>
+      <button type="button" class="btn-min oculto" id="btnQuitarIntegrante">Quitar este integrante</button>
+    </div>
+    <p class="pista" style="margin:10px 0 0">El equipo es el mismo para los tres formatos: los
+      integrantes que agregues aquí aparecen también en el acta de inicio y en la bitácora.</p>
+  </section>
+
+  <section class="tarjeta" id="tarjetaAprendiz">
+    <h2>Datos del aprendiz</h2>
+    <p class="sub">Si cargaste un grupo, vienen puestos. Si no, escríbelos aquí: al generar quedan
+      guardados y la próxima vez no hay que repetirlos.</p>
+    <div class="rejilla">
+      <div class="campo ancho"><label for="apNombre">Nombre completo</label>
+        <input type="text" id="apNombre">
+        <span class="msj-error" data-error="apNombre"></span></div>
+      <div class="campo"><label for="apTipoDocumento">Tipo de documento</label>
+        <select id="apTipoDocumento"><option>T.I</option><option>C.C</option><option>C.E</option><option>PPT</option></select></div>
+      <div class="campo"><label for="apNumeroDocumento">Número de documento</label>
+        <input type="text" id="apNumeroDocumento" inputmode="numeric">
+        <span class="msj-error" data-error="apNumeroDocumento"></span></div>
+      <div class="campo"><label for="apTelefono">Contacto telefónico</label>
+        <input type="text" id="apTelefono" inputmode="numeric">
+        <span class="msj-error" data-error="apTelefono"></span></div>
+      <div class="campo ancho"><label for="apDireccion">Dirección de residencia</label>
+        <input type="text" id="apDireccion"></div>
+      <div class="campo"><label for="apCorreoPersonal">Correo personal</label>
+        <input type="email" id="apCorreoPersonal">
+        <span class="msj-error" data-error="apCorreoPersonal"></span></div>
+      <div class="campo"><label for="apCorreoInstitucional">Correo institucional</label>
+        <input type="email" id="apCorreoInstitucional">
+        <span class="msj-error" data-error="apCorreoInstitucional"></span></div>
+    </div>
+  </section>
+
+  <section class="tarjeta">
+    <h2>Momento 1 — Planeación de la etapa productiva</h2>
+    <p class="sub">Se diligencia una sola vez, al inicio. Los momentos 2 (seguimiento) y 3
+      (evaluación) los completa el instructor más adelante, sobre el mismo documento.</p>
+    <div class="rejilla">
+      <div class="campo"><label for="grado">Grado escolar
+          <span class="pista">(cada grado tiene su propia plantilla)</span></label>
+        <select id="grado"></select></div>
+      <div class="campo"><label for="fechaFinLectiva">Fecha fin de la etapa lectiva</label>
+        <input type="text" id="fechaFinLectiva" placeholder="Ej.: 30 Noviembre 2026">
+        <span class="msj-error" data-error="fechaFinLectiva"></span></div>
+      <div class="campo"><label for="alternativaRegistrada">Alternativa registrada en SofiaPlus</label>
+        <select id="alternativaRegistrada">
+          <option>PROYECTO PRODUCTIVO</option>
+          <option>CONTRATO DE APRENDIZAJE</option>
+          <option>VÍNCULO LABORAL</option>
+          <option>CONTRATO DE VÍNCULO FORMATIVO</option>
+          <option>MONITORIA</option>
+        </select></div>
+      <div class="campo"><label for="fechaRegistroSofia">Fecha de registro en SofiaPlus</label>
+        <input type="date" id="fechaRegistroSofia">
+        <span class="msj-error" data-error="fechaRegistroSofia"></span></div>
+      <div class="campo"><label for="fechaInicioEP">Fecha inicio de la etapa productiva</label>
+        <input type="date" id="fechaInicioEP">
+        <span class="msj-error" data-error="fechaInicioEP"></span></div>
+      <div class="campo"><label for="fechaFinEP">Fecha fin de la etapa productiva</label>
+        <input type="date" id="fechaFinEP">
+        <span class="msj-error" data-error="fechaFinEP"></span></div>
+      <div class="campo ancho"><label for="horario">Horario
+          <span class="pista">(diurno o nocturno, días y hora)</span></label>
+        <input type="text" id="horario" placeholder="Ej.: Lunes 12:00 pm 05:00 pm">
+        <span class="msj-error" data-error="horario"></span></div>
+    </div>
+  </section>
+
+  <section class="tarjeta">
+    <h2>Instructor de seguimiento y ente co-formador</h2>
+    <p class="sub">Vienen del grupo. El correo de la entidad y el teléfono del instructor solo se
+      piden aquí, y quedan guardados en el grupo para la próxima vez.</p>
+    <div class="rejilla">
+      <div class="campo"><label for="instructorNombre">Instructor de seguimiento</label>
+        <input type="text" id="instructorNombre"></div>
+      <div class="campo"><label for="instructorTelefono">Teléfono del instructor</label>
+        <input type="text" id="instructorTelefono" inputmode="numeric">
+        <span class="msj-error" data-error="instructorTelefono"></span></div>
+      <div class="campo"><label for="instructorCorreo">Correo del instructor</label>
+        <input type="email" id="instructorCorreo"></div>
+      <div class="campo ancho"><label for="colegio">Colegio
+          <span class="pista">(al elegirlo se llenan la ficha, la dirección y el NIT)</span></label>
+        <select id="colegio"></select></div>
+      <div class="campo"><label for="grupo">Ficha
+          <span class="pista">(No. de grupo)</span></label>
+        <input type="text" id="grupo" inputmode="numeric">
+        <span class="msj-error" data-error="grupo"></span></div>
+      <div class="campo ancho"><label for="entidad">Entidad co-formadora</label>
+        <input type="text" id="entidad">
+        <span class="msj-error" data-error="entidad"></span></div>
+      <div class="campo"><label for="direccionEntidad">Dirección de la entidad</label>
+        <input type="text" id="direccionEntidad"></div>
+      <div class="campo"><label for="nit">NIT</label>
+        <input type="text" id="nit"></div>
+      <div class="campo"><label for="correoEntidad">Correo de la entidad</label>
+        <input type="email" id="correoEntidad">
+        <span class="msj-error" data-error="correoEntidad"></span></div>
+      <div class="campo"><label for="jefeNombre">Jefe inmediato / co-formador</label>
+        <input type="text" id="jefeNombre"></div>
+      <div class="campo"><label for="jefeCargo">Cargo</label>
+        <input type="text" id="jefeCargo"></div>
+      <div class="campo"><label for="jefeTelefono">Teléfono del jefe inmediato</label>
+        <input type="text" id="jefeTelefono" inputmode="numeric">
+        <span class="msj-error" data-error="jefeTelefono"></span></div>
+    </div>
+  </section>
+
+  <section class="tarjeta">
+    <h2>Firmas de los aprendices</h2>
+    <p class="sub">Las firmas del instructor de seguimiento y del ente co-formador ya vienen dentro
+      de la plantilla oficial: aquí solo falta la del aprendiz. Si ya la cargaste en la bitácora,
+      aparece puesta.</p>
+    <div id="listaFirmas"></div>
+  </section>
+
+  <section class="tarjeta">
+    <h2>Generar los formatos</h2>
+    <p class="sub">Este formato es individual: se genera un documento por aprendiz, cada uno con
+      sus propios datos.</p>
+    <div id="resumen"></div>
+    <div class="ok-caja" style="margin-top:16px">
+      Se descargarán estos archivos:
+      <ul id="nombresPrevios" style="margin:8px 0 0;padding-left:20px"></ul>
+    </div>
+    <div id="estadoGeneracion" class="msj-error" style="margin-top:10px"></div>
+    <button type="button" class="btn" id="btnGenerar" style="margin-top:16px;font-size:1.05rem;padding:13px 26px">
+      Generar formatos
+    </button>
+    <p class="pista" style="margin-top:8px">Si el navegador pregunta «¿Descargar varios archivos?», elige <strong>Permitir</strong>.</p>
+  </section>
+</main>
+
+<footer>Los datos se guardan solo en este navegador. Nada se envía a internet.</footer>
+
+<script>
+/* =========================================================================
+   PLANEACIÓN Y SEGUIMIENTO — GFPI-F-023 v06
+   Mapa de párrafos obtenido comparando la plantilla vacía con el formato que
+   ya habían diligenciado: cada clave es el `w14:paraId` de Word.
+   A diferencia de la bitácora y el acta, este formato es INDIVIDUAL: cada
+   aprendiz recibe un documento con sus propios datos.
+   ========================================================================= */
+
+/* ==== INICIO NUCLEO PLANEACION ==== */
+/* Cada grado tiene su propia plantilla: la de grado 10 y la de grado 11 traen
+   valores distintos ya escritos (fechas de la etapa productiva, instructor,
+   registro en SofiaPlus…). El nombre del archivo sale de CONFIG.grados. */
+function plantillaDelGrado(grado) {
+  const g = CONFIG.grados[grado] || CONFIG.grados[CONFIG.gradoPredeterminado];
+  return g.plantillaPlaneacion;
+}
+
+/* Párrafo donde va la firma del aprendiz: el espacio en blanco justo encima
+   del rótulo «Firma del aprendiz». Las firmas del instructor de seguimiento y
+   del ente co-formador YA vienen dentro de la plantilla oficial. */
+const PARRAFO_FIRMA_APRENDIZ = '5448632A';
+
+const MAPA_PLANEACION = {
+  grupo:              '0238C8F2',   // No. Grupo (ficha)
+  fechaFinLectiva:    '3D4B3ADD',
+  // Datos del aprendiz
+  nombre:             '6CF2AC32',
+  tipoDocumento:      '363B7D00',
+  numeroDocumento:    '784A341F',
+  telefono:           '346F90B5',
+  direccion:          '38AB30CA',
+  correoPersonal:     '70C29DA4',
+  correoInstitucional:'1139651A',
+  alternativa:        '162B24EF',
+  fechaRegistroSofia: '3AAE816C',
+  // Instructor de seguimiento
+  instructorNombre:   '41207129',
+  instructorTelefono: '4F9AC435',
+  instructorCorreo:   '2D388403',
+  // Ente co-formador
+  entidad:            '779A9EEC',
+  direccionEntidad:   '42FF23D7',
+  nit:                '49C21E5F',
+  correoEntidad:      '4352E11A',
+  jefeNombre:         '18740BB8',
+  jefeCargo:          '1D8A9C8C',
+  jefeTelefono:       '4C9038FE',
+  // Momento 1
+  fechaInicioEP:      '5DFD73F1',
+  fechaFinEP:         '7958BE45',
+  horario:            '0B66C6E8'
+};
+
+/* dd/mm/aa, como lo pide el formato */
+function fechaCorta(iso) {
+  const f = aFechaUTC(iso);
+  if (!f) return '';
+  const dd = String(f.getUTCDate()).padStart(2, '0');
+  const mm = String(f.getUTCMonth() + 1).padStart(2, '0');
+  return `${dd}/${mm}/${String(f.getUTCFullYear()).slice(2)}`;
+}
+/* dd/mm/aaaa, para la fecha de registro en SofiaPlus */
+function fechaLarga(iso) {
+  const f = aFechaUTC(iso);
+  if (!f) return '';
+  const dd = String(f.getUTCDate()).padStart(2, '0');
+  const mm = String(f.getUTCMonth() + 1).padStart(2, '0');
+  return `${dd}/${mm}/${f.getUTCFullYear()}`;
+}
+
+function nombreArchivoPlaneacion(nombreAprendiz, grado) {
+  const limpio = normalizar(nombreAprendiz).replace(/[\\/:*?"<>|]/g, '').replace(/\s+/g, ' ').trim();
+  const g = CONFIG.grados[grado] || CONFIG.grados[CONFIG.gradoPredeterminado];
+  return `GFPI-F-023_V06.__Formato_de_Planeación_Seguimiento_y_Evaluación_de_Etapa_Productiva_` +
+         `${g.etiquetaArchivo}_${limpio || 'Aprendiz'}.docx`;
+}
+
+/* Los campos vacíos NO se escriben: la plantilla de cada grado ya trae
+   valores propios (instructor, fechas de la etapa productiva, alternativa…) y
+   escribirles una cadena vacía los borraría. Solo se sobrescribe lo que el
+   formulario tiene diligenciado. */
+function soloConValor(valores) {
+  const limpio = {};
+  Object.keys(valores).forEach(k => { if (normalizar(valores[k]) !== '') limpio[k] = valores[k]; });
+  return limpio;
+}
+
+/* Valores para UN aprendiz: el resto de los datos son del grupo */
+function valoresDePlaneacion(datos, aprendiz) {
+  const M = MAPA_PLANEACION;
+  return soloConValor({
+    [M.grupo]: normalizar(datos.grupo),
+    [M.fechaFinLectiva]: normalizar(datos.fechaFinLectiva),
+    [M.nombre]: normalizar(aprendiz.nombre),
+    [M.tipoDocumento]: normalizar(aprendiz.tipoDocumento),
+    [M.numeroDocumento]: normalizar(aprendiz.numeroDocumento),
+    [M.telefono]: normalizar(aprendiz.telefono),
+    [M.direccion]: normalizar(aprendiz.direccion),
+    [M.correoPersonal]: normalizar(aprendiz.correoPersonal),
+    [M.correoInstitucional]: normalizar(aprendiz.correoInstitucional),
+    [M.alternativa]: normalizar(datos.alternativaRegistrada),
+    [M.fechaRegistroSofia]: fechaLarga(datos.fechaRegistroSofia),
+    [M.instructorNombre]: normalizar(datos.instructorNombre),
+    [M.instructorTelefono]: normalizar(datos.instructorTelefono),
+    [M.instructorCorreo]: normalizar(datos.instructorCorreo),
+    [M.entidad]: normalizar(datos.entidad),
+    [M.direccionEntidad]: normalizar(datos.direccionEntidad),
+    [M.nit]: normalizar(datos.nit),
+    [M.correoEntidad]: normalizar(datos.correoEntidad),
+    [M.jefeNombre]: normalizar(datos.jefeNombre),
+    [M.jefeCargo]: normalizar(datos.jefeCargo),
+    [M.jefeTelefono]: normalizar(datos.jefeTelefono),
+    [M.fechaInicioEP]: fechaCorta(datos.fechaInicioEP),
+    [M.fechaFinEP]: fechaCorta(datos.fechaFinEP),
+    [M.horario]: normalizar(datos.horario)
+  });
+}
+
+/* La firma del aprendiz, lista para el motor de Word */
+function firmasDePlaneacion(datos, indiceAprendiz) {
+  const firma = (datos.firmas || {})['aprendiz' + indiceAprendiz];
+  return firma ? { [PARRAFO_FIRMA_APRENDIZ]: firma } : {};
+}
+
+/* Quiénes van a recibir un documento en esta generación.
+   Devuelve [{ aprendiz, indice }] — con «todo el grupo» son todos; con un
+   aprendiz seleccionado, solo ese. */
+function destinatarios(datos) {
+  const validos = datos.aprendices
+    .map((a, i) => ({ aprendiz: a, indice: i }))
+    .filter(x => normalizar(x.aprendiz.nombre));
+  if (datos.destinatario === 'grupo') return validos;
+  const i = Number(datos.destinatario);
+  const uno = datos.aprendices[i];
+  return uno ? [{ aprendiz: uno, indice: i }] : [];
+}
+/* ==== FIN NUCLEO PLANEACION ==== */
+
+
+/* =========================================================================
+   INTERFAZ
+   ========================================================================= */
+const CLAVE_BORRADOR = 'planeacion-gfpi-f023-borrador';
+const $ = s => document.querySelector(s);
+let bufferPlantilla = null;
+
+let estado = {
+  grupoGuardado: '', grado: CONFIG.gradoPredeterminado, destinatario: '0',
+  fechaFinLectiva: '', alternativaRegistrada: 'PROYECTO PRODUCTIVO', fechaRegistroSofia: '',
+  fechaInicioEP: '', fechaFinEP: '', horario: '',
+  aprendices: [aprendizVacio()],
+  firmas: {}
+};
+CAMPOS_GRUPO.forEach(c => { if (estado[c] === undefined) estado[c] = CONFIG.predeterminados[c] ?? ''; });
+
+const CAMPOS_APRENDIZ = { apNombre:'nombre', apTipoDocumento:'tipoDocumento',
+  apNumeroDocumento:'numeroDocumento', apTelefono:'telefono', apDireccion:'direccion',
+  apCorreoPersonal:'correoPersonal', apCorreoInstitucional:'correoInstitucional' };
+
+const CAMPOS_PAGINA = ['grado', 'colegio', 'grupo', 'fechaFinLectiva', 'alternativaRegistrada', 'fechaRegistroSofia',
+  'fechaInicioEP', 'fechaFinEP', 'horario', 'instructorNombre', 'instructorTelefono',
+  'instructorCorreo', 'entidad', 'direccionEntidad', 'nit', 'correoEntidad', 'jefeNombre',
+  'jefeCargo', 'jefeTelefono'];
+
+function leerCampos() {
+  CAMPOS_PAGINA.forEach(id => { const e = $('#' + id); if (e) estado[id] = e.value; });
+}
+function escribirCampos() {
+  CAMPOS_PAGINA.forEach(id => { const e = $('#' + id); if (e && estado[id] !== undefined) e.value = estado[id]; });
+}
+
+function aprendicesValidos() {
+  return estado.aprendices.filter(a => normalizar(a.nombre));
+}
+
+const ANCHO_MAX_FIRMA = 600;
+const OTRO_COLEGIO = '__otro__';
+
+/* --- ¿Para quién? --- */
+function pintarSelectorDestinatario() {
+  const conNombre = estado.aprendices.filter(a => normalizar(a.nombre)).length;
+  const opciones = estado.aprendices.map((a, i) =>
+    `<option value="${i}">${esc(normalizar(a.nombre) || `Aprendiz ${i + 1} (sin nombre)`)}</option>`);
+  if (conNombre > 1) {
+    opciones.unshift(`<option value="grupo">Todo el grupo — ${conNombre} aprendices</option>`);
+  }
+  $('#destinatario').innerHTML = opciones.join('');
+  if (![...$('#destinatario').options].some(o => o.value === estado.destinatario)) {
+    estado.destinatario = conNombre > 1 ? 'grupo' : '0';
+  }
+  $('#destinatario').value = estado.destinatario;
+  // La tarjeta de datos solo tiene sentido cuando se edita a UNA persona
+  $('#tarjetaAprendiz').classList.toggle('oculto', estado.destinatario === 'grupo');
+  $('#btnAgregarIntegrante').classList.toggle('oculto',
+    estado.aprendices.length >= CONFIG.maxAprendices);
+  $('#btnQuitarIntegrante').classList.toggle('oculto',
+    estado.destinatario === 'grupo' || estado.aprendices.length <= 1);
+}
+
+function aprendizEnEdicion() {
+  if (estado.destinatario === 'grupo') return null;
+  const i = Number(estado.destinatario);
+  if (!estado.aprendices[i]) estado.aprendices[i] = aprendizVacio();
+  return estado.aprendices[i];
+}
+
+function escribirCamposAprendiz() {
+  const a = aprendizEnEdicion();
+  if (!a) return;
+  Object.entries(CAMPOS_APRENDIZ).forEach(([id, campo]) => {
+    const e = $('#' + id);
+    if (e) e.value = a[campo] || '';
+  });
+}
+function leerCamposAprendiz() {
+  const a = aprendizEnEdicion();
+  if (!a) return;
+  Object.entries(CAMPOS_APRENDIZ).forEach(([id, campo]) => {
+    const e = $('#' + id);
+    if (e) a[campo] = e.value;
+  });
+}
+
+/* --- Colegio: llena entidad, dirección y NIT --- */
+function pintarSelectorColegio() {
+  $('#colegio').innerHTML =
+    '<option value="">— Elige el colegio —</option>' +
+    CONFIG.colegios.map(c => `<option value="${esc(c.nombre)}">${esc(c.nombre)}</option>`).join('') +
+    `<option value="${OTRO_COLEGIO}">Otra entidad (escribirla a mano)</option>`;
+  sincronizarSelectorColegio();
+}
+function aplicarColegio(nombre) {
+  const c = CONFIG.colegios.find(x => x.nombre === nombre);
+  if (!c) return;
+  estado.entidad = c.nombre; estado.direccionEntidad = c.direccion; estado.nit = c.nit;
+  $('#entidad').value = c.nombre;
+  $('#direccionEntidad').value = c.direccion;
+  $('#nit').value = c.nit;
+  // Cada colegio tiene su ficha. Si el aprendiz ya escribió otra, se respeta.
+  if (c.ficha && !normalizar(estado.grupo)) {
+    estado.grupo = c.ficha;
+    $('#grupo').value = c.ficha;
+  }
+}
+function sincronizarSelectorColegio() {
+  const c = CONFIG.colegios.find(x =>
+    x.nombre === normalizar(estado.entidad) &&
+    x.direccion === normalizar(estado.direccionEntidad) &&
+    x.nit === normalizar(estado.nit));
+  estado.colegio = c ? c.nombre : (normalizar(estado.entidad) ? OTRO_COLEGIO : '');
+  $('#colegio').value = estado.colegio;
+}
+
+function pintarSelectorGrado() {
+  $('#grado').innerHTML = Object.entries(CONFIG.grados)
+    .map(([clave, g]) => `<option value="${clave}">${esc(g.etiqueta)}</option>`).join('');
+  $('#grado').value = estado.grado;
+}
+
+/* Valores que trae escritos la plantilla del grado: se muestran en el
+   formulario para que el aprendiz los vea y pueda corregirlos. */
+function aplicarValoresDelGrado() {
+  const g = CONFIG.grados[estado.grado] || CONFIG.grados[CONFIG.gradoPredeterminado];
+  Object.entries(g.planeacion || {}).forEach(([k, v]) => { estado[k] = v; });
+  escribirCampos();
+}
+
+function pintarFirmas() {
+  const quienes = destinatarios(estado);
+  $('#listaFirmas').innerHTML = quienes.length ? quienes.map(({ aprendiz, indice }) => {
+    const f = estado.firmas['aprendiz' + indice];
+    const nombre = normalizar(aprendiz.nombre) || `Aprendiz ${indice + 1}`;
+    return `<div class="bloque">
+      <div class="bloque-cab">
+        <strong>Firma de ${esc(nombre)}</strong>
+        ${f ? `<button type="button" class="btn-min" data-quitar-firma="aprendiz${indice}">Quitar</button>` : ''}
+      </div>
+      ${f ? `<img class="firma-previa" src="${f.datos}" alt="Firma de ${esc(nombre)}">`
+          : '<div class="firma-linea"></div>'}
+      <input type="file" accept="image/png,image/jpeg" data-firma="aprendiz${indice}">
+      <span class="msj-error" data-error="firma-aprendiz${indice}"></span>
+    </div>`;
+  }).join('')
+    : '<p class="msj-aviso">Escribe primero el nombre del aprendiz.</p>';
+}
+
+/* Igual que en la bitácora: se reduce la imagen antes de guardarla */
+function procesarImagenFirma(archivo) {
+  return new Promise((resolve, reject) => {
+    const lector = new FileReader();
+    lector.onerror = () => reject(new Error('No se pudo leer la imagen.'));
+    lector.onload = () => {
+      const img = new Image();
+      img.onerror = () => reject(new Error('El archivo no es una imagen válida.'));
+      img.onload = () => {
+        const escala = Math.min(1, ANCHO_MAX_FIRMA / img.naturalWidth);
+        const ancho = Math.max(1, Math.round(img.naturalWidth * escala));
+        const alto = Math.max(1, Math.round(img.naturalHeight * escala));
+        const lienzo = document.createElement('canvas');
+        lienzo.width = ancho; lienzo.height = alto;
+        const ctx = lienzo.getContext('2d');
+        ctx.fillStyle = '#fff';
+        ctx.fillRect(0, 0, ancho, alto);
+        ctx.drawImage(img, 0, 0, ancho, alto);
+        resolve({ datos: lienzo.toDataURL('image/png'), ancho, alto });
+      };
+      img.src = lector.result;
+    };
+    lector.readAsDataURL(archivo);
+  });
+}
+
+function pintarResumen() {
+  const quienes = destinatarios(estado);
+  const filas = [
+    ['Ficha', esc(estado.grupo) || '—'],
+    ['Aprendices', quienes.map(({ aprendiz: a }) =>
+       `${esc(a.nombre)} — ${esc(a.tipoDocumento)} ${esc(a.numeroDocumento)}`).join('<br>') || '—'],
+    ['Etapa productiva', `${fechaCorta(estado.fechaInicioEP) || '—'} a ${fechaCorta(estado.fechaFinEP) || '—'}`],
+    ['Horario', esc(estado.horario) || '—'],
+    ['Entidad', esc(estado.entidad) || '—'],
+    ['Instructor de seguimiento', esc(estado.instructorNombre) || '—']
+  ];
+  $('#resumen').innerHTML = '<table class="resumen">' +
+    filas.map(([k, v]) => `<tr><th>${k}</th><td>${v}</td></tr>`).join('') + '</table>';
+  $('#nombresPrevios').innerHTML = quienes.length
+    ? quienes.map(({ aprendiz: a }) =>
+        `<li>${esc(nombreArchivoPlaneacion(a.nombre, estado.grado))}</li>`).join('')
+    : '<li>—</li>';
+}
+
+/* comun.js llama a esto al cargar o importar un grupo */
+function refrescarInterfaz() {
+  pintarSelectorGrado();
+  pintarSelectorDestinatario();
+  escribirCampos();
+  escribirCamposAprendiz();
+  pintarSelectorColegio();
+  pintarFirmas();
+  pintarResumen();
+}
+
+function guardarBorrador() {
+  try { localStorage.setItem(CLAVE_BORRADOR, JSON.stringify(estado)); }
+  catch (e) { try { localStorage.setItem(CLAVE_BORRADOR, JSON.stringify({ ...estado, firmas: {} })); } catch (e2) {} }
+}
+function cargarBorrador() {
+  try {
+    const g = JSON.parse(localStorage.getItem(CLAVE_BORRADOR) || 'null');
+    if (g) estado = { ...estado, ...g };
+  } catch (e) { /* borrador corrupto */ }
+}
+
+function validar() {
+  const errores = [];
+  const err = (c, m) => errores.push({ clave: c, msj: m });
+  const quienes = destinatarios(estado);
+  if (!quienes.length) err('apNombre', 'Escribe el nombre del aprendiz.');
+  if (estado.destinatario !== 'grupo') {          // se está diligenciando a UNA persona
+    const a = aprendizEnEdicion() || {};
+    if (!normalizar(a.nombre)) err('apNombre', 'Escribe el nombre completo.');
+    if (!RE_DIGITOS.test(normalizar(a.numeroDocumento))) err('apNumeroDocumento', 'Solo dígitos, entre 7 y 12 caracteres.');
+    if (!RE_DIGITOS.test(normalizar(a.telefono))) err('apTelefono', 'Solo dígitos, entre 7 y 12 caracteres.');
+    if (a.correoPersonal && !RE_CORREO.test(a.correoPersonal)) err('apCorreoPersonal', 'Correo inválido.');
+    if (a.correoInstitucional && !RE_CORREO.test(a.correoInstitucional)) err('apCorreoInstitucional', 'Correo inválido.');
+  }
+  if (!normalizar(estado.entidad)) err('entidad', 'Indica el colegio o entidad co-formadora.');
+  if (!normalizar(estado.grupo)) err('grupo', 'Indica el número de ficha.');
+  if (!normalizar(estado.fechaFinLectiva)) err('fechaFinLectiva', 'Indica la fecha fin de la etapa lectiva.');
+  if (!estado.fechaRegistroSofia) err('fechaRegistroSofia', 'Indica la fecha de registro en SofiaPlus.');
+  if (!estado.fechaInicioEP) err('fechaInicioEP', 'Indica la fecha de inicio de la etapa productiva.');
+  if (!estado.fechaFinEP) err('fechaFinEP', 'Indica la fecha de fin de la etapa productiva.');
+  if (estado.fechaInicioEP && estado.fechaFinEP && estado.fechaFinEP < estado.fechaInicioEP)
+    err('fechaFinEP', 'La fecha de fin no puede ser anterior a la de inicio.');
+  if (!normalizar(estado.horario)) err('horario', 'Indica el horario.');
+  if (estado.correoEntidad && !RE_CORREO.test(estado.correoEntidad)) err('correoEntidad', 'Correo inválido.');
+  if (estado.instructorTelefono && !/^\d{7,12}$/.test(normalizar(estado.instructorTelefono)))
+    err('instructorTelefono', 'Solo dígitos, entre 7 y 12 caracteres.');
+  if (estado.jefeTelefono && !/^\d{7,12}$/.test(normalizar(estado.jefeTelefono)))
+    err('jefeTelefono', 'Solo dígitos, entre 7 y 12 caracteres.');
+  quienes.forEach(({ aprendiz, indice }) => {
+    if (!estado.firmas['aprendiz' + indice])
+      err('firma-aprendiz' + indice, `Falta la firma de ${normalizar(aprendiz.nombre)}.`);
+  });
+  return errores;
+}
+
+async function cargarPlantilla() {
+  bufferPlantilla = await obtenerPlantilla(plantillaDelGrado(estado.grado));
+  $('#cajaPlantilla').classList.toggle('oculto', !!bufferPlantilla);
+}
+$('#archivoPlantilla').addEventListener('change', async ev => {
+  const a = ev.target.files[0];
+  if (!a) return;
+  bufferPlantilla = new Uint8Array(await a.arrayBuffer());
+  $('#cajaPlantilla').classList.add('oculto');
+});
+
+document.addEventListener('input', ev => {
+  const t = ev.target;
+  if (CAMPOS_APRENDIZ[t.id]) {                    // datos del aprendiz en edición
+    leerCamposAprendiz();
+    pintarSelectorDestinatario();
+    pintarFirmas();
+    pintarResumen();
+    guardarBorrador();
+    return;
+  }
+  if (CAMPOS_PAGINA.includes(t.id)) {
+    leerCampos();
+    if (['entidad', 'nit', 'direccionEntidad'].includes(t.id)) sincronizarSelectorColegio();
+    pintarResumen();
+    guardarBorrador();
+  }
+});
+document.addEventListener('change', async ev => {
+  const t = ev.target;
+
+  if (t.dataset.firma !== undefined) {            // carga de una firma
+    const archivo = t.files && t.files[0];
+    if (!archivo) return;
+    marcarError('firma-' + t.dataset.firma, '');
+    try {
+      estado.firmas[t.dataset.firma] = await procesarImagenFirma(archivo);
+      pintarFirmas();
+      guardarBorrador();
+    } catch (e) { marcarError('firma-' + t.dataset.firma, e.message); }
+    return;
+  }
+
+  if (t.id === 'destinatario') {                  // cambia a quién se le genera
+    estado.destinatario = t.value;
+    pintarSelectorDestinatario();
+    escribirCamposAprendiz();
+    pintarFirmas();
+    pintarResumen();
+    guardarBorrador();
+    return;
+  }
+
+  if (CAMPOS_APRENDIZ[t.id]) {
+    leerCamposAprendiz(); pintarFirmas(); pintarResumen(); guardarBorrador();
+    return;
+  }
+
+  if (CAMPOS_PAGINA.includes(t.id)) {
+    leerCampos();
+    if (t.id === 'grado') {                       // otra plantilla y otros valores
+      aplicarValoresDelGrado();
+      cargarPlantilla();
+    }
+    if (t.id === 'colegio') {
+      marcarError('entidad', '');
+      if (t.value && t.value !== OTRO_COLEGIO) aplicarColegio(t.value);
+    }
+    pintarResumen();
+    guardarBorrador();
+  }
+});
+document.addEventListener('click', ev => {
+  const q = ev.target.dataset.quitarFirma;
+  if (q !== undefined) { delete estado.firmas[q]; pintarFirmas(); guardarBorrador(); }
+});
+
+$('#btnAgregarIntegrante').addEventListener('click', () => {
+  const i = agregarIntegrante();
+  if (i === null) return;
+  estado.destinatario = String(i);          // se pasa a editar al recién agregado
+  refrescarInterfaz();
+  guardarBorrador();
+  $('#apNombre').focus();
+});
+$('#btnQuitarIntegrante').addEventListener('click', () => {
+  const i = Number(estado.destinatario);
+  const a = estado.aprendices[i];
+  if (!confirm(`¿Quitar a ${normalizar(a && a.nombre) || 'este integrante'} del equipo?`)) return;
+  if (!quitarIntegrante(i)) return;
+  estado.destinatario = '0';
+  refrescarInterfaz();
+  guardarBorrador();
+});
+
+$('#btnGenerar').addEventListener('click', async () => {
+  const msj = $('#estadoGeneracion');
+  msj.className = 'msj-error';
+  msj.textContent = '';
+  document.querySelectorAll('[data-error]').forEach(s => s.textContent = '');
+  document.querySelectorAll('.malo').forEach(e => e.classList.remove('malo'));
+
+  const errores = validar();
+  if (errores.length) {
+    errores.forEach(e => marcarError(e.clave, e.msj));
+    const campo = document.querySelector(`[data-error="${errores[0].clave}"]`)
+      ?.closest('.campo')?.querySelector('input,select,textarea');
+    if (campo) { campo.classList.add('malo'); campo.focus(); }
+    return;
+  }
+  if (!bufferPlantilla) {
+    msj.textContent = 'Falta cargar la plantilla (arriba de esta página).';
+    $('#cajaPlantilla').classList.remove('oculto');
+    return;
+  }
+
+  try {
+    $('#btnGenerar').disabled = true;
+    $('#btnGenerar').textContent = 'Generando…';
+    const quienes = destinatarios(estado);
+    for (let i = 0; i < quienes.length; i++) {
+      const { aprendiz, indice } = quienes[i];
+      // Un documento por aprendiz: aquí el contenido SÍ cambia entre copias
+      const { datos, faltantes } = generarDocx(fflate, bufferPlantilla,
+                                               valoresDePlaneacion(estado, aprendiz),
+                                               firmasDePlaneacion(estado, indice));
+      if (faltantes.length) {
+        msj.textContent = 'La plantilla no coincide con la esperada: no se encontraron ' +
+                          faltantes.length + ' campos. Verifica que sea el modelo oficial.';
+        return;
+      }
+      descargar(datos, nombreArchivoPlaneacion(aprendiz.nombre, estado.grado),
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+      if (i < quienes.length - 1) await new Promise(r => setTimeout(r, 600));
+    }
+    guardarGrupoActual();
+    msj.className = 'msj-aviso';
+    msj.textContent = `✓ ${quienes.length} ${quienes.length === 1 ? 'formato generado' : 'formatos generados'}. Revisa tu carpeta de descargas.`;
+  } catch (e) {
+    msj.textContent = 'No se pudo generar el formato: ' + e.message;
+  } finally {
+    $('#btnGenerar').disabled = false;
+    $('#btnGenerar').textContent = 'Generar formatos';
+  }
+});
+
+(function iniciar() {
+  cargarBorrador();
+  pintarSelectorGrado();
+  if (!normalizar(estado.fechaFinLectiva)) aplicarValoresDelGrado();
+  refrescarInterfaz();
+  conectarTarjetaGrupo();
+  cargarPlantilla();
+})();
+</script>
+</body>
+</html>

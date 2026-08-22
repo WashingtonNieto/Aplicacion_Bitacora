@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Acta de inicio GFPI-F-193 · Etapa productiva</title>
+<script src="comun.js"></script>
+<script src="fflate.min.js"></script>
+<script src="docx.js"></script>
+<script src="plantillas-193.js"></script>
+<style>
+  :root{
+    --verde:#39A900; --verde-osc:#2d8500; --gris:#f4f6f4; --borde:#d6dbd6;
+    --texto:#1f2420; --suave:#5c665e; --error:#c0392b; --aviso:#b7791f;
+    --radio:10px; --sombra:0 1px 3px rgba(0,0,0,.08),0 8px 24px rgba(0,0,0,.06);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font:16px/1.5 "Segoe UI",system-ui,sans-serif;color:var(--texto);background:var(--gris)}
+  header{background:var(--verde);color:#fff;padding:18px 20px}
+  header h1{margin:0;font-size:1.15rem}
+  header p{margin:4px 0 0;font-size:.85rem;opacity:.9}
+  .volver{color:#fff;text-decoration:none;font-size:.82rem;opacity:.9;display:inline-block;margin-bottom:6px}
+  .volver:hover{text-decoration:underline}
+  main{max-width:940px;margin:0 auto;padding:20px}
+  .tarjeta{background:#fff;border:1px solid var(--borde);border-radius:var(--radio);box-shadow:var(--sombra);padding:22px;margin-bottom:18px}
+  h2{font-size:1.05rem;margin:0 0 4px}
+  .sub{color:var(--suave);font-size:.87rem;margin:0 0 18px}
+  .rejilla{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+  .campo{display:flex;flex-direction:column;gap:4px}
+  .campo.ancho{grid-column:1/-1}
+  label{font-size:.82rem;font-weight:600}
+  .pista{font-size:.75rem;color:var(--suave);font-weight:400}
+  input,select,textarea{font:inherit;font-size:.92rem;padding:9px 10px;border:1px solid var(--borde);border-radius:8px;background:#fff;width:100%}
+  textarea{resize:vertical;min-height:120px}
+  input:focus,select:focus,textarea:focus{outline:3px solid rgba(57,169,0,.35);border-color:var(--verde)}
+  input.malo,textarea.malo{border-color:var(--error);background:#fff6f5}
+  .msj-error{color:var(--error);font-size:.76rem;min-height:1em}
+  .msj-aviso{color:var(--aviso);font-size:.76rem}
+  button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid transparent;padding:10px 18px}
+  .btn{background:var(--verde);color:#fff;font-weight:600}
+  .btn:hover{background:var(--verde-osc)}
+  .btn-sec{background:#fff;border-color:var(--borde);color:var(--texto)}
+  .btn-sec:hover{background:var(--gris)}
+  .btn-min{background:none;border:none;color:var(--error);font-size:.8rem;padding:4px 6px;text-decoration:underline}
+  button:disabled{opacity:.45;cursor:not-allowed}
+  .acciones{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:14px}
+  .acciones button{font-size:.88rem;padding:8px 14px}
+  #tarjetaGrupo{border-left:4px solid var(--verde)}
+  .bloque{border:1px solid var(--borde);border-left:4px solid var(--verde);border-radius:8px;padding:14px;margin-bottom:12px;background:#fcfdfc}
+  .bloque-cab{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+  .bloque-cab strong{font-size:.9rem}
+  .firma-previa{display:block;max-height:70px;max-width:100%;background:#fff;border:1px solid var(--borde);border-radius:6px;padding:6px;margin-bottom:10px}
+  .firma-linea{border-bottom:2px solid var(--texto);width:200px;margin:0 0 10px}
+  .oculto{display:none!important}
+  table.resumen{width:100%;border-collapse:collapse;font-size:.85rem}
+  table.resumen th,table.resumen td{text-align:left;padding:7px 9px;border-bottom:1px solid var(--borde);vertical-align:top}
+  table.resumen th{width:250px;color:var(--suave);font-weight:600}
+  .ok-caja{border:1px solid var(--borde);border-left:4px solid var(--verde);background:#f5fbf2;padding:14px;border-radius:8px;font-size:.87rem}
+  .aviso-caja{border:1px solid var(--borde);border-left:4px solid var(--aviso);background:#fffdf5;padding:14px;border-radius:8px;font-size:.87rem;margin-bottom:16px}
+  code{background:#eef1ee;padding:1px 5px;border-radius:4px;font-size:.85em}
+  footer{text-align:center;color:var(--suave);font-size:.78rem;padding:10px 20px 30px}
+</style>
+</head>
+<body>
+
+<header>
+  <a class="volver" href="index.html">← Menú de formatos</a>
+  <h1>Acta de inicio y confidencialidad del proyecto productivo</h1>
+  <p>Formato GFPI-F-193 v3 · Articulación con la Educación Media · SENA</p>
+</header>
+
+<main>
+
+  <div id="cajaPlantilla" class="aviso-caja oculto">
+    <strong>Selecciona la plantilla oficial</strong>
+    <p style="margin:6px 0 10px">No se pudo cargar la plantilla del acta automáticamente
+      (pasa cuando la página se abre con doble clic, sin servidor web). Búscala en tu computador.</p>
+    <input type="file" id="archivoPlantilla" accept=".docx">
+  </div>
+
+  <!-- Grupo de trabajo: compartido con los otros dos formatos -->
+  <section class="tarjeta" id="tarjetaGrupo">
+    <h2>Grupo de trabajo</h2>
+    <p class="sub">Los mismos aprendices, colegio e instructor de la bitácora. Si ya guardaste el
+      grupo, elígelo aquí y los datos se llenan solos.</p>
+    <div class="campo">
+      <label for="grupoGuardado">Grupo guardado</label>
+      <select id="grupoGuardado"></select>
+    </div>
+    <div class="acciones">
+      <button type="button" class="btn-sec" id="btnNuevoGrupo">Grupo nuevo</button>
+      <button type="button" class="btn-sec" id="btnGuardarGrupo">Guardar grupo actual</button>
+      <button type="button" class="btn-sec" id="btnExportarGrupo">Exportar a archivo</button>
+      <button type="button" class="btn-sec" id="btnImportarGrupo">Importar de archivo</button>
+      <input type="file" id="archivoGrupo" accept=".json,application/json" class="oculto">
+      <button type="button" class="btn-min" id="btnEliminarGrupo">Eliminar grupo</button>
+    </div>
+    <span class="msj-error" data-error="grupoGuardado"></span>
+    <span id="estadoGrupo" class="msj-aviso"></span>
+  </section>
+
+  <section class="tarjeta">
+    <h2>Datos del acta</h2>
+    <p class="sub">Lo que cambia de un proyecto a otro. El resto del acta —objetivos, compromiso de
+      confidencialidad y textos legales— ya viene en el formato oficial y no se toca.</p>
+    <div class="rejilla">
+      <div class="campo"><label for="ciudad">Ciudad</label>
+        <input type="text" id="ciudad" value="Bogotá"></div>
+      <div class="campo"><label for="fechaActa">Fecha del acta</label>
+        <input type="date" id="fechaActa">
+        <span class="msj-error" data-error="fechaActa"></span></div>
+      <div class="campo ancho"><label for="nombreProyecto">Nombre del proyecto</label>
+        <input type="text" id="nombreProyecto" placeholder="Ej.: Biobelleza">
+        <span class="msj-error" data-error="nombreProyecto"></span></div>
+      <div class="campo ancho">
+        <label for="descripcion">Descripción, alcance e impacto del proyecto
+          <span class="pista">(puedes escribir varios párrafos)</span></label>
+        <textarea id="descripcion"></textarea>
+        <span class="msj-error" data-error="descripcion"></span></div>
+      <div class="campo"><label for="enfoque">Enfoque del proyecto productivo</label>
+        <select id="enfoque">
+          <option value="empresarial">Enfoque empresarial</option>
+          <option value="idi">Enfoque I+D+i</option>
+        </select>
+        <span class="pista">El formato ya trae marcado el enfoque empresarial.</span></div>
+    </div>
+  </section>
+
+  <section class="tarjeta">
+    <h2>Personal vinculado</h2>
+    <p class="sub">El acta va a nombre de todo el equipo. Revisa que los documentos estén completos:
+      van al «Personal vinculado» y a la tabla de aprobación. El equipo es el mismo para los tres
+      formatos.</p>
+    <div id="listaPersonal"></div>
+    <button type="button" class="btn-sec" id="btnAgregarIntegrante">+ Agregar integrante</button>
+    <span class="msj-error" data-error="aprendices"></span>
+    <div class="rejilla" style="margin-top:14px">
+      <div class="campo"><label for="instructorSeguimiento">Instructor de seguimiento</label>
+        <input type="text" id="instructorSeguimiento"></div>
+      <div class="campo"><label for="instructorSeguimientoDoc">Documento del instructor de seguimiento</label>
+        <input type="text" id="instructorSeguimientoDoc" inputmode="numeric">
+        <span class="msj-error" data-error="instructorSeguimientoDoc"></span></div>
+      <div class="campo"><label for="instructorTecnico">Instructor técnico</label>
+        <input type="text" id="instructorTecnico"></div>
+      <div class="campo"><label for="instructorTecnicoDoc">Documento del instructor técnico</label>
+        <input type="text" id="instructorTecnicoDoc" inputmode="numeric">
+        <span class="msj-error" data-error="instructorTecnicoDoc"></span></div>
+      <div class="campo"><label for="instructorTecnicoCorreo">Correo del instructor técnico</label>
+        <input type="email" id="instructorTecnicoCorreo"></div>
+      <div class="campo"><label for="instructorTecnicoTel">Teléfono del instructor técnico</label>
+        <input type="text" id="instructorTecnicoTel" inputmode="numeric"></div>
+      <div class="campo ancho"><label for="dependencia">Dependencia o empresa del instructor técnico</label>
+        <input type="text" id="dependencia" value="CENTRO DE DISEÑO Y METROLOGIA"></div>
+    </div>
+  </section>
+
+  <section class="tarjeta">
+    <h2>Firmas</h2>
+    <p class="sub">Van en la columna «FIRMA» de la tabla de aprobación: una por integrante y la del
+      instructor técnico. Si ya las cargaste en otro formato, aparecen puestas.</p>
+    <div id="listaFirmas"></div>
+  </section>
+
+  <section class="tarjeta">
+    <h2>Generar el acta</h2>
+    <div id="resumen"></div>
+    <div class="ok-caja" style="margin-top:16px">
+      Se descargarán estos archivos:
+      <ul id="nombresPrevios" style="margin:8px 0 0;padding-left:20px"></ul>
+    </div>
+    <div id="estadoGeneracion" class="msj-error" style="margin-top:10px"></div>
+    <button type="button" class="btn" id="btnGenerar" style="margin-top:16px;font-size:1.05rem;padding:13px 26px">
+      Generar acta de inicio
+    </button>
+    <p class="pista" style="margin-top:8px">Si el navegador pregunta «¿Descargar varios archivos?», elige <strong>Permitir</strong>.</p>
+  </section>
+</main>
+
+<footer>Los datos se guardan solo en este navegador. Nada se envía a internet.</footer>
+
+<script>
+/* =========================================================================
+   ACTA DE INICIO — GFPI-F-193
+   Mapa de párrafos obtenido comparando la plantilla vacía con el acta que ya
+   habían diligenciado los aprendices: cada clave es el `w14:paraId` que Word
+   le asignó al párrafo, y no cambia al escribir dentro de él.
+   ========================================================================= */
+
+/* ==== INICIO NUCLEO ACTA ==== */
+const PLANTILLA_ACTA = 'GFPI-F-193Formato_acta_de_inicio_y_confidencialidad_del_proyecto_productivo_V3_NombreApellidosAprendiz_Modelo.docx';
+
+const MAPA_ACTA = {
+  ciudadYFecha:      '294EE1FE',
+  nombreProyecto:    '2BF62EEB',
+  // Listas con viñeta (a., b., c. …). El formato trae dos renglones de cada
+  // una; si el equipo es más grande, el motor clona el último y Word sigue
+  // numerando solo.
+  listaAprendices:   ['429A4432', '6058E51B'],
+  listaInstructores: ['49164E48', '7F934EA2'],
+  descripcion:       '67BAF786',
+  conclusiones:      '3FF94BCA',
+  registroFecha:     '20C1512B',
+  objetivoActa:      '6C9C67E9',
+  // Tabla «Registro aprobación»: 4 filas (3 aprendices + instructor técnico)
+  filas: [
+    { num:'12E9EE7D', autoriza:'336EF2C0', nombre:'42637236', documento:'7C215FE0',
+      rol:'724FC8B7', correo:'58CB4814', telefono:'0999071A', firma:'4EB23022' },
+    { num:'18B5A9AB', autoriza:'0C3AC962', nombre:'464C7A49', documento:'7EFC1982',
+      rol:'79C1C1B0', correo:'74EFD7CE', telefono:'3036E73C', firma:'4551A3C4' },
+    { num:'0D034AE8', autoriza:'525D4D3E', nombre:'60692EBF', documento:'3E332C74',
+      rol:'34D8E03B', correo:'66119A29', telefono:'4C53FF45', firma:'4D74D4E1' },
+    { num:'22AC969C', autoriza:'521AB1C4', nombre:'652296E6', documento:'7B03E891',
+      rol:'37B53472', dependencia:'3DA9C2EB', correo:'34A7927B', telefono:'1BAB3BBF',
+      firma:'131FD7AB' }
+  ]
+};
+
+const MESES = ['enero','febrero','marzo','abril','mayo','junio','julio',
+               'agosto','septiembre','octubre','noviembre','diciembre'];
+
+function fechaEnLetras(iso) {
+  const f = aFechaUTC(iso);
+  if (!f) return '';
+  return `${MESES[f.getUTCMonth()]} ${f.getUTCDate()} de ${f.getUTCFullYear()}`;
+}
+
+/* «Nombre TI 1234» tal como lo escribieron los aprendices en el acta real */
+function personaConDocumento(nombre, tipo, numero) {
+  const doc = normalizar(numero);
+  return `${normalizar(nombre)}${doc ? ` ${normalizar(tipo) || 'CC'} ${doc}` : ''}`.trim();
+}
+
+function nombreArchivoActa(acta, indiceAprendiz) {
+  const quien = normalizar(acta.aprendices?.[indiceAprendiz || 0]?.nombre) || 'Aprendiz';
+  const limpio = quien.replace(/[\\/:*?"<>|]/g, '').replace(/\s+/g, ' ').trim();
+  return `GFPI-F-193_Acta_de_inicio_${limpio}.docx`;
+}
+function nombresArchivosActa(acta) {
+  return acta.aprendices.map((_, i) => nombreArchivoActa(acta, i));
+}
+
+/* Arma el { paraId: texto } que se le entrega al motor de Word */
+function valoresDelActa(acta) {
+  const aprendices = acta.aprendices.filter(a => normalizar(a.nombre));
+
+  const instructores = [];
+  if (normalizar(acta.instructorSeguimiento)) {
+    instructores.push(personaConDocumento(acta.instructorSeguimiento, 'CC', acta.instructorSeguimientoDoc));
+  }
+  if (normalizar(acta.instructorTecnico)) {
+    instructores.push(personaConDocumento(acta.instructorTecnico, 'CC', acta.instructorTecnicoDoc));
+  }
+
+  const nombresAprendices = aprendices.map(a => normalizar(a.nombre)).join(', ');
+  const conclusiones =
+    'Luego de postularse y pasar el proceso inicial de la convocatoria de proyecto productivo, ' +
+    'firman la presente acta la(s) persona(s) con rol de: aprendiz ' + nombresAprendices +
+    ',  instructor de seguimiento: ' + normalizar(acta.instructorSeguimiento) +
+    ', instructor técnico ' + normalizar(acta.instructorTecnico) +
+    ' y facilitador de seguimiento etapa productiva o instructor a cargo.';
+
+  const f = aFechaUTC(acta.fechaActa);
+  const dia = f ? String(f.getUTCDate()) : '____';
+  const mes = f ? MESES[f.getUTCMonth()].toUpperCase() : '________';
+  const anio = f ? f.getUTCFullYear() : '____';
+
+  const valores = {
+    [MAPA_ACTA.ciudadYFecha]: `${normalizar(acta.ciudad)}, ${fechaEnLetras(acta.fechaActa)}`,
+    [MAPA_ACTA.nombreProyecto]: normalizar(acta.nombreProyecto),
+    [MAPA_ACTA.descripcion]: acta.descripcion || '',
+    [MAPA_ACTA.conclusiones]: conclusiones,
+    [MAPA_ACTA.objetivoActa]: 'Dar inicio al proyecto productivo',
+    [MAPA_ACTA.registroFecha]:
+      `REGISTRO APROBACIÓN DEL ACTA DE INICIO DEL PROYECTO PRODUCTIVO      DEL DÍA__${dia}___ ` +
+      `DEL MES DE__${mes}_______ DEL AÑO ${anio}___`
+  };
+
+  // Tabla de aprobación: los aprendices y, en la última fila, el instructor técnico
+  MAPA_ACTA.filas.forEach((fila, i) => {
+    const esUltima = i === MAPA_ACTA.filas.length - 1;
+    const persona = esUltima
+      ? { nombre: acta.instructorTecnico, documento: acta.instructorTecnicoDoc, rol: 'Instructor',
+          correo: acta.instructorTecnicoCorreo, telefono: acta.instructorTecnicoTel,
+          dependencia: acta.dependencia }
+      : (aprendices[i]
+          ? { nombre: aprendices[i].nombre, documento: aprendices[i].numeroDocumento, rol: 'Aprendiz',
+              // La columna «CORREO ELECTRÓNICO» es una sola: van los dos correos,
+              // el institucional arriba y el personal debajo.
+              correo: [normalizar(aprendices[i].correoInstitucional),
+                       normalizar(aprendices[i].correoPersonal)].filter(Boolean).join('\n'),
+              telefono: aprendices[i].telefono }
+          : null);
+    if (!persona || !normalizar(persona.nombre)) {          // fila sin usar: se deja en blanco
+      Object.entries(fila).forEach(([campo, pid]) => {
+        if (campo !== 'firma') valores[pid] = '';           // la firma es imagen, no texto
+      });
+      return;
+    }
+    valores[fila.num] = String(i + 1);
+    valores[fila.autoriza] = 'SI';
+    valores[fila.nombre] = normalizar(persona.nombre);
+    valores[fila.documento] = normalizar(persona.documento);
+    valores[fila.rol] = persona.rol;
+    valores[fila.correo] = String(persona.correo || '')
+      .split('\n').map(normalizar).filter(Boolean).join('\n');
+    valores[fila.telefono] = normalizar(persona.telefono);
+    if (fila.dependencia) valores[fila.dependencia] = normalizar(persona.dependencia);
+  });
+
+  return valores;
+}
+
+/* La columna FIRMA de la tabla de aprobación mide 2,46 cm: la firma se limita
+   a ese ancho para que no desborde la celda. */
+const FIRMA_TABLA = { maxAnchoEmu: 800000, maxAltoEmu: 400000 };
+
+/* { paraId: firma } para la tabla de aprobación: cada aprendiz en su fila y,
+   en la última, el instructor técnico. */
+function firmasDelActa(acta) {
+  const firmas = acta.firmas || {};
+  const aprendices = acta.aprendices.filter(a => normalizar(a.nombre));
+  const salida = {};
+  const poner = (paraId, firma) => {
+    if (paraId && firma && firma.datos) salida[paraId] = { ...firma, ...FIRMA_TABLA };
+  };
+  MAPA_ACTA.filas.forEach((fila, i) => {
+    const esUltima = i === MAPA_ACTA.filas.length - 1;
+    if (esUltima) poner(fila.firma, firmas.coformador);   // instructor técnico
+    else if (aprendices[i]) poner(fila.firma, firmas['aprendiz' + i]);
+  });
+  return salida;
+}
+
+/* Un renglón por persona en las listas con viñeta del acta.
+   El formato trae dos renglones de cada lista; si el equipo es más grande, el
+   motor clona el último y Word sigue con la letra que corresponde. */
+function listasDelActa(acta) {
+  const aprendices = acta.aprendices.filter(a => normalizar(a.nombre));
+  const instructores = [];
+  if (normalizar(acta.instructorSeguimiento)) {
+    instructores.push(personaConDocumento(acta.instructorSeguimiento, 'CC', acta.instructorSeguimientoDoc));
+  }
+  if (normalizar(acta.instructorTecnico)) {
+    instructores.push(personaConDocumento(acta.instructorTecnico, 'CC', acta.instructorTecnicoDoc));
+  }
+  return [
+    { paraIds: MAPA_ACTA.listaAprendices,
+      textos: aprendices.map(a => personaConDocumento(a.nombre, a.tipoDocumento, a.numeroDocumento)) },
+    { paraIds: MAPA_ACTA.listaInstructores, textos: instructores }
+  ];
+}
+/* ==== FIN NUCLEO ACTA ==== */
+
+
+/* =========================================================================
+   INTERFAZ
+   ========================================================================= */
+const CLAVE_BORRADOR = 'acta-gfpi-f193-borrador';
+const $ = s => document.querySelector(s);
+let bufferPlantilla = null;
+
+let estado = {
+  grupoGuardado: '',
+  ciudad: 'Bogotá', fechaActa: '', nombreProyecto: '', descripcion: '', enfoque: 'empresarial',
+  instructorSeguimiento: '', instructorSeguimientoDoc: '',
+  instructorTecnico: '', instructorTecnicoDoc: '', instructorTecnicoCorreo: '',
+  instructorTecnicoTel: '', dependencia: 'CENTRO DE DISEÑO Y METROLOGIA',
+  aprendices: [aprendizVacio()],
+  firmas: {}
+};
+CAMPOS_GRUPO.forEach(c => { if (estado[c] === undefined) estado[c] = CONFIG.predeterminados[c] ?? ''; });
+
+const CAMPOS_ACTA = ['ciudad', 'fechaActa', 'nombreProyecto', 'descripcion', 'enfoque',
+  'instructorSeguimiento', 'instructorSeguimientoDoc', 'instructorTecnico', 'instructorTecnicoDoc',
+  'instructorTecnicoCorreo', 'instructorTecnicoTel', 'dependencia'];
+
+function leerCampos() {
+  CAMPOS_ACTA.forEach(id => { const e = $('#' + id); if (e) estado[id] = e.value; });
+}
+function escribirCampos() {
+  CAMPOS_ACTA.forEach(id => { const e = $('#' + id); if (e && estado[id] !== undefined) e.value = estado[id]; });
+}
+
+/* Los integrantes se pueden escribir aquí mismo: el acta es el primer formato
+   del ciclo y no siempre existe ya un grupo guardado. Lo que se escriba queda
+   en el grupo, así que sirve también para la bitácora y el 023. */
+function pintarPersonal() {
+  $('#listaPersonal').innerHTML = estado.aprendices.map((ap, i) => `
+    <div class="bloque">
+      <div class="bloque-cab">
+        <strong>Integrante ${i + 1}</strong>
+        ${estado.aprendices.length > 1
+          ? `<button type="button" class="btn-min" data-quitar-aprendiz="${i}">Quitar</button>` : ''}
+      </div>
+      <div class="rejilla">
+        <div class="campo ancho"><label>Nombre completo</label>
+          <input type="text" data-ap="${i}" data-campo="nombre" value="${esc(ap.nombre)}">
+          <span class="msj-error" data-error="ap${i}nombre"></span></div>
+        <div class="campo"><label>Tipo de documento</label>
+          <select data-ap="${i}" data-campo="tipoDocumento">
+            ${CONFIG.tiposDocumento.map(t =>
+              `<option ${ap.tipoDocumento === t ? 'selected' : ''}>${t}</option>`).join('')}
+          </select></div>
+        <div class="campo"><label>Número de documento</label>
+          <input type="text" inputmode="numeric" data-ap="${i}" data-campo="numeroDocumento" value="${esc(ap.numeroDocumento)}">
+          <span class="msj-error" data-error="ap${i}numeroDocumento"></span></div>
+        <div class="campo"><label>Contacto telefónico</label>
+          <input type="text" inputmode="numeric" data-ap="${i}" data-campo="telefono" value="${esc(ap.telefono)}"></div>
+        <div class="campo"><label>Correo institucional
+            <span class="pista">(va en la tabla de aprobación)</span></label>
+          <input type="email" data-ap="${i}" data-campo="correoInstitucional" value="${esc(ap.correoInstitucional)}">
+          <span class="msj-error" data-error="ap${i}correoInstitucional"></span></div>
+        <div class="campo"><label>Correo personal
+            <span class="pista">(va debajo del institucional)</span></label>
+          <input type="email" data-ap="${i}" data-campo="correoPersonal" value="${esc(ap.correoPersonal)}">
+          <span class="msj-error" data-error="ap${i}correoPersonal"></span></div>
+      </div>
+    </div>`).join('');
+  $('#btnAgregarIntegrante').classList.toggle('oculto',
+    estado.aprendices.length >= CONFIG.maxAprendices);
+}
+
+function pintarResumen() {
+  const aprendices = estado.aprendices.filter(a => normalizar(a.nombre));
+  const filas = [
+    ['Ciudad y fecha', `${esc(estado.ciudad)}, ${esc(fechaEnLetras(estado.fechaActa)) || '—'}`],
+    ['Proyecto', esc(estado.nombreProyecto) || '—'],
+    ['Aprendices', aprendices.map(a =>
+       esc(personaConDocumento(a.nombre, a.tipoDocumento, a.numeroDocumento)) +
+       `<br><span class="pista">${esc([normalizar(a.correoInstitucional), normalizar(a.correoPersonal)]
+          .filter(Boolean).join(' · '))}</span>`).join('<br>') || '—'],
+    ['Instructor de seguimiento', esc(estado.instructorSeguimiento) || '—'],
+    ['Instructor técnico', esc(estado.instructorTecnico) || '—'],
+    ['Descripción', estado.descripcion ? esc(estado.descripcion.slice(0, 160)) + (estado.descripcion.length > 160 ? '…' : '') : '—']
+  ];
+  $('#resumen').innerHTML = '<table class="resumen">' +
+    filas.map(([k, v]) => `<tr><th>${k}</th><td>${v}</td></tr>`).join('') + '</table>';
+  $('#nombresPrevios').innerHTML = aprendices.length
+    ? nombresArchivosActa({ aprendices }).map(n => `<li>${esc(n)}</li>`).join('')
+    : '<li>—</li>';
+}
+
+const ANCHO_MAX_FIRMA = 600;
+
+/* Quiénes firman la tabla de aprobación */
+function firmantes() {
+  const lista = estado.aprendices
+    .map((a, i) => ({ clave: 'aprendiz' + i, nombre: normalizar(a.nombre) }))
+    .filter(x => x.nombre);
+  lista.push({ clave: 'coformador',
+               nombre: normalizar(estado.instructorTecnico) || 'Instructor técnico',
+               opcional: true });
+  return lista;
+}
+
+function pintarFirmas() {
+  $('#listaFirmas').innerHTML = firmantes().map(f => {
+    const img = estado.firmas[f.clave];
+    return `<div class="bloque">
+      <div class="bloque-cab">
+        <strong>Firma de ${esc(f.nombre)}</strong>
+        ${img ? `<button type="button" class="btn-min" data-quitar-firma="${f.clave}">Quitar</button>` : ''}
+      </div>
+      ${img ? `<img class="firma-previa" src="${img.datos}" alt="Firma de ${esc(f.nombre)}">`
+            : '<div class="firma-linea"></div>'}
+      <input type="file" accept="image/png,image/jpeg" data-firma="${f.clave}">
+      <span class="pista">${f.opcional ? 'Opcional.' : 'Obligatoria.'}</span>
+      <span class="msj-error" data-error="firma-${f.clave}"></span>
+    </div>`;
+  }).join('');
+}
+
+/* Igual que en los otros formatos: se reduce la imagen antes de guardarla */
+function procesarImagenFirma(archivo) {
+  return new Promise((resolve, reject) => {
+    const lector = new FileReader();
+    lector.onerror = () => reject(new Error('No se pudo leer la imagen.'));
+    lector.onload = () => {
+      const img = new Image();
+      img.onerror = () => reject(new Error('El archivo no es una imagen válida.'));
+      img.onload = () => {
+        const escala = Math.min(1, ANCHO_MAX_FIRMA / img.naturalWidth);
+        const ancho = Math.max(1, Math.round(img.naturalWidth * escala));
+        const alto = Math.max(1, Math.round(img.naturalHeight * escala));
+        const lienzo = document.createElement('canvas');
+        lienzo.width = ancho; lienzo.height = alto;
+        const ctx = lienzo.getContext('2d');
+        ctx.fillStyle = '#fff';
+        ctx.fillRect(0, 0, ancho, alto);
+        ctx.drawImage(img, 0, 0, ancho, alto);
+        resolve({ datos: lienzo.toDataURL('image/png'), ancho, alto });
+      };
+      img.src = lector.result;
+    };
+    lector.readAsDataURL(archivo);
+  });
+}
+
+/* comun.js llama a esto al cargar o importar un grupo */
+function refrescarInterfaz() {
+  if (!normalizar(estado.instructorSeguimiento)) estado.instructorSeguimiento = estado.instructorNombre || '';
+  if (!normalizar(estado.instructorTecnico)) {
+    estado.instructorTecnico = (estado.jefeNombre || '').replace(/^SENA\s*-\s*/i, '');
+    estado.instructorTecnicoCorreo = estado.instructorTecnicoCorreo || estado.jefeCorreo || '';
+    estado.instructorTecnicoTel = estado.instructorTecnicoTel || estado.jefeTelefono || '';
+  }
+  escribirCampos();
+  pintarPersonal();
+  pintarFirmas();
+  pintarResumen();
+}
+
+function guardarBorrador() {
+  try { localStorage.setItem(CLAVE_BORRADOR, JSON.stringify(estado)); }
+  catch (e) { try { localStorage.setItem(CLAVE_BORRADOR, JSON.stringify({ ...estado, firmas: {} })); } catch (e2) {} }
+}
+function cargarBorrador() {
+  try {
+    const g = JSON.parse(localStorage.getItem(CLAVE_BORRADOR) || 'null');
+    if (g) estado = { ...estado, ...g };
+  } catch (e) { /* borrador corrupto */ }
+}
+
+function validar() {
+  const errores = [];
+  const err = (c, m) => errores.push({ clave: c, msj: m });
+  if (!normalizar(estado.nombreProyecto)) err('nombreProyecto', 'Escribe el nombre del proyecto.');
+  if (!estado.fechaActa) err('fechaActa', 'Indica la fecha del acta.');
+  if (!normalizar(estado.descripcion)) err('descripcion', 'Describe el alcance y el impacto del proyecto.');
+  if (!estado.aprendices.some(a => normalizar(a.nombre)))
+    err('ap0nombre', 'Escribe al menos un integrante del equipo.');
+  estado.aprendices.forEach((a, i) => {
+    if (normalizar(a.nombre) && !estado.firmas['aprendiz' + i])
+      err(`firma-aprendiz${i}`, `Falta la firma de ${normalizar(a.nombre)}.`);
+  });
+  estado.aprendices.forEach((a, i) => {
+    if (!normalizar(a.nombre)) return;               // los vacíos simplemente se ignoran
+    if (!normalizar(a.numeroDocumento))
+      err(`ap${i}numeroDocumento`, 'El documento va en el acta y en la tabla de aprobación.');
+    if (!normalizar(a.correoInstitucional) && !normalizar(a.correoPersonal))
+      err(`ap${i}correoInstitucional`, 'Escribe al menos un correo: la tabla de aprobación lo pide.');
+    if (a.correoInstitucional && !RE_CORREO.test(normalizar(a.correoInstitucional)))
+      err(`ap${i}correoInstitucional`, 'Correo inválido.');
+    if (a.correoPersonal && !RE_CORREO.test(normalizar(a.correoPersonal)))
+      err(`ap${i}correoPersonal`, 'Correo inválido.');
+  });
+  if (normalizar(estado.instructorSeguimiento) && !normalizar(estado.instructorSeguimientoDoc))
+    err('instructorSeguimientoDoc', 'Falta el documento del instructor de seguimiento.');
+  if (normalizar(estado.instructorTecnico) && !normalizar(estado.instructorTecnicoDoc))
+    err('instructorTecnicoDoc', 'Falta el documento del instructor técnico.');
+  return errores;
+}
+
+async function cargarPlantilla() {
+  bufferPlantilla = await obtenerPlantilla(PLANTILLA_ACTA);
+  $('#cajaPlantilla').classList.toggle('oculto', !!bufferPlantilla);
+}
+$('#archivoPlantilla').addEventListener('change', async ev => {
+  const a = ev.target.files[0];
+  if (!a) return;
+  bufferPlantilla = new Uint8Array(await a.arrayBuffer());
+  $('#cajaPlantilla').classList.add('oculto');
+});
+
+function alEditar(t) {
+  if (t.dataset && t.dataset.ap !== undefined) {     // datos de un integrante
+    estado.aprendices[Number(t.dataset.ap)][t.dataset.campo] = t.value;
+    if (t.dataset.campo === 'nombre') pintarFirmas();
+    pintarResumen();
+    guardarBorrador();
+    return true;
+  }
+  if (CAMPOS_ACTA.includes(t.id)) { leerCampos(); pintarResumen(); guardarBorrador(); return true; }
+  return false;
+}
+document.addEventListener('input', ev => alEditar(ev.target));
+document.addEventListener('change', async ev => {
+  const t = ev.target;
+  if (t.dataset && t.dataset.firma !== undefined) {   // carga de una firma
+    const archivo = t.files && t.files[0];
+    if (!archivo) return;
+    marcarError('firma-' + t.dataset.firma, '');
+    try {
+      estado.firmas[t.dataset.firma] = await procesarImagenFirma(archivo);
+      pintarFirmas();
+      guardarBorrador();
+    } catch (e) { marcarError('firma-' + t.dataset.firma, e.message); }
+    return;
+  }
+  alEditar(t);
+});
+
+document.addEventListener('click', ev => {
+  const qf = ev.target.dataset.quitarFirma;
+  if (qf !== undefined) {
+    delete estado.firmas[qf];
+    pintarFirmas();
+    guardarBorrador();
+    return;
+  }
+  const q = ev.target.dataset.quitarAprendiz;
+  if (q === undefined) return;
+  const a = estado.aprendices[Number(q)];
+  if (!confirm(`¿Quitar a ${normalizar(a && a.nombre) || 'este integrante'} del equipo?`)) return;
+  if (!quitarIntegrante(Number(q))) return;
+  pintarPersonal();
+  pintarFirmas();
+  pintarResumen();
+  guardarBorrador();
+});
+
+$('#btnAgregarIntegrante').addEventListener('click', () => {
+  if (agregarIntegrante() === null) return;
+  pintarPersonal();
+  pintarFirmas();
+  pintarResumen();
+  guardarBorrador();
+  const campos = document.querySelectorAll('[data-campo="nombre"]');
+  if (campos.length) campos[campos.length - 1].focus();
+});
+
+$('#btnGenerar').addEventListener('click', async () => {
+  const msj = $('#estadoGeneracion');
+  msj.className = 'msj-error';
+  msj.textContent = '';
+  document.querySelectorAll('[data-error]').forEach(s => s.textContent = '');
+  document.querySelectorAll('.malo').forEach(e => e.classList.remove('malo'));
+
+  const errores = validar();
+  if (errores.length) {
+    errores.forEach(e => marcarError(e.clave, e.msj));
+    const campo = document.querySelector(`[data-error="${errores[0].clave}"]`)
+      ?.closest('.campo')?.querySelector('input,select,textarea');
+    if (campo) { campo.classList.add('malo'); campo.focus(); }
+    return;
+  }
+  if (!bufferPlantilla) {
+    msj.textContent = 'Falta cargar la plantilla del acta (arriba de esta página).';
+    $('#cajaPlantilla').classList.remove('oculto');
+    return;
+  }
+
+  try {
+    $('#btnGenerar').disabled = true;
+    $('#btnGenerar').textContent = 'Generando…';
+    const { datos, faltantes } = generarDocx(fflate, bufferPlantilla, valoresDelActa(estado),
+                                             firmasDelActa(estado), listasDelActa(estado));
+    if (faltantes.length) {
+      msj.textContent = 'La plantilla no coincide con la esperada: no se encontraron ' +
+                        faltantes.length + ' campos. Verifica que sea el modelo oficial.';
+      return;
+    }
+    const aprendices = estado.aprendices.filter(a => normalizar(a.nombre));
+    const nombres = nombresArchivosActa({ aprendices });
+    for (let i = 0; i < nombres.length; i++) {
+      descargar(datos, nombres[i],
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+      if (i < nombres.length - 1) await new Promise(r => setTimeout(r, 600));
+    }
+    guardarGrupoActual();
+    msj.className = 'msj-aviso';
+    msj.textContent = `✓ ${nombres.length} ${nombres.length === 1 ? 'acta generada' : 'copias generadas'}. Revisa tu carpeta de descargas.`;
+  } catch (e) {
+    msj.textContent = 'No se pudo generar el acta: ' + e.message;
+  } finally {
+    $('#btnGenerar').disabled = false;
+    $('#btnGenerar').textContent = 'Generar acta de inicio';
+  }
+});
+
+(function iniciar() {
+  cargarBorrador();
+  refrescarInterfaz();
+  conectarTarjetaGrupo();
+  cargarPlantilla();
+})();
+</script>
+</body>
+</html>

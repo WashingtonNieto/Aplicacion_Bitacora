@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Formatos de etapa productiva · SENA</title>
+<script src="comun.js"></script>
+<style>
+  :root{
+    --verde:#39A900; --verde-osc:#2d8500; --gris:#f4f6f4; --borde:#d6dbd6;
+    --texto:#1f2420; --suave:#5c665e; --radio:10px;
+    --sombra:0 1px 3px rgba(0,0,0,.08),0 8px 24px rgba(0,0,0,.06);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font:16px/1.5 "Segoe UI",system-ui,sans-serif;color:var(--texto);background:var(--gris)}
+  header{background:var(--verde);color:#fff;padding:26px 20px}
+  header .interior{max-width:940px;margin:0 auto}
+  header h1{margin:0;font-size:1.35rem}
+  header p{margin:6px 0 0;font-size:.9rem;opacity:.92}
+  main{max-width:940px;margin:0 auto;padding:24px 20px 40px}
+  .intro{color:var(--suave);font-size:.92rem;margin:0 0 20px}
+  .formatos{display:grid;gap:16px}
+  /* Cada formato tiene su propio color pastel: se distinguen de un vistazo.
+     --c-fondo: la tarjeta · --c-borde: la franja y el número · --c-texto: el código */
+  .formato{display:flex;gap:16px;align-items:flex-start;
+           background:var(--c-fondo);border:1px solid var(--borde);
+           border-left:5px solid var(--c-borde);border-radius:var(--radio);box-shadow:var(--sombra);
+           padding:20px;text-decoration:none;color:inherit;transition:.15s}
+  .formato:hover{transform:translateY(-2px);box-shadow:0 4px 10px rgba(0,0,0,.10),0 14px 32px rgba(0,0,0,.08)}
+  .formato:focus-visible{outline:3px solid var(--c-borde);outline-offset:2px}
+
+  /* 1 · Planeación — verde salvia */
+  .formato.planeacion{--c-fondo:#F1F7EC;--c-borde:#7FB069;--c-texto:#3D6B2B;--c-numero:#E2EFD8}
+  /* 2 · Acta de inicio — azul niebla */
+  .formato.acta{--c-fondo:#EDF3F9;--c-borde:#7AA5CC;--c-texto:#2F5C86;--c-numero:#DEEAF5}
+  /* 3 · Bitácora — durazno */
+  .formato.bitacora{--c-fondo:#FBF1E7;--c-borde:#D9A470;--c-texto:#8A5620;--c-numero:#F6E4D2}
+
+  .numero{flex:0 0 44px;height:44px;border-radius:50%;background:var(--c-numero);color:var(--c-texto);
+          display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.1rem}
+  .formato h2{margin:0 0 2px;font-size:1.02rem}
+  .codigo{font-size:.76rem;color:var(--c-texto);font-weight:600;letter-spacing:.03em;text-transform:uppercase}
+  .formato p{margin:8px 0 0;font-size:.89rem;color:var(--suave)}
+  .etiquetas{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+  .etiqueta{font-size:.72rem;background:rgba(255,255,255,.75);border:1px solid var(--c-borde);
+            border-radius:20px;padding:3px 10px;color:var(--c-texto)}
+  .nota{margin-top:24px;background:#fff;border:1px solid var(--borde);border-left:4px solid var(--verde);
+        border-radius:var(--radio);padding:16px 18px;font-size:.87rem}
+  .nota h3{margin:0 0 6px;font-size:.92rem}
+  .nota p{margin:0;color:var(--suave)}
+  footer{text-align:center;color:var(--suave);font-size:.78rem;padding:0 20px 30px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="interior">
+    <h1>Formatos de etapa productiva</h1>
+    <p>Articulación con la Educación Media · Centro de Diseño y Metrología · SENA</p>
+  </div>
+</header>
+
+<main>
+  <p class="intro">Elige el formato que vas a diligenciar. Los datos del grupo —aprendices, colegio,
+    instructor y firmas— se comparten entre los tres: se escriben una sola vez.</p>
+
+  <div class="formatos">
+
+    <a class="formato planeacion" href="planeacion.html">
+      <span class="numero">1</span>
+      <span>
+        <span class="codigo">GFPI-F-023 v06</span>
+        <h2>Planeación, Seguimiento y Evaluación de Etapa Productiva</h2>
+        <p>Se diligencia al inicio de la etapa productiva: datos del aprendiz, del instructor de
+          seguimiento y del ente co-formador, fechas y horario. Un documento por aprendiz.</p>
+        <span class="etiquetas">
+          <span class="etiqueta">Word (.docx)</span>
+          <span class="etiqueta">Una vez por aprendiz</span>
+        </span>
+      </span>
+    </a>
+
+    <a class="formato acta" href="acta-inicio.html">
+      <span class="numero">2</span>
+      <span>
+        <span class="codigo">GFPI-F-193 v3</span>
+        <h2>Acta de inicio y confidencialidad del proyecto productivo</h2>
+        <p>Da inicio al proyecto y fija los compromisos de confidencialidad. Incluye el nombre y la
+          descripción del proyecto, el personal vinculado y el registro de aprobación.</p>
+        <span class="etiquetas">
+          <span class="etiqueta">Word (.docx)</span>
+          <span class="etiqueta">Una vez por proyecto</span>
+        </span>
+      </span>
+    </a>
+
+    <a class="formato bitacora" href="bitacora.html">
+      <span class="numero">3</span>
+      <span>
+        <span class="codigo">GFPI-F-147 v05</span>
+        <h2>Bitácora de seguimiento de etapa productiva</h2>
+        <p>Se entrega cada quincena (grado 11) o cada mes (grado 10), con las actividades realizadas,
+          sus evidencias y las firmas. Se descarga una copia por aprendiz.</p>
+        <span class="etiquetas">
+          <span class="etiqueta">Excel (.xlsx)</span>
+          <span class="etiqueta">Cada período</span>
+        </span>
+      </span>
+    </a>
+
+  </div>
+
+  <div class="nota">
+    <h3>Antes de empezar</h3>
+    <p>Si es la primera vez, entra a cualquiera de los formatos y guarda tu grupo: los aprendices con
+      sus documentos, correos y direcciones, el colegio y las firmas quedan disponibles para los tres
+      formatos y no hay que volver a escribirlos.</p>
+  </div>
+</main>
+
+<footer>Los datos se guardan solo en este navegador. Nada se envía a internet.</footer>
+
+<script>
+  // Si ya hay grupos guardados, se muestran en la nota de bienvenida
+  (function () {
+    try {
+      const grupos = leerGrupos();
+      if (!grupos.length) return;
+      const nota = document.querySelector('.nota');
+      nota.querySelector('h3').textContent = 'Tus grupos guardados';
+      nota.querySelector('p').textContent =
+        grupos.map(g => g.nombre).join(' · ') +
+        '. Al entrar a cualquier formato podrás elegirlos y los datos se llenan solos.';
+    } catch (e) { /* sin almacenamiento disponible: la nota se queda como está */ }
+  })();
+</script>
+</body>
+</html>

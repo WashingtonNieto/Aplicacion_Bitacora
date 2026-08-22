@@ -1,0 +1,43 @@
+# .gitignore — qué NO debe subirse al repositorio público
+#
+# Un patrón por línea. Sin comas, sin comillas.
+# Todo lo de aquí abajo contiene datos personales de aprendices menores de edad:
+# documentos, direcciones, teléfonos, correos y firmas.
+
+# Firmas reales de aprendices e instructores
+firmas_demo/
+
+# Documentos generados con datos reales
+PRUEBA-*
+descargas/
+descargas_*/
+Documentacion/
+
+# Perfiles de grupo exportados (llevan documentos, direcciones y firmas)
+*.json
+
+# Formatos ya diligenciados que quedaron en la carpeta como ejemplo
+*_Ali Yassin Paternina.docx
+*_Danna Lizeth Puerto*.docx
+*_Danna Lizeth Puerto Diaz.xlsx
+*_Lizeth Mariana Caita*.docx
+*_Lizeth Mariana Caita*.xlsx
+*_Victor Santiago*.docx
+*_Victor Santiago*.xlsx
+
+# Las pruebas automáticas traen nombres, documentos y correos escritos dentro
+probar.js
+prueba_ui.py
+prueba_formatos.py
+prueba_sin_servidor.py
+verificar.py
+
+# Archivos temporales de Word y del sistema
+~$*
+.DS_Store
+Thumbs.db
+
+# Dependencias de las pruebas, si algún día se instalan aquí
+node_modules/
+package-lock.json
+__pycache__/
