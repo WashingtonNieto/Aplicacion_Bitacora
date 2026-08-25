@@ -177,17 +177,9 @@
   </section>
 
   <section class="tarjeta">
-    <h2>Instructor de seguimiento y ente co-formador</h2>
-    <p class="sub">Vienen del grupo. El correo de la entidad y el teléfono del instructor solo se
-      piden aquí, y quedan guardados en el grupo para la próxima vez.</p>
+    <h2>Colegio e instructores</h2>
+    <p class="sub">Vienen del grupo y quedan guardados para la próxima vez.</p>
     <div class="rejilla">
-      <div class="campo"><label for="instructorNombre">Instructor de seguimiento</label>
-        <input type="text" id="instructorNombre"></div>
-      <div class="campo"><label for="instructorTelefono">Teléfono del instructor</label>
-        <input type="text" id="instructorTelefono" inputmode="numeric">
-        <span class="msj-error" data-error="instructorTelefono"></span></div>
-      <div class="campo"><label for="instructorCorreo">Correo del instructor</label>
-        <input type="email" id="instructorCorreo"></div>
       <div class="campo ancho"><label for="colegio">Colegio
           <span class="pista">(al elegirlo se llenan la ficha, la dirección y el NIT)</span></label>
         <select id="colegio"></select></div>
@@ -205,14 +197,11 @@
       <div class="campo"><label for="correoEntidad">Correo de la entidad</label>
         <input type="email" id="correoEntidad">
         <span class="msj-error" data-error="correoEntidad"></span></div>
-      <div class="campo"><label for="jefeNombre">Jefe inmediato / co-formador</label>
-        <input type="text" id="jefeNombre"></div>
-      <div class="campo"><label for="jefeCargo">Cargo</label>
-        <input type="text" id="jefeCargo"></div>
-      <div class="campo"><label for="jefeTelefono">Teléfono del jefe inmediato</label>
-        <input type="text" id="jefeTelefono" inputmode="numeric">
-        <span class="msj-error" data-error="jefeTelefono"></span></div>
     </div>
+
+    <h2 style="margin-top:26px">Instructores</h2>
+    <p class="sub">Se guardan con el grupo: quedan puestos en los tres formatos.</p>
+    <div id="tarjetaInstructores"></div>
   </section>
 
   <section class="tarjeta">
@@ -402,10 +391,9 @@ const CAMPOS_APRENDIZ = { apNombre:'nombre', apTipoDocumento:'tipoDocumento',
   apNumeroDocumento:'numeroDocumento', apTelefono:'telefono', apDireccion:'direccion',
   apCorreoPersonal:'correoPersonal', apCorreoInstitucional:'correoInstitucional' };
 
-const CAMPOS_PAGINA = ['grado', 'colegio', 'grupo', 'fechaFinLectiva', 'alternativaRegistrada', 'fechaRegistroSofia',
-  'fechaInicioEP', 'fechaFinEP', 'horario', 'instructorNombre', 'instructorTelefono',
-  'instructorCorreo', 'entidad', 'direccionEntidad', 'nit', 'correoEntidad', 'jefeNombre',
-  'jefeCargo', 'jefeTelefono'];
+const CAMPOS_PAGINA = ['grado', 'colegio', 'grupo', 'fechaFinLectiva', 'alternativaRegistrada',
+  'fechaRegistroSofia', 'fechaInicioEP', 'fechaFinEP', 'horario',
+  'entidad', 'direccionEntidad', 'nit', 'correoEntidad'];
 
 function leerCampos() {
   CAMPOS_PAGINA.forEach(id => { const e = $('#' + id); if (e) estado[id] = e.value; });
@@ -478,9 +466,11 @@ function aplicarColegio(nombre) {
   const c = CONFIG.colegios.find(x => x.nombre === nombre);
   if (!c) return;
   estado.entidad = c.nombre; estado.direccionEntidad = c.direccion; estado.nit = c.nit;
+  estado.correoEntidad = c.correo || '';
   $('#entidad').value = c.nombre;
   $('#direccionEntidad').value = c.direccion;
   $('#nit').value = c.nit;
+  if ($('#correoEntidad')) $('#correoEntidad').value = estado.correoEntidad;
   // Cada colegio tiene su ficha. Si el aprendiz ya escribió otra, se respeta.
   if (c.ficha && !normalizar(estado.grupo)) {
     estado.grupo = c.ficha;
@@ -576,6 +566,7 @@ function pintarResumen() {
 
 /* comun.js llama a esto al cargar o importar un grupo */
 function refrescarInterfaz() {
+  pintarInstructores();
   pintarSelectorGrado();
   pintarSelectorDestinatario();
   escribirCampos();
@@ -619,6 +610,7 @@ function validar() {
     err('fechaFinEP', 'La fecha de fin no puede ser anterior a la de inicio.');
   if (!normalizar(estado.horario)) err('horario', 'Indica el horario.');
   if (estado.correoEntidad && !RE_CORREO.test(estado.correoEntidad)) err('correoEntidad', 'Correo inválido.');
+  if (!normalizar(estado.instructorNombre)) err('instructorNombre', 'Indica el instructor de seguimiento.');
   if (estado.instructorTelefono && !/^\d{7,12}$/.test(normalizar(estado.instructorTelefono)))
     err('instructorTelefono', 'Solo dígitos, entre 7 y 12 caracteres.');
   if (estado.jefeTelefono && !/^\d{7,12}$/.test(normalizar(estado.jefeTelefono)))
@@ -782,6 +774,7 @@ $('#btnGenerar').addEventListener('click', async () => {
   if (!normalizar(estado.fechaFinLectiva)) aplicarValoresDelGrado();
   refrescarInterfaz();
   conectarTarjetaGrupo();
+  conectarInstructores();
   cargarPlantilla();
 })();
 </script>

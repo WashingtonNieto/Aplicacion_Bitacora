@@ -79,17 +79,21 @@ const CONFIG = {
   dominioInstitucional: 'educacionbogota.edu.co',
 
   // Colegios con los que se trabaja. Al elegir uno en el formulario se llenan
-  // solos la dirección, el NIT y el número de ficha del grupo.
+  // solos la ficha, la dirección, el NIT y el correo de la entidad.
   // Para agregar o quitar colegios, edita esta lista: no hay que tocar nada más.
   colegios: [
     { nombre: 'COLEGIO FERNANDO SOTO APARICIO I.E.D',
-      direccion: 'CRA 73 A Bis B No. 36-47 Sur', nit: '860.532.538-3', ficha: '3218687' },
+      direccion: 'CRA 73 A Bis B No. 36-47 Sur', nit: '860.532.538-3', ficha: '3218687',
+      correo: 'corpoandares@gmail.com' },
     { nombre: 'COLEGIO MAGDALENA ORTEGA DE NARIÑO I.E.D',
-      direccion: 'CRA 69B # 78A-36', nit: '830.000.292', ficha: '3191165' },
+      direccion: 'CRA 69B # 78A-36', nit: '830.000.292', ficha: '3191165',
+      correo: 'lnalmagdalenaorteg10@educacionbogota.edu.co' },
     { nombre: 'COLEGIO REPUBLICA ESTADOS UNIDOS DE AMERICA I.E.D',
-      direccion: 'CRA 23 # 24c-22 Sur', nit: '899-99735-4', ficha: '3191243' },
+      direccion: 'CRA 23 # 24c-22 Sur', nit: '899-99735-4', ficha: '3191243',
+      correo: 'coldirepeeuudeamer18@educacionbogota.edu.co' },
     { nombre: 'COLEGIO TECNICO PALERMO I.E.D',
-      direccion: 'CRA 23 # 49-27', nit: '830036734-4', ficha: '3450523' }
+      direccion: 'CRA 23 # 49-27', nit: '830036734-4', ficha: '3450523',
+      correo: 'cedpalermocedip13@educacionbogota.edu.co' }
   ],
 
   // Valores precargados (editables por el aprendiz en el formulario)
@@ -102,12 +106,15 @@ const CONFIG = {
     entidad: '',
     nit: '',
     direccionEntidad: '',
-    jefeNombre: 'SENA-Washington Leon Nieto Arce',
+    jefeNombre: 'Washington Nieto Arce',
+    jefeDocumento: '',
     jefeCargo: 'Instructor',
     jefeTelefono: '',
     jefeCorreo: 'wnieto@sena.edu.co',
     instructorNombre: 'Daniel Alberto Ardila Carrasquilla',
+    instructorDocumento: '',
     instructorCorreo: 'dardilac@sena.edu.co',
+    instructorTelefono: '',
     alternativa: 'proyectoProductivo'
   },
 
@@ -218,8 +225,11 @@ const VERSION_ARCHIVO_GRUPO = 1;
 // Campos del formulario que forman parte del perfil (no incluye número de
 // bitácora, fechas ni actividades: eso cambia en cada entrega).
 const CAMPOS_GRUPO = ['grado', 'grupo', 'programa', 'modalidadFormacion', 'modalidadEjecucion',
-  'colegio', 'entidad', 'nit', 'direccionEntidad', 'correoEntidad', 'jefeNombre', 'jefeCargo',
-  'jefeTelefono', 'jefeCorreo', 'instructorNombre', 'instructorCorreo', 'instructorTelefono',
+  'colegio', 'entidad', 'nit', 'direccionEntidad', 'correoEntidad',
+  // Instructor de seguimiento
+  'instructorNombre', 'instructorDocumento', 'instructorCorreo', 'instructorTelefono',
+  // Instructor técnico — en la bitácora y en el 023 se rotula «ente co-formador»
+  'jefeNombre', 'jefeDocumento', 'jefeCargo', 'jefeCorreo', 'jefeTelefono',
   'alternativa'];
 
 function leerGrupos() {
@@ -476,6 +486,121 @@ if (typeof document !== 'undefined') {
   }
 }
 
+/* -------------------------------------------------------------------------
+   INSTRUCTORES
+   Los dos instructores son los mismos en los tres formatos y cambian poco: se
+   capturan una vez y quedan en el grupo, junto con los aprendices. El técnico
+   es la misma persona que la bitácora y el 023 rotulan «ente co-formador».
+   ------------------------------------------------------------------------- */
+const INSTRUCTORES = [
+  { clave: 'instructor', titulo: 'Instructor de seguimiento',
+    campos: [
+      ['nombre', 'instructorNombre', 'Nombre completo', 'text'],
+      ['documento', 'instructorDocumento', 'Cédula', 'text'],
+      ['correo', 'instructorCorreo', 'Correo electrónico', 'email'],
+      ['telefono', 'instructorTelefono', 'Teléfono', 'text']
+    ] },
+  { clave: 'coformador', titulo: 'Instructor técnico',
+    nota: 'En la bitácora y en el GFPI-F-023 este mismo dato se rotula «ente co-formador».',
+    campos: [
+      ['nombre', 'jefeNombre', 'Nombre completo', 'text'],
+      ['documento', 'jefeDocumento', 'Cédula', 'text'],
+      ['cargo', 'jefeCargo', 'Cargo', 'text'],
+      ['correo', 'jefeCorreo', 'Correo electrónico', 'email'],
+      ['telefono', 'jefeTelefono', 'Teléfono', 'text']
+    ] }
+];
+
+/* Reduce la imagen antes de guardarla: una foto de celular pesa varios MB y no
+   cabría en el borrador local. 600 px de ancho sobran para una firma. */
+function procesarImagenFirma(archivo, anchoMaximo) {
+  const tope = anchoMaximo || 600;
+  return new Promise((resolve, reject) => {
+    const lector = new FileReader();
+    lector.onerror = () => reject(new Error('No se pudo leer la imagen.'));
+    lector.onload = () => {
+      const img = new Image();
+      img.onerror = () => reject(new Error('El archivo no es una imagen válida.'));
+      img.onload = () => {
+        const escala = Math.min(1, tope / img.naturalWidth);
+        const ancho = Math.max(1, Math.round(img.naturalWidth * escala));
+        const alto = Math.max(1, Math.round(img.naturalHeight * escala));
+        const lienzo = document.createElement('canvas');
+        lienzo.width = ancho; lienzo.height = alto;
+        const ctx = lienzo.getContext('2d');
+        ctx.fillStyle = '#fff';                 // los JPG no tienen transparencia
+        ctx.fillRect(0, 0, ancho, alto);
+        ctx.drawImage(img, 0, 0, ancho, alto);
+        resolve({ datos: lienzo.toDataURL('image/png'), ancho, alto });
+      };
+      img.src = lector.result;
+    };
+    lector.readAsDataURL(archivo);
+  });
+}
+
+function pintarInstructores() {
+  const caja = document.getElementById('tarjetaInstructores');
+  if (!caja) return;
+  caja.innerHTML = INSTRUCTORES.map(inst => {
+    const firma = (estado.firmas || {})[inst.clave];
+    const campos = inst.campos.map(([, clave, rotulo, tipo]) => `
+      <div class="campo${clave === 'instructorNombre' || clave === 'jefeNombre' ? ' ancho' : ''}">
+        <label for="inst-${clave}">${rotulo}</label>
+        <input type="${tipo}" id="inst-${clave}" data-inst="${clave}"
+               ${tipo === 'text' && /Documento|Telefono/.test(clave) ? 'inputmode="numeric"' : ''}
+               value="${esc(estado[clave] || '')}">
+        <span class="msj-error" data-error="${clave}"></span>
+      </div>`).join('');
+    return `<div class="bloque">
+      <div class="bloque-cab"><strong>${inst.titulo}</strong></div>
+      ${inst.nota ? `<p class="pista" style="margin:-4px 0 12px">${inst.nota}</p>` : ''}
+      <div class="rejilla">${campos}</div>
+      <div style="margin-top:14px">
+        <label style="font-size:.82rem;font-weight:600">Firma</label>
+        ${firma ? `<img class="firma-previa" src="${firma.datos}" alt="Firma de ${esc(estado[inst.campos[0][1]] || inst.titulo)}">`
+                : '<div class="firma-linea"></div>'}
+        <input type="file" accept="image/png,image/jpeg" data-firma-inst="${inst.clave}">
+        ${firma ? `<button type="button" class="btn-min" data-quitar-firma-inst="${inst.clave}">Quitar firma</button>` : ''}
+        <span class="msj-error" data-error="firma-${inst.clave}"></span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* Conecta la tarjeta. Cada página la llama una vez, después de definir su
+   `estado` y su `refrescarInterfaz()`. */
+function conectarInstructores() {
+  if (!document.getElementById('tarjetaInstructores')) return;
+  document.addEventListener('input', ev => {
+    const clave = ev.target.dataset && ev.target.dataset.inst;
+    if (!clave) return;
+    estado[clave] = ev.target.value;
+    if (typeof alCambiarInstructor === 'function') alCambiarInstructor(clave);
+    if (typeof guardarBorrador === 'function') guardarBorrador();
+  });
+  document.addEventListener('change', async ev => {
+    const clave = ev.target.dataset && ev.target.dataset.firmaInst;
+    if (!clave) return;
+    const archivo = ev.target.files && ev.target.files[0];
+    if (!archivo) return;
+    marcarError('firma-' + clave, '');
+    try {
+      estado.firmas[clave] = await procesarImagenFirma(archivo);
+      pintarInstructores();
+      if (typeof guardarBorrador === 'function') guardarBorrador();
+    } catch (e) { marcarError('firma-' + clave, e.message); }
+  });
+  document.addEventListener('click', ev => {
+    const clave = ev.target.dataset && ev.target.dataset.quitarFirmaInst;
+    if (!clave) return;
+    delete estado.firmas[clave];
+    pintarInstructores();
+    if (typeof guardarBorrador === 'function') guardarBorrador();
+  });
+  pintarInstructores();
+}
+
 /* Muestra u oculta el mensaje de error de un campo */
 function marcarError(clave, mensaje) {
   const span = document.querySelector(`[data-error="${clave}"]`);
@@ -570,5 +695,5 @@ if (typeof module !== 'undefined' && module.exports) {
                      mesDeSecuencia, periodoDeBitacora, esc, CAMPOS_GRUPO,
                      CLAVE_GRUPOS, TIPO_ARCHIVO_GRUPO, VERSION_ARCHIVO_GRUPO, nuevoGrupo,
                      agregarIntegrante, quitarIntegrante, reindexarFirmasAprendices,
-                     RE_CORREO, RE_DIGITOS, fechaCortaVisible };
+                     RE_CORREO, RE_DIGITOS, fechaCortaVisible, INSTRUCTORES };
 }

@@ -208,24 +208,12 @@
           <input type="text" id="direccionEntidad" name="direccionEntidad">
           <span class="msj-error" data-error="direccionEntidad"></span></div>
 
-        <div class="campo"><label for="jefeNombre">Jefe inmediato / supervisor <span class="pista">(ente co-formador)</span></label>
-          <input type="text" id="jefeNombre" name="jefeNombre"></div>
-        <div class="campo"><label for="jefeCargo">Cargo del jefe inmediato</label>
-          <input type="text" id="jefeCargo" name="jefeCargo"></div>
-        <div class="campo"><label for="jefeTelefono">Teléfono del jefe inmediato</label>
-          <input type="text" id="jefeTelefono" name="jefeTelefono" inputmode="numeric">
-          <span class="msj-error" data-error="jefeTelefono"></span></div>
-        <div class="campo"><label for="jefeCorreo">Correo del jefe inmediato</label>
-          <input type="email" id="jefeCorreo" name="jefeCorreo">
-          <span class="msj-error" data-error="jefeCorreo"></span></div>
-
-        <div class="campo"><label for="instructorNombre">Instructor de seguimiento</label>
-          <input type="text" id="instructorNombre" name="instructorNombre">
-          <span class="msj-error" data-error="instructorNombre"></span></div>
-        <div class="campo"><label for="instructorCorreo">Correo del instructor de seguimiento</label>
-          <input type="email" id="instructorCorreo" name="instructorCorreo">
-          <span class="msj-error" data-error="instructorCorreo"></span></div>
       </div>
+
+      <h2 style="margin-top:26px">Instructores</h2>
+      <p class="sub">Se guardan con el grupo: quedan puestos en los tres formatos y en las
+        bitácoras siguientes.</p>
+      <div id="tarjetaInstructores"></div>
     </section>
 
     <!-- ══════════ PASO 4 ══════════ -->
@@ -247,9 +235,9 @@
 
     <!-- ══════════ PASO 6 ══════════ -->
     <section class="tarjeta paso oculto" data-paso="5">
-      <h2>6. Firmas</h2>
+      <h2>6. Firmas de los aprendices</h2>
       <p class="sub">Carga una imagen de cada firma (PNG o JPG). Se insertan sobre la línea que les
-        corresponde en el formato. Consejo: firmen en una hoja blanca y tomen la foto de cerca.</p>
+        corresponde en el formato. Las de los instructores están en el paso 3, con sus datos.</p>
       <div id="listaFirmas"></div>
     </section>
 
@@ -740,9 +728,11 @@ function aplicarColegio(nombre) {
   estado.entidad = c.nombre;
   estado.direccionEntidad = c.direccion;
   estado.nit = c.nit;
+  estado.correoEntidad = c.correo || '';
   $('#entidad').value = c.nombre;
   $('#direccionEntidad').value = c.direccion;
   $('#nit').value = c.nit;
+  if ($('#correoEntidad')) $('#correoEntidad').value = estado.correoEntidad;
   // Cada colegio tiene su ficha. Si ya hay una escrita, no se pisa.
   if (c.ficha && !normalizar(estado.grupo)) {
     estado.grupo = c.ficha;
@@ -838,10 +828,8 @@ function itemsFirma() {
     quien: a.nombre || '(sin nombre)',
     obligatoria: true
   }));
-  items.push({ clave: 'instructor', titulo: 'Firma del instructor de seguimiento',
-               quien: estado.instructorNombre || '', obligatoria: false });
-  items.push({ clave: 'coformador', titulo: 'Firma del ente co-formador',
-               quien: estado.jefeNombre || '', obligatoria: false });
+  // Las firmas de los dos instructores se cargan en la tarjeta «Instructores»
+  // del paso 3, porque se comparten con los otros dos formatos.
   return items;
 }
 
@@ -953,6 +941,7 @@ function validarPaso(paso) {
     if (!normalizar(estado.nit)) err('nit', 'Indica el NIT de la entidad.');
     if (!normalizar(estado.direccionEntidad)) err('direccionEntidad', 'Indica la dirección de la entidad.');
     if (!normalizar(estado.instructorNombre)) err('instructorNombre', 'Indica el instructor de seguimiento.');
+    if (!normalizar(estado.jefeNombre)) err('jefeNombre', 'Indica el instructor técnico.');
     if (estado.instructorCorreo && !RE_CORREO.test(estado.instructorCorreo)) err('instructorCorreo', 'Correo inválido.');
     if (estado.jefeCorreo && !RE_CORREO.test(estado.jefeCorreo)) err('jefeCorreo', 'Correo inválido.');
     if (estado.jefeTelefono && !RE_DIGITOS.test(normalizar(estado.jefeTelefono))) err('jefeTelefono', 'Solo dígitos, entre 7 y 12 caracteres.');
@@ -1138,6 +1127,7 @@ function refrescarInterfaz() {
   aplicarPeriodoSugerido();
   reconciliarCompetencias();
   sincronizarSelectorColegio();
+  pintarInstructores();
   pintarAprendices();
   pintarActividades();
   pintarFirmas();
@@ -1208,6 +1198,7 @@ $('#btnGenerar').addEventListener('click', async () => {
   escribirCamposSimples();
   pintarSelectorBitacora();                       // depende del grado ya cargado
   conectarTarjetaGrupo();
+  conectarInstructores();
   sincronizarSelectorColegio();
   reconciliarCompetencias();
   if (!estado.fechaInicio) aplicarPeriodoSugerido();   // primera visita

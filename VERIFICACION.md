@@ -50,7 +50,7 @@ de su línea, de modo que nunca invade el espacio de otro firmante.
 | Archivo | Qué comprueba |
 |---|---|
 | `probar.js` | El núcleo de escritura, los calendarios de **los dos grados** (9 casos: quincenal de grado 11, mensual de grado 10, salto de diciembre-enero y cierre de febrero el 28), las 5 firmas y que las 3 copias sean idénticas byte a byte. Extrae el código del propio `bitacora.html`, así que no puede desincronizarse |
-| `prueba_ui.py` | La app en un navegador real: comprueba que **cambiar de grado** rehaga el calendario (grado 10 mensual, febrero cerrando el 28; grado 11 quincenal), valida el formulario, respeta el tope de 3 aprendices, bloquea fechas fuera del período, comprueba que **elegir el colegio llene dirección y NIT** (y que editarlos a mano devuelva la lista a "Otra entidad"), **exige las firmas de los aprendices**, descarga una copia por aprendiz, comprueba que sean idénticas, restaura el borrador tras recargar, verifica que el **grupo quede guardado solo al generar** y que exportarlo, **limpiar todo el almacenamiento** e importarlo devuelva aprendices, colegio y firmas intactos. Sin errores de consola |
+| `prueba_ui.py` | La app en un navegador real: comprueba que **cambiar de grado** rehaga el calendario (grado 10 mensual, febrero cerrando el 28; grado 11 quincenal), valida el formulario, respeta el tope de 3 aprendices, bloquea fechas fuera del período, comprueba que **elegir el colegio llene dirección, NIT y correo** (y que editarlos a mano devuelva la lista a "Otra entidad"), **exige las firmas de los aprendices**, descarga una copia por aprendiz, comprueba que sean idénticas, restaura el borrador tras recargar, verifica que el **grupo quede guardado solo al generar** y que exportarlo, **limpiar todo el almacenamiento** e importarlo devuelva aprendices, colegio y firmas intactos. Sin errores de consola |
 | `verificar.py` | Los 11 criterios de esta tabla, incluida la conversión a PDF para comparar la paginación |
 | `prueba_formatos.py` | El menú y los dos formatos de Word (ver la sección final) |
 
@@ -115,8 +115,9 @@ contra los que los aprendices habían llenado a mano:
 | GFPI-F-023 grado 10: sale de su plantilla, con sus fechas y su firma | ✅ |
 | GFPI-F-023: por defecto genera **solo el del aprendiz elegido**, y «Todo el grupo» genera los de todos | ✅ |
 | GFPI-F-023: un aprendiz sin grupo escribe sus datos, elige su colegio y descarga **un solo archivo** | ✅ |
-| Elegir el colegio llena también la **ficha** del grupo, en la bitácora y en el 023 | ✅ |
+| Elegir el colegio llena también la **ficha** y el **correo de la entidad**, en la bitácora y en el 023 | ✅ |
 | Cambiar de colegio no pisa una ficha ya escrita | ✅ |
+| Los dos instructores (nombre, cédula, correo, teléfono y firma) se capturan una vez y llegan a los tres formatos | ✅ |
 | El equipo se puede armar **desde el acta**, sin grupo previo, y topa en 3 integrantes | ✅ |
 | Ese equipo aparece después en el 023 (3 destinatarios) y en la bitácora (3 aprendices) | ✅ |
 | **Grupal**: los 3 integrantes salen en el personal vinculado y en las conclusiones del acta, y las 3 copias son idénticas | ✅ |

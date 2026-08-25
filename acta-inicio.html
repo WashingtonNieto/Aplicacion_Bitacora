@@ -134,22 +134,16 @@
     <div id="listaPersonal"></div>
     <button type="button" class="btn-sec" id="btnAgregarIntegrante">+ Agregar integrante</button>
     <span class="msj-error" data-error="aprendices"></span>
+  </section>
+
+  <section class="tarjeta">
+    <h2>Instructores</h2>
+    <p class="sub">Se guardan con el grupo: quedan puestos en los tres formatos. Sus firmas van en
+      la tabla de aprobación del acta.</p>
+    <div id="tarjetaInstructores"></div>
     <div class="rejilla" style="margin-top:14px">
-      <div class="campo"><label for="instructorSeguimiento">Instructor de seguimiento</label>
-        <input type="text" id="instructorSeguimiento"></div>
-      <div class="campo"><label for="instructorSeguimientoDoc">Documento del instructor de seguimiento</label>
-        <input type="text" id="instructorSeguimientoDoc" inputmode="numeric">
-        <span class="msj-error" data-error="instructorSeguimientoDoc"></span></div>
-      <div class="campo"><label for="instructorTecnico">Instructor técnico</label>
-        <input type="text" id="instructorTecnico"></div>
-      <div class="campo"><label for="instructorTecnicoDoc">Documento del instructor técnico</label>
-        <input type="text" id="instructorTecnicoDoc" inputmode="numeric">
-        <span class="msj-error" data-error="instructorTecnicoDoc"></span></div>
-      <div class="campo"><label for="instructorTecnicoCorreo">Correo del instructor técnico</label>
-        <input type="email" id="instructorTecnicoCorreo"></div>
-      <div class="campo"><label for="instructorTecnicoTel">Teléfono del instructor técnico</label>
-        <input type="text" id="instructorTecnicoTel" inputmode="numeric"></div>
-      <div class="campo ancho"><label for="dependencia">Dependencia o empresa del instructor técnico</label>
+      <div class="campo ancho"><label for="dependencia">Dependencia o empresa del instructor técnico
+          <span class="pista">(va en la tabla de aprobación)</span></label>
         <input type="text" id="dependencia" value="CENTRO DE DISEÑO Y METROLOGIA"></div>
     </div>
   </section>
@@ -215,6 +209,12 @@ const MAPA_ACTA = {
   ]
 };
 
+/* En la bitácora el ente co-formador se escribe a veces como «SENA-Nombre»;
+   en el acta la persona va sin ese prefijo. */
+function nombreTecnico(acta) {
+  return normalizar(acta.jefeNombre).replace(/^SENA\s*-\s*/i, '');
+}
+
 const MESES = ['enero','febrero','marzo','abril','mayo','junio','julio',
                'agosto','septiembre','octubre','noviembre','diciembre'];
 
@@ -244,19 +244,19 @@ function valoresDelActa(acta) {
   const aprendices = acta.aprendices.filter(a => normalizar(a.nombre));
 
   const instructores = [];
-  if (normalizar(acta.instructorSeguimiento)) {
-    instructores.push(personaConDocumento(acta.instructorSeguimiento, 'CC', acta.instructorSeguimientoDoc));
+  if (normalizar(acta.instructorNombre)) {
+    instructores.push(personaConDocumento(acta.instructorNombre, 'CC', acta.instructorDocumento));
   }
-  if (normalizar(acta.instructorTecnico)) {
-    instructores.push(personaConDocumento(acta.instructorTecnico, 'CC', acta.instructorTecnicoDoc));
+  if (normalizar(acta.jefeNombre)) {
+    instructores.push(personaConDocumento(nombreTecnico(acta), 'CC', acta.jefeDocumento));
   }
 
   const nombresAprendices = aprendices.map(a => normalizar(a.nombre)).join(', ');
   const conclusiones =
     'Luego de postularse y pasar el proceso inicial de la convocatoria de proyecto productivo, ' +
     'firman la presente acta la(s) persona(s) con rol de: aprendiz ' + nombresAprendices +
-    ',  instructor de seguimiento: ' + normalizar(acta.instructorSeguimiento) +
-    ', instructor técnico ' + normalizar(acta.instructorTecnico) +
+    ',  instructor de seguimiento: ' + normalizar(acta.instructorNombre) +
+    ', instructor técnico ' + nombreTecnico(acta) +
     ' y facilitador de seguimiento etapa productiva o instructor a cargo.';
 
   const f = aFechaUTC(acta.fechaActa);
@@ -279,8 +279,8 @@ function valoresDelActa(acta) {
   MAPA_ACTA.filas.forEach((fila, i) => {
     const esUltima = i === MAPA_ACTA.filas.length - 1;
     const persona = esUltima
-      ? { nombre: acta.instructorTecnico, documento: acta.instructorTecnicoDoc, rol: 'Instructor',
-          correo: acta.instructorTecnicoCorreo, telefono: acta.instructorTecnicoTel,
+      ? { nombre: nombreTecnico(acta), documento: acta.jefeDocumento, rol: 'Instructor',
+          correo: acta.jefeCorreo, telefono: acta.jefeTelefono,
           dependencia: acta.dependencia }
       : (aprendices[i]
           ? { nombre: aprendices[i].nombre, documento: aprendices[i].numeroDocumento, rol: 'Aprendiz',
@@ -337,11 +337,11 @@ function firmasDelActa(acta) {
 function listasDelActa(acta) {
   const aprendices = acta.aprendices.filter(a => normalizar(a.nombre));
   const instructores = [];
-  if (normalizar(acta.instructorSeguimiento)) {
-    instructores.push(personaConDocumento(acta.instructorSeguimiento, 'CC', acta.instructorSeguimientoDoc));
+  if (normalizar(acta.instructorNombre)) {
+    instructores.push(personaConDocumento(acta.instructorNombre, 'CC', acta.instructorDocumento));
   }
-  if (normalizar(acta.instructorTecnico)) {
-    instructores.push(personaConDocumento(acta.instructorTecnico, 'CC', acta.instructorTecnicoDoc));
+  if (normalizar(acta.jefeNombre)) {
+    instructores.push(personaConDocumento(nombreTecnico(acta), 'CC', acta.jefeDocumento));
   }
   return [
     { paraIds: MAPA_ACTA.listaAprendices,
@@ -362,17 +362,14 @@ let bufferPlantilla = null;
 let estado = {
   grupoGuardado: '',
   ciudad: 'Bogotá', fechaActa: '', nombreProyecto: '', descripcion: '', enfoque: 'empresarial',
-  instructorSeguimiento: '', instructorSeguimientoDoc: '',
-  instructorTecnico: '', instructorTecnicoDoc: '', instructorTecnicoCorreo: '',
-  instructorTecnicoTel: '', dependencia: 'CENTRO DE DISEÑO Y METROLOGIA',
+  dependencia: 'CENTRO DE DISEÑO Y METROLOGIA',
   aprendices: [aprendizVacio()],
   firmas: {}
 };
 CAMPOS_GRUPO.forEach(c => { if (estado[c] === undefined) estado[c] = CONFIG.predeterminados[c] ?? ''; });
 
 const CAMPOS_ACTA = ['ciudad', 'fechaActa', 'nombreProyecto', 'descripcion', 'enfoque',
-  'instructorSeguimiento', 'instructorSeguimientoDoc', 'instructorTecnico', 'instructorTecnicoDoc',
-  'instructorTecnicoCorreo', 'instructorTecnicoTel', 'dependencia'];
+  'dependencia'];
 
 function leerCampos() {
   CAMPOS_ACTA.forEach(id => { const e = $('#' + id); if (e) estado[id] = e.value; });
@@ -429,8 +426,8 @@ function pintarResumen() {
        esc(personaConDocumento(a.nombre, a.tipoDocumento, a.numeroDocumento)) +
        `<br><span class="pista">${esc([normalizar(a.correoInstitucional), normalizar(a.correoPersonal)]
           .filter(Boolean).join(' · '))}</span>`).join('<br>') || '—'],
-    ['Instructor de seguimiento', esc(estado.instructorSeguimiento) || '—'],
-    ['Instructor técnico', esc(estado.instructorTecnico) || '—'],
+    ['Instructor de seguimiento', esc(estado.instructorNombre) || '—'],
+    ['Instructor técnico', esc(nombreTecnico(estado)) || '—'],
     ['Descripción', estado.descripcion ? esc(estado.descripcion.slice(0, 160)) + (estado.descripcion.length > 160 ? '…' : '') : '—']
   ];
   $('#resumen').innerHTML = '<table class="resumen">' +
@@ -447,10 +444,7 @@ function firmantes() {
   const lista = estado.aprendices
     .map((a, i) => ({ clave: 'aprendiz' + i, nombre: normalizar(a.nombre) }))
     .filter(x => x.nombre);
-  lista.push({ clave: 'coformador',
-               nombre: normalizar(estado.instructorTecnico) || 'Instructor técnico',
-               opcional: true });
-  return lista;
+  return lista;   // la firma del instructor técnico va en la tarjeta «Instructores»
 }
 
 function pintarFirmas() {
@@ -498,12 +492,7 @@ function procesarImagenFirma(archivo) {
 
 /* comun.js llama a esto al cargar o importar un grupo */
 function refrescarInterfaz() {
-  if (!normalizar(estado.instructorSeguimiento)) estado.instructorSeguimiento = estado.instructorNombre || '';
-  if (!normalizar(estado.instructorTecnico)) {
-    estado.instructorTecnico = (estado.jefeNombre || '').replace(/^SENA\s*-\s*/i, '');
-    estado.instructorTecnicoCorreo = estado.instructorTecnicoCorreo || estado.jefeCorreo || '';
-    estado.instructorTecnicoTel = estado.instructorTecnicoTel || estado.jefeTelefono || '';
-  }
+  pintarInstructores();
   escribirCampos();
   pintarPersonal();
   pintarFirmas();
@@ -544,10 +533,12 @@ function validar() {
     if (a.correoPersonal && !RE_CORREO.test(normalizar(a.correoPersonal)))
       err(`ap${i}correoPersonal`, 'Correo inválido.');
   });
-  if (normalizar(estado.instructorSeguimiento) && !normalizar(estado.instructorSeguimientoDoc))
-    err('instructorSeguimientoDoc', 'Falta el documento del instructor de seguimiento.');
-  if (normalizar(estado.instructorTecnico) && !normalizar(estado.instructorTecnicoDoc))
-    err('instructorTecnicoDoc', 'Falta el documento del instructor técnico.');
+  if (!normalizar(estado.instructorNombre)) err('instructorNombre', 'Indica el instructor de seguimiento.');
+  if (!normalizar(estado.instructorDocumento))
+    err('instructorDocumento', 'La cédula del instructor de seguimiento va en el acta.');
+  if (!normalizar(estado.jefeNombre)) err('jefeNombre', 'Indica el instructor técnico.');
+  if (!normalizar(estado.jefeDocumento))
+    err('jefeDocumento', 'La cédula del instructor técnico va en el acta.');
   return errores;
 }
 
@@ -672,6 +663,7 @@ $('#btnGenerar').addEventListener('click', async () => {
   cargarBorrador();
   refrescarInterfaz();
   conectarTarjetaGrupo();
+  conectarInstructores();
   cargarPlantilla();
 })();
 </script>

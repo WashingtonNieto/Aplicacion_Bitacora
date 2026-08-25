@@ -14,7 +14,12 @@ archivo, para que cada integrante entregue el suyo. En el individual, cada docum
 de su aprendiz: nombre, documento, teléfono, dirección, correos y su firma.
 
 **El equipo se arma una vez, desde cualquiera de los tres formatos** («+ Agregar integrante»,
-máximo 3) y queda igual en todos.
+máximo 3) y queda igual en todos. Lo mismo con **los dos instructores**: nombre, cédula, correo,
+teléfono y firma se capturan una sola vez en la tarjeta «Instructores» y quedan guardados con el
+grupo, listos para los documentos siguientes.
+
+> El **instructor técnico** es la misma persona que la bitácora y el GFPI-F-023 rotulan «ente
+> co-formador»: se guarda una vez y cada formato le pone su propio rótulo.
 
 En los tres casos la app **abre la plantilla oficial y escribe dentro de ella**: nunca construye un
 documento nuevo, así que logos, tablas, bordes y textos legales quedan exactamente como los publicó
@@ -243,14 +248,18 @@ el calendario y las competencias.
 ## Colegios
 
 En el paso 3 el aprendiz elige su colegio de una lista desplegable y la app llena solos el
-**nombre, la ficha, la dirección y el NIT**. Los cuatro colegios vienen cargados:
+**nombre, la ficha, la dirección, el NIT y el correo electrónico**. Los cuatro colegios vienen
+cargados:
 
-| Colegio | Ficha | Dirección | NIT |
+| Colegio | Ficha | Dirección | NIT | Correo |
 |---|---|---|---|
-| COLEGIO FERNANDO SOTO APARICIO I.E.D | 3218687 | CRA 73 A Bis B No. 36-47 Sur | 860.532.538-3 |
-| COLEGIO MAGDALENA ORTEGA DE NARIÑO I.E.D | 3191165 | CRA 69B # 78A-36 | 830.000.292 |
-| COLEGIO REPUBLICA ESTADOS UNIDOS DE AMERICA I.E.D | 3191243 | CRA 23 # 24c-22 Sur | 899-99735-4 |
-| COLEGIO TECNICO PALERMO I.E.D | 3450523 | CRA 23 # 49-27 | 830036734-4 |
+| COLEGIO FERNANDO SOTO APARICIO I.E.D | 3218687 | CRA 73 A Bis B No. 36-47 Sur | 860.532.538-3 | corpoandares@gmail.com |
+| COLEGIO MAGDALENA ORTEGA DE NARIÑO I.E.D | 3191165 | CRA 69B # 78A-36 | 830.000.292 | lnalmagdalenaorteg10@educacionbogota.edu.co |
+| COLEGIO REPUBLICA ESTADOS UNIDOS DE AMERICA I.E.D | 3191243 | CRA 23 # 24c-22 Sur | 899-99735-4 | coldirepeeuudeamer18@educacionbogota.edu.co |
+| COLEGIO TECNICO PALERMO I.E.D | 3450523 | CRA 23 # 49-27 | 830036734-4 | cedpalermocedip13@educacionbogota.edu.co |
+
+El **correo de la entidad** solo se imprime en el GFPI-F-023, que es el único de los tres formatos
+que lo pide; en la bitácora queda guardado con el grupo para que el 023 lo encuentre ya escrito.
 
 Los tres campos quedan editables. Si alguien los modifica a mano, la lista pasa sola a
 **"Otra entidad"**, para que nunca quede afirmando un colegio que no corresponde a lo escrito.
@@ -260,7 +269,8 @@ Para agregar, quitar o corregir colegios, edita el arreglo `CONFIG.colegios` de 
 
 ```js
 colegios: [
-  { nombre: 'COLEGIO ...', direccion: 'CRA ...', nit: '...', ficha: '3218687' },
+  { nombre: 'COLEGIO ...', direccion: 'CRA ...', nit: '...', ficha: '3218687',
+    correo: 'algo@educacionbogota.edu.co' },
   ...
 ]
 ```
