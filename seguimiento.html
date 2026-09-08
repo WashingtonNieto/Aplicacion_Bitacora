@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Momento 2 — Seguimiento GFPI-F-023 · Etapa productiva</title>
+<script src="comun.js"></script>
+<script src="fflate.min.js"></script>
+<script src="docx.js"></script>
+<script src="plantillas-023m2.js"></script>
+<style>
+  :root{
+    --verde:#39A900; --verde-osc:#2d8500; --gris:#f4f6f4; --borde:#d6dbd6;
+    --texto:#1f2420; --suave:#5c665e; --error:#c0392b; --aviso:#b7791f;
+    --radio:10px; --sombra:0 1px 3px rgba(0,0,0,.08),0 8px 24px rgba(0,0,0,.06);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font:16px/1.5 "Segoe UI",system-ui,sans-serif;color:var(--texto);background:var(--gris)}
+  header{background:var(--verde);color:#fff;padding:18px 20px}
+  header h1{margin:0;font-size:1.15rem}
+  header p{margin:4px 0 0;font-size:.85rem;opacity:.9}
+  .volver{color:#fff;text-decoration:none;font-size:.82rem;opacity:.9;display:inline-block;margin-bottom:6px}
+  .volver:hover{text-decoration:underline}
+  main{max-width:1040px;margin:0 auto;padding:20px}
+  .tarjeta{background:#fff;border:1px solid var(--borde);border-radius:var(--radio);box-shadow:var(--sombra);padding:22px;margin-bottom:18px}
+  h2{font-size:1.05rem;margin:0 0 4px}
+  .sub{color:var(--suave);font-size:.87rem;margin:0 0 18px}
+  .rejilla{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+  .campo{display:flex;flex-direction:column;gap:4px}
+  .campo.ancho{grid-column:1/-1}
+  label{font-size:.82rem;font-weight:600}
+  .pista{font-size:.75rem;color:var(--suave);font-weight:400}
+  input,select,textarea{font:inherit;font-size:.92rem;padding:9px 10px;border:1px solid var(--borde);border-radius:8px;background:#fff;width:100%}
+  textarea{min-height:96px;resize:vertical}
+  input:focus,select:focus,textarea:focus{outline:3px solid rgba(57,169,0,.35);border-color:var(--verde)}
+  input.malo,select.malo,textarea.malo{border-color:var(--error);background:#fff6f5}
+  .msj-error{color:var(--error);font-size:.76rem;min-height:1em}
+  .msj-aviso{color:var(--aviso);font-size:.76rem}
+  button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid transparent;padding:10px 18px}
+  .btn{background:var(--verde);color:#fff;font-weight:600}
+  .btn:hover{background:var(--verde-osc)}
+  .btn-sec{background:#fff;border-color:var(--borde);color:var(--texto)}
+  .btn-sec:hover{background:var(--gris)}
+  .btn-min{background:none;border:none;color:var(--error);font-size:.8rem;padding:4px 6px;text-decoration:underline}
+  .btn-liga{background:none;border:none;color:var(--verde-osc);font-size:.8rem;padding:4px 0;text-decoration:underline}
+  button:disabled{opacity:.45;cursor:not-allowed}
+  .acciones{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:14px}
+  .acciones button{font-size:.88rem;padding:8px 14px}
+  #tarjetaGrupo{border-left:4px solid var(--verde)}
+  .bloque{border:1px solid var(--borde);border-left:4px solid var(--verde);border-radius:8px;padding:14px;margin-bottom:12px;background:#fcfdfc}
+  .bloque-cab{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+  .bloque-cab strong{font-size:.9rem}
+  .firma-previa{display:block;max-height:80px;max-width:100%;background:#fff;border:1px solid var(--borde);border-radius:6px;padding:6px;margin-bottom:10px}
+  .firma-linea{border-bottom:2px solid var(--texto);width:220px;margin:0 0 10px}
+  .oculto{display:none!important}
+  /* Rejilla de valoración: un renglón por factor, con los dos botones S/M */
+  .factores{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:6px 22px;margin-bottom:6px}
+  .factor{display:flex;align-items:center;justify-content:space-between;gap:10px;
+          padding:5px 0;border-bottom:1px dotted var(--borde)}
+  .factor span{font-size:.85rem}
+  .sm{display:inline-flex;border:1px solid var(--borde);border-radius:8px;overflow:hidden;flex:none}
+  .sm label{display:block;margin:0}
+  /* El radio se oculta a la vista pero sigue existiendo para el teclado y los
+     lectores de pantalla: la etiqueta es lo que se ve y lo que recibe el clic. */
+  .sm input{position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;
+            overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
+  .sm label span{display:block;padding:4px 13px;font-size:.82rem;font-weight:700;
+                 background:#fff;color:var(--suave);cursor:pointer}
+  .sm label:first-child span{border-right:1px solid var(--borde)}
+  .sm input:checked + span{background:var(--verde);color:#fff}
+  .sm input.mal:checked + span{background:var(--aviso);color:#fff}
+  .sm input:focus-visible + span{outline:3px solid rgba(57,169,0,.35)}
+  .grupo-factores{margin:14px 0 4px;font-size:.8rem;font-weight:700;color:var(--suave);
+                  text-transform:uppercase;letter-spacing:.03em}
+  table.resumen{width:100%;border-collapse:collapse;font-size:.85rem}
+  table.resumen th,table.resumen td{text-align:left;padding:7px 9px;border-bottom:1px solid var(--borde);vertical-align:top}
+  table.resumen th{width:250px;color:var(--suave);font-weight:600}
+  .ok-caja{border:1px solid var(--borde);border-left:4px solid var(--verde);background:#f5fbf2;padding:14px;border-radius:8px;font-size:.87rem}
+  .aviso-caja{border:1px solid var(--borde);border-left:4px solid var(--aviso);background:#fffdf5;padding:14px;border-radius:8px;font-size:.87rem;margin-bottom:16px}
+  code{background:#eef1ee;padding:1px 5px;border-radius:4px;font-size:.85em}
+  footer{text-align:center;color:var(--suave);font-size:.78rem;padding:10px 20px 30px}
+</style>
+</head>
+<body>
+
+<header>
+  <a class="volver" href="index.html">← Menú de formatos</a>
+  <h1>Momento 2 — Seguimiento de la Etapa Productiva</h1>
+  <p>Formato GFPI-F-023 v06 · Lo diligencia el instructor · Articulación con la Educación Media · SENA</p>
+</header>
+
+<main>
+
+  <div id="cajaPlantilla" class="aviso-caja oculto">
+    <strong>Selecciona la plantilla oficial</strong>
+    <p style="margin:6px 0 10px">No se pudo cargar la plantilla automáticamente (pasa cuando la
+      página se abre con doble clic, sin servidor web). Búscala en tu computador.</p>
+    <input type="file" id="archivoPlantilla" accept=".docx">
+  </div>
+
+  <section class="tarjeta" id="tarjetaGrupo">
+    <h2>Grupo de trabajo</h2>
+    <p class="sub">Los mismos aprendices, colegio e instructores de los otros formatos. Elige el
+      colegio y el grado eligiendo aquí el grupo guardado.</p>
+    <div class="campo">
+      <label for="grupoGuardado">Grupo guardado</label>
+      <select id="grupoGuardado"></select>
+    </div>
+    <div class="acciones">
+      <button type="button" class="btn-sec" id="btnNuevoGrupo">Grupo nuevo</button>
+      <button type="button" class="btn-sec" id="btnGuardarGrupo">Guardar grupo actual</button>
+      <button type="button" class="btn-sec" id="btnExportarGrupo">Exportar a archivo</button>
+      <button type="button" class="btn-sec" id="btnImportarGrupo">Importar de archivo</button>
+      <input type="file" id="archivoGrupo" accept=".json,application/json" class="oculto">
+      <button type="button" class="btn-min" id="btnEliminarGrupo">Eliminar grupo</button>
+    </div>
+    <span class="msj-error" data-error="grupoGuardado"></span>
+    <span id="estadoGrupo" class="msj-aviso"></span>
+  </section>
+
+  <section class="tarjeta">
+    <h2>Datos del seguimiento</h2>
+    <p class="sub">El Momento 2 se diligencia una sola vez por visita de seguimiento, para todo el
+      equipo. La fecha fin de la etapa lectiva la pone el grado.</p>
+    <div class="rejilla">
+      <div class="campo"><label for="grado">Grado escolar</label>
+        <select id="grado"></select></div>
+      <div class="campo"><label for="fechaInicioEP">Fecha inicio de la etapa productiva</label>
+        <input type="date" id="fechaInicioEP">
+        <span class="msj-error" data-error="fechaInicioEP"></span></div>
+      <div class="campo"><label for="fechaMomentoDesde">Fecha del momento de seguimiento</label>
+        <input type="date" id="fechaMomentoDesde">
+        <span class="msj-error" data-error="fechaMomentoDesde"></span></div>
+      <div class="campo"><label for="fechaMomentoHasta">Hasta
+          <span class="pista">(opcional, si el seguimiento cubre un período)</span></label>
+        <input type="date" id="fechaMomentoHasta">
+        <span class="msj-error" data-error="fechaMomentoHasta"></span></div>
+      <div class="campo"><label for="modalidadSeguimiento">Modalidad del seguimiento</label>
+        <select id="modalidadSeguimiento">
+          <option>Presencial</option>
+          <option>Virtual</option>
+        </select></div>
+      <div class="campo"><label for="ciudad">Ciudad de diligenciamiento</label>
+        <input type="text" id="ciudad"></div>
+      <div class="campo ancho" id="campoEnlace"><label for="enlaceGrabacion">Enlace de grabación
+          <span class="pista">(solo si el seguimiento fue virtual)</span></label>
+        <input type="text" id="enlaceGrabacion" placeholder="https://…">
+        <span class="msj-error" data-error="enlaceGrabacion"></span></div>
+    </div>
+  </section>
+
+  <section class="tarjeta">
+    <h2>Valoración de los aprendices</h2>
+    <p class="sub"><strong>S</strong> si es satisfactorio, <strong>M</strong> si es por mejorar.
+      Todos empiezan en S: baja a M solo lo que haya que mejorar. La tabla del formato admite hasta
+      <span id="topeFilas"></span> aprendices.</p>
+    <div id="listaValoraciones"></div>
+    <div class="acciones">
+      <button type="button" class="btn-sec" id="btnAgregarIntegrante">+ Agregar integrante</button>
+    </div>
+  </section>
+
+  <section class="tarjeta">
+    <h2>Observaciones finales</h2>
+    <p class="sub">Los tres renglones del cierre del formato. Puedes dejarlos en blanco si se
+      escriben a mano el día de la firma.</p>
+    <div class="rejilla">
+      <div class="campo ancho"><label for="obsInstructor">Observaciones complementarias del instructor de seguimiento</label>
+        <textarea id="obsInstructor"></textarea></div>
+      <div class="campo ancho"><label for="obsAprendiz">Observaciones del aprendiz</label>
+        <textarea id="obsAprendiz"></textarea></div>
+      <div class="campo ancho"><label for="obsCoformador">Observaciones del responsable ente co-formador</label>
+        <textarea id="obsCoformador"></textarea></div>
+    </div>
+  </section>
+
+  <section class="tarjeta">
+    <h2>Colegio e instructores</h2>
+    <p class="sub">Llenan el encabezado «Información general» del formato. Vienen del grupo y quedan
+      guardados para la próxima vez.</p>
+    <div class="rejilla">
+      <div class="campo ancho"><label for="colegio">Colegio
+          <span class="pista">(al elegirlo se llenan la ficha, la dirección, el NIT y el correo)</span></label>
+        <select id="colegio"></select></div>
+      <div class="campo"><label for="grupo">Ficha
+          <span class="pista">(No. de grupo)</span></label>
+        <input type="text" id="grupo" inputmode="numeric">
+        <span class="msj-error" data-error="grupo"></span></div>
+      <div class="campo ancho"><label for="entidad">Entidad co-formadora</label>
+        <input type="text" id="entidad">
+        <span class="msj-error" data-error="entidad"></span></div>
+      <div class="campo"><label for="direccionEntidad">Dirección de la entidad</label>
+        <input type="text" id="direccionEntidad"></div>
+      <div class="campo"><label for="nit">NIT</label>
+        <input type="text" id="nit"></div>
+      <div class="campo"><label for="correoEntidad">Correo de la entidad</label>
+        <input type="email" id="correoEntidad">
+        <span class="msj-error" data-error="correoEntidad"></span></div>
+    </div>
+
+    <h2 style="margin-top:26px">Instructores</h2>
+    <p class="sub">Se guardan con el grupo: quedan puestos en los cuatro formatos.</p>
+    <div id="tarjetaInstructores"></div>
+  </section>
+
+  <section class="tarjeta">
+    <h2>Firmas de los aprendices</h2>
+    <p class="sub">La plantilla del Momento 2 viene <strong>sin ninguna firma</strong>: las tres
+      líneas del cierre las llena la app. Si ya cargaste las firmas en otro formato, aparecen
+      puestas.</p>
+    <div id="listaFirmas"></div>
+  </section>
+
+  <section class="tarjeta">
+    <h2>Bloqueo del documento</h2>
+    <p class="sub">Una vez calificado, el documento sale en <strong>solo lectura</strong>: se ve y se
+      imprime, pero no se puede editar sin quitar la restricción.</p>
+    <label style="display:flex;gap:9px;align-items:flex-start;font-weight:400;font-size:.9rem">
+      <input type="checkbox" id="bloquear" checked style="width:auto;margin-top:3px">
+      <span>Entregar el documento bloqueado contra edición</span>
+    </label>
+    <div class="campo" id="campoClave" style="margin-top:14px;max-width:340px">
+      <label for="claveBloqueo">Contraseña para desbloquearlo
+        <span class="pista">(opcional)</span></label>
+      <input type="password" id="claveBloqueo" autocomplete="new-password">
+      <span class="pista">Sin contraseña, el bloqueo se quita desde «Revisar → Restringir
+        edición». Con contraseña, Word la pide primero.</span>
+      <span class="msj-error" data-error="claveBloqueo"></span>
+    </div>
+    <div class="aviso-caja" style="margin:16px 0 0">
+      <strong>Qué protege y qué no.</strong>
+      <p style="margin:6px 0 0">Es un sello, no cifrado: evita que se cambie una calificación por
+        descuido o por las buenas, pero quien tenga conocimiento técnico puede quitarlo. Para un
+        documento realmente cerrado, ábralo en Word y use <strong>Guardar como → PDF</strong>.</p>
+      <p style="margin:8px 0 0">Bloqueado, <strong>nadie podrá escribir después</strong>: las
+        observaciones del aprendiz y del ente co-formador tienen que quedar escritas arriba, o
+        firmarse y anotarse sobre el impreso.</p>
+      <p style="margin:8px 0 0">La contraseña <strong>no se guarda</strong> en ninguna parte: hay
+        que escribirla cada vez. Si se le olvida, el documento se vuelve a generar desde aquí.</p>
+    </div>
+  </section>
+
+  <section class="tarjeta">
+    <h2>Generar los formatos</h2>
+    <p class="sub">Sale un documento por aprendiz: cada uno lleva sus propios datos en el
+      encabezado y la misma tabla de valoración del equipo.</p>
+    <div id="resumen"></div>
+    <div class="ok-caja" style="margin-top:16px">
+      Se descargarán estos archivos:
+      <ul id="nombresPrevios" style="margin:8px 0 0;padding-left:20px"></ul>
+    </div>
+    <div id="avisoFirmas" class="msj-aviso" style="margin-top:10px"></div>
+    <div id="estadoGeneracion" class="msj-error" style="margin-top:10px"></div>
+    <button type="button" class="btn" id="btnGenerar" style="margin-top:16px;font-size:1.05rem;padding:13px 26px">
+      Generar formatos
+    </button>
+    <p class="pista" style="margin-top:8px">Si el navegador pregunta «¿Descargar varios archivos?», elige <strong>Permitir</strong>.</p>
+  </section>
+</main>
+
+<footer>Los datos se guardan solo en este navegador. Nada se envía a internet.</footer>
+
+<script>
+/* =========================================================================
+   GFPI-F-023 v06 — MOMENTO 2 (SEGUIMIENTO)
+   =========================================================================
+   Es el mismo GFPI-F-023 recortado: conserva íntegro el encabezado
+   «Información general» —con los mismos paraId que el Momento 1, así que los
+   datos del aprendiz y de los instructores se escriben con el mismo mapa— y en
+   lugar de la planeación trae la tabla de valoración del seguimiento.
+
+   Dos diferencias que importan:
+   · Hay UNA sola plantilla para los dos grados. Lo único que cambia entre
+     grado 10 y 11 es la fecha fin de la etapa lectiva, y esa la escribe la app.
+   · La plantilla NO trae ninguna firma (la del Momento 1 sí traía las del
+     instructor y el ente co-formador). Aquí se insertan las tres.
+   ========================================================================= */
+
+/* ==== INICIO NUCLEO SEGUIMIENTO ==== */
+
+const MAPA_SEGUIMIENTO = {
+  // — Información general: los mismos párrafos del Momento 1 —
+  grupo:              '0238C8F2',
+  fechaFinLectiva:    '3D4B3ADD',
+  nombre:             '6CF2AC32',
+  tipoDocumento:      '363B7D00',
+  numeroDocumento:    '784A341F',
+  telefono:           '346F90B5',
+  direccion:          '38AB30CA',
+  correoPersonal:     '70C29DA4',
+  correoInstitucional:'1139651A',
+  alternativa:        '162B24EF',
+  fechaRegistroSofia: '3AAE816C',
+  instructorNombre:   '41207129',
+  instructorTelefono: '4F9AC435',
+  instructorCorreo:   '2D388403',
+  entidad:            '779A9EEC',
+  direccionEntidad:   '42FF23D7',
+  nit:                '49C21E5F',
+  correoEntidad:      '4352E11A',
+  jefeNombre:         '18740BB8',
+  jefeCargo:          '1D8A9C8C',
+  jefeTelefono:       '4C9038FE',
+  // — Cabecera del Momento 2 —
+  fechaInicioEP:      '50D81FFE',
+  fechaMomento:       '7FBF62D0',
+  modalidad:          '3F4F855C',
+  enlaceGrabacion:    '2276397B',
+  // — Cierre —
+  obsInstructor:      '2B155172',
+  obsAprendiz:        '5A347F23',
+  obsCoformador:      '3606A0F7',
+  ciudadFecha:        '6E9AB561'
+};
+
+/* Una entrada por fila de la tabla. En Factores Técnicos cada fila es
+   [aprendiz, …los 8 factores]; en Actitudinales, [aprendiz, …los 5 factores,
+   observaciones]. El formato trae 7 filas técnicas y 5 actitudinales, así que
+   caben 5 aprendices por documento. */
+const FILAS_TECNICOS = [
+  ['338B48BD','18ECF203','550D2313','1ADE444B','32457175','634C157C','36AE5E1A','282A24B0','07CA4249'],
+  ['17704D41','0AE2FBF2','40E81768','3625A08A','0F74B533','339ADDF4','64FE2BE4','79BC02FE','6A87E123'],
+  ['629516FD','67D8B46B','7F8E6C9F','5D98F3FE','369925A7','111F0D84','09E09450','093FC264','53273546'],
+  ['1669EF6E','69571419','4CAAFA98','6B02C57D','1737A57F','2933EE2F','733C1042','79B4CDA5','2F761890'],
+  ['3C665E0E','4A754094','0F3B48CF','1C797705','47CC5140','6AAE27DC','5B1B40E1','5728AC8B','2206CA7A'],
+  ['3D018869','30DBAEE7','76D1A7E9','42AA994D','16ACE50E','3AFC2D10','543EF907','5C914DBB','14632A39'],
+  ['61FB9C51','3F891AC9','09D56325','4458694D','2CF4EC59','1E73E5B7','7365D796','4E91E26B','10375BFA']
+];
+
+const FILAS_ACTITUDINALES = [
+  ['5F954922','58C234E1','2D738743','7162AF7F','099FC047','1901A70C','2C64C645'],
+  ['6624E879','1A918808','5C1C5E31','2F1A73E7','5713B8BF','748F4855','35083057'],
+  ['655E6038','7E5D32B5','586F3D5E','1907430A','0767E17B','549430D0','086BD202'],
+  ['6331FE85','24575954','460ABA57','65B59995','7B73E264','337C5350','64B85CE1'],
+  ['15857761','39E79322','0404426B','18B85810','40090296','01CB5278','654AA4EC']
+];
+
+/* Cuántos aprendices caben: la tabla más corta manda. */
+const MAX_FILAS_SEGUIMIENTO = Math.min(FILAS_TECNICOS.length, FILAS_ACTITUDINALES.length);
+
+/* Los tres espacios en blanco encima de los rótulos de firma */
+const FIRMAS_SEGUIMIENTO = {
+  aprendiz:    '5FF847F3',
+  instructor:  '6D4CADD7',
+  coformador:  '306C9954'
+};
+
+/* dd/mm/aa, como lo pide el rótulo del formato */
+function fechaCorta(iso) {
+  const f = aFechaUTC(iso);
+  if (!f) return '';
+  const dd = String(f.getUTCDate()).padStart(2, '0');
+  const mm = String(f.getUTCMonth() + 1).padStart(2, '0');
+  return `${dd}/${mm}/${String(f.getUTCFullYear()).slice(2)}`;
+}
+function fechaLarga(iso) {
+  const f = aFechaUTC(iso);
+  if (!f) return '';
+  const dd = String(f.getUTCDate()).padStart(2, '0');
+  const mm = String(f.getUTCMonth() + 1).padStart(2, '0');
+  return `${dd}/${mm}/${f.getUTCFullYear()}`;
+}
+
+function nombreArchivoSeguimiento(nombreAprendiz, grado) {
+  const limpio = normalizar(nombreAprendiz).replace(/[\\/:*?"<>|]/g, '').replace(/\s+/g, ' ').trim();
+  const g = CONFIG.grados[grado] || CONFIG.grados[CONFIG.gradoPredeterminado];
+  return `GFPI-F-023_V06.__Formato_de_Planeación_Seguimiento_y_Evaluación_de_Etapa_Productiva_` +
+         `Momento2_${g.etiquetaArchivo}_${limpio || 'Aprendiz'}.docx`;
+}
+
+/* Igual que en el Momento 1: los campos vacíos NO se escriben, porque la
+   plantilla ya trae valores propios y una cadena vacía los borraría. */
+function soloConValor(valores) {
+  const limpio = {};
+  Object.keys(valores).forEach(k => {
+    const v = valores[k];
+    const texto = (v && typeof v === 'object') ? v.texto : v;
+    if (normalizar(texto) !== '') limpio[k] = v;
+  });
+  return limpio;
+}
+
+/* Texto de la fecha del momento: una fecha, o un período si hay «hasta». */
+function textoFechaMomento(datos) {
+  const desde = fechaCorta(datos.fechaMomentoDesde);
+  const hasta = fechaCorta(datos.fechaMomentoHasta);
+  if (!desde) return '';
+  return hasta && hasta !== desde ? `${desde} – ${hasta}` : desde;
+}
+
+/* El renglón final: «Ciudad ___ y fecha de diligenciamiento: __/__/____ de
+   forma presencial ___ o virtual ___», con la X donde corresponda. */
+function textoCiudadFecha(datos) {
+  const ciudad = normalizar(datos.ciudad);
+  const fecha = fechaLarga(datos.fechaMomentoDesde);
+  if (!ciudad && !fecha) return '';
+  const presencial = normalizar(datos.modalidadSeguimiento).toLowerCase() !== 'virtual';
+  return `Ciudad ${ciudad || '____________'} y fecha de diligenciamiento: ${fecha || '___/___/____'} ` +
+         `de forma presencial ${presencial ? 'X' : '___'} o virtual ${presencial ? '___' : 'X'}`;
+}
+
+/* Cómo se rotula cada aprendiz dentro de la tabla: «1. Nombre Apellidos» */
+function rotuloFila(indice, aprendiz) {
+  return `${indice + 1}. ${normalizar(aprendiz.nombre)}`;
+}
+
+/* La plantilla no es coherente consigo misma: unas casillas de valoración
+   vienen centradas y en negrita y otras alineadas a la izquierda y más
+   pequeñas, así que respetando cada celda tal cual la columna de «S»/«M» sale
+   desordenada. Se fuerza el mismo formato en las trece. La observación, en
+   cambio, viene centrada en el formato: centrada, un párrafo largo se lee mal,
+   y va alineada a la izquierda. */
+const FORMATO_VALORACION = { alinear: 'center', negrita: true, tamano: 18 };
+const FORMATO_OBSERVACION = { alinear: 'left' };
+
+/* La valoración del equipo, repartida en las dos tablas del formato.
+   Devuelve { paraId: valor } listo para el motor de Word. */
+function filasDeValoracion(equipo, valoraciones) {
+  const celdas = {};
+  const marca = letra => Object.assign({ texto: letra }, FORMATO_VALORACION);
+  equipo.slice(0, MAX_FILAS_SEGUIMIENTO).forEach((aprendiz, i) => {
+    const v = (valoraciones || {})[i] || valoracionVacia();
+    const rotulo = rotuloFila(i, aprendiz);
+
+    const tec = FILAS_TECNICOS[i];
+    celdas[tec[0]] = rotulo;
+    FACTORES_TECNICOS.forEach(([clave], k) => { celdas[tec[k + 1]] = marca(v[clave] === 'M' ? 'M' : 'S'); });
+
+    const act = FILAS_ACTITUDINALES[i];
+    celdas[act[0]] = rotulo;
+    FACTORES_ACTITUDINALES.forEach(([clave], k) => { celdas[act[k + 1]] = marca(v[clave] === 'M' ? 'M' : 'S'); });
+    celdas[act[FACTORES_ACTITUDINALES.length + 1]] =
+      Object.assign({ texto: normalizar(v.observaciones) }, FORMATO_OBSERVACION);
+  });
+  return celdas;
+}
+
+/* Valores para UN documento. El encabezado cambia entre copias (es el aprendiz
+   que la recibe); la tabla de valoración es la misma para todo el equipo. */
+function valoresDeSeguimiento(datos, aprendiz) {
+  const M = MAPA_SEGUIMIENTO;
+  const equipo = (datos.aprendices || []).filter(a => normalizar(a.nombre));
+  return soloConValor(Object.assign({
+    [M.grupo]: normalizar(datos.grupo),
+    [M.fechaFinLectiva]: normalizar(datos.fechaFinLectiva),
+    [M.nombre]: normalizar(aprendiz.nombre),
+    [M.tipoDocumento]: normalizar(aprendiz.tipoDocumento),
+    [M.numeroDocumento]: normalizar(aprendiz.numeroDocumento),
+    [M.telefono]: normalizar(aprendiz.telefono),
+    [M.direccion]: normalizar(aprendiz.direccion),
+    [M.correoPersonal]: normalizar(aprendiz.correoPersonal),
+    [M.correoInstitucional]: normalizar(aprendiz.correoInstitucional),
+    [M.alternativa]: normalizar(datos.alternativaRegistrada),
+    [M.fechaRegistroSofia]: fechaLarga(datos.fechaRegistroSofia),
+    [M.instructorNombre]: normalizar(datos.instructorNombre),
+    [M.instructorTelefono]: normalizar(datos.instructorTelefono),
+    [M.instructorCorreo]: normalizar(datos.instructorCorreo),
+    [M.entidad]: normalizar(datos.entidad),
+    [M.direccionEntidad]: normalizar(datos.direccionEntidad),
+    [M.nit]: normalizar(datos.nit),
+    [M.correoEntidad]: normalizar(datos.correoEntidad),
+    [M.jefeNombre]: normalizar(datos.jefeNombre),
+    [M.jefeCargo]: normalizar(datos.jefeCargo),
+    [M.jefeTelefono]: normalizar(datos.jefeTelefono),
+    [M.fechaInicioEP]: fechaCorta(datos.fechaInicioEP),
+    [M.fechaMomento]: textoFechaMomento(datos),
+    [M.modalidad]: normalizar(datos.modalidadSeguimiento),
+    [M.enlaceGrabacion]: normalizar(datos.enlaceGrabacion),
+    [M.obsInstructor]: normalizar(datos.obsInstructor),
+    [M.obsAprendiz]: normalizar(datos.obsAprendiz),
+    [M.obsCoformador]: normalizar(datos.obsCoformador),
+    [M.ciudadFecha]: textoCiudadFecha(datos)
+  }, filasDeValoracion(equipo, datos.valoraciones)));
+}
+
+/* Las tres firmas del cierre. A diferencia del Momento 1 —donde la plantilla ya
+   traía las del instructor y el ente co-formador— aquí no viene ninguna: hay
+   que insertar las tres, del mismo tamaño que en los otros formatos. */
+function firmasDeSeguimiento(datos, indiceAprendiz) {
+  const f = datos.firmas || {};
+  const imagenes = {};
+  if (f['aprendiz' + indiceAprendiz]) imagenes[FIRMAS_SEGUIMIENTO.aprendiz] = f['aprendiz' + indiceAprendiz];
+  if (f.instructor)  imagenes[FIRMAS_SEGUIMIENTO.instructor]  = f.instructor;
+  if (f.coformador)  imagenes[FIRMAS_SEGUIMIENTO.coformador]  = f.coformador;
+  return imagenes;
+}
+
+/* Quiénes reciben documento: todos los del equipo con nombre. */
+function destinatarios(datos) {
+  return (datos.aprendices || [])
+    .map((a, i) => ({ aprendiz: a, indice: i }))
+    .filter(x => normalizar(x.aprendiz.nombre))
+    .slice(0, MAX_FILAS_SEGUIMIENTO);
+}
+
+/* Enumera en castellano: «A», «A y B», «A, B y C» */
+function enumerar(lista) {
+  if (lista.length <= 1) return lista.join('');
+  return lista.slice(0, -1).join(', ') + ' y ' + lista[lista.length - 1];
+}
+
+/* Primera frase de la observación, armada con los factores marcados «M». El
+   compromiso de mejora lo escribe el instructor: eso no se puede adivinar. */
+function redaccionSugerida(v) {
+  const val = v || valoracionVacia();
+  const tec = FACTORES_TECNICOS.filter(([c]) => val[c] === 'M').map(([, r]) => r.toLowerCase());
+  const act = FACTORES_ACTITUDINALES.filter(([c]) => val[c] === 'M').map(([, r]) => r.toLowerCase());
+  if (!tec.length && !act.length) {
+    return 'Presenta valoración satisfactoria (S) en todos los factores técnicos y ' +
+           'actitudinales. Se compromete a ';
+  }
+  const partes = [];
+  if (tec.length) partes.push(`${tec.length === 1 ? 'el factor técnico' : 'los factores técnicos'} de ${enumerar(tec)}`);
+  if (act.length) partes.push(`${act.length === 1 ? 'el factor actitudinal' : 'los factores actitudinales'} de ${enumerar(act)}`);
+  return `Presenta una valoración por mejorar (M) en ${partes.join(' y en ')}. Se compromete a `;
+}
+/* ==== FIN NUCLEO SEGUIMIENTO ==== */
+
+
+/* =========================================================================
+   INTERFAZ
+   ========================================================================= */
+const CLAVE_BORRADOR = 'seguimiento-gfpi-f023-m2-borrador';
+const $ = s => document.querySelector(s);
+let bufferPlantilla = null;
+
+let estado = {
+  grupoGuardado: '', grado: CONFIG.gradoPredeterminado,
+  fechaFinLectiva: '', alternativaRegistrada: 'PROYECTO PRODUCTIVO', fechaRegistroSofia: '',
+  fechaInicioEP: '', fechaMomentoDesde: '', fechaMomentoHasta: '',
+  modalidadSeguimiento: 'Presencial', enlaceGrabacion: '',
+  ciudad: CONFIG.ciudadPredeterminada,
+  obsInstructor: '', obsAprendiz: '', obsCoformador: '',
+  bloquear: true,
+  valoraciones: {},
+  aprendices: [aprendizVacio()],
+  firmas: {}
+};
+
+/* La contraseña vive solo en memoria, mientras la página está abierta: no entra
+   en el borrador ni en el grupo guardado. Guardar una contraseña en el
+   navegador sería dejarla escrita en claro en el computador de la sala. */
+let claveBloqueo = '';
+CAMPOS_GRUPO.forEach(c => { if (estado[c] === undefined) estado[c] = CONFIG.predeterminados[c] ?? ''; });
+
+const CAMPOS_PAGINA = ['grado', 'colegio', 'grupo', 'entidad', 'direccionEntidad', 'nit',
+  'correoEntidad', 'fechaInicioEP', 'fechaMomentoDesde', 'fechaMomentoHasta',
+  'modalidadSeguimiento', 'enlaceGrabacion', 'ciudad',
+  'obsInstructor', 'obsAprendiz', 'obsCoformador'];
+
+function leerCampos() {
+  CAMPOS_PAGINA.forEach(id => { const e = $('#' + id); if (e) estado[id] = e.value; });
+}
+function escribirCampos() {
+  CAMPOS_PAGINA.forEach(id => { const e = $('#' + id); if (e && estado[id] !== undefined) e.value = estado[id]; });
+}
+
+const OTRO_COLEGIO = '__otro__';
+
+/* --- Colegio: llena entidad, dirección, NIT y correo --- */
+function pintarSelectorColegio() {
+  $('#colegio').innerHTML =
+    '<option value="">— Elige el colegio —</option>' +
+    CONFIG.colegios.map(c => `<option value="${esc(c.nombre)}">${esc(c.nombre)}</option>`).join('') +
+    `<option value="${OTRO_COLEGIO}">Otra entidad (escribirla a mano)</option>`;
+  sincronizarSelectorColegio();
+}
+function aplicarColegio(nombre) {
+  const c = CONFIG.colegios.find(x => x.nombre === nombre);
+  if (!c) return;
+  estado.entidad = c.nombre; estado.direccionEntidad = c.direccion; estado.nit = c.nit;
+  estado.correoEntidad = c.correo || '';
+  $('#entidad').value = c.nombre;
+  $('#direccionEntidad').value = c.direccion;
+  $('#nit').value = c.nit;
+  $('#correoEntidad').value = estado.correoEntidad;
+  if (c.ficha && !normalizar(estado.grupo)) {
+    estado.grupo = c.ficha;
+    $('#grupo').value = c.ficha;
+  }
+}
+function sincronizarSelectorColegio() {
+  const c = CONFIG.colegios.find(x =>
+    x.nombre === normalizar(estado.entidad) &&
+    x.direccion === normalizar(estado.direccionEntidad) &&
+    x.nit === normalizar(estado.nit));
+  estado.colegio = c ? c.nombre : (normalizar(estado.entidad) ? OTRO_COLEGIO : '');
+  $('#colegio').value = estado.colegio;
+}
+
+function pintarSelectorGrado() {
+  $('#grado').innerHTML = Object.entries(CONFIG.grados)
+    .map(([clave, g]) => `<option value="${clave}">${esc(g.etiqueta)}</option>`).join('');
+  $('#grado').value = estado.grado;
+}
+
+/* Lo que el grado define y la app escribe en el encabezado sin preguntar */
+function aplicarValoresDelGrado() {
+  const g = CONFIG.grados[estado.grado] || CONFIG.grados[CONFIG.gradoPredeterminado];
+  const p = g.planeacion || {};
+  estado.fechaFinLectiva = p.fechaFinLectiva || '';
+  estado.alternativaRegistrada = p.alternativaRegistrada || '';
+  estado.fechaRegistroSofia = p.fechaRegistroSofia || '';
+  if (!estado.fechaInicioEP) estado.fechaInicioEP = p.fechaInicioEP || '';
+  escribirCampos();
+}
+
+/* --- Valoración: un bloque por aprendiz --- */
+function valoracionDe(indice) {
+  if (!estado.valoraciones[indice]) estado.valoraciones[indice] = valoracionVacia();
+  return estado.valoraciones[indice];
+}
+
+function botonesSM(indice, clave, valor) {
+  const n = `sm-${indice}-${clave}`;
+  return `<span class="sm">
+    <label><input type="radio" name="${n}" data-val="${indice}" data-factor="${clave}" value="S"
+      ${valor !== 'M' ? 'checked' : ''}><span>S</span></label>
+    <label><input type="radio" class="mal" name="${n}" data-val="${indice}" data-factor="${clave}" value="M"
+      ${valor === 'M' ? 'checked' : ''}><span>M</span></label>
+  </span>`;
+}
+
+function pintarValoraciones() {
+  const quienes = destinatarios(estado);
+  if (!quienes.length) {
+    $('#listaValoraciones').innerHTML =
+      '<p class="msj-aviso">Carga un grupo o escribe el nombre de los aprendices en otro formato.</p>';
+    return;
+  }
+  $('#listaValoraciones').innerHTML = quienes.map(({ aprendiz, indice }) => {
+    const v = valoracionDe(indice);
+    const fila = (lista) => lista.map(([clave, rotulo]) =>
+      `<div class="factor"><span>${esc(rotulo)}</span>${botonesSM(indice, clave, v[clave])}</div>`).join('');
+    return `<div class="bloque">
+      <div class="bloque-cab"><strong>${esc(rotuloFila(indice, aprendiz))}</strong></div>
+      <div class="grupo-factores">Factores técnicos</div>
+      <div class="factores">${fila(FACTORES_TECNICOS)}</div>
+      <div class="grupo-factores">Factores actitudinales y comportamentales</div>
+      <div class="factores">${fila(FACTORES_ACTITUDINALES)}</div>
+      <div class="campo" style="margin-top:14px">
+        <label for="obs-${indice}">Observaciones / Compromisos de mejora</label>
+        <textarea id="obs-${indice}" data-obs="${indice}">${esc(v.observaciones)}</textarea>
+        <button type="button" class="btn-liga" data-sugerir="${indice}"
+          style="align-self:flex-start">Sugerir redacción a partir de las «M»</button>
+        <span class="msj-error" data-error="obs-${indice}"></span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function pintarFirmas() {
+  const quienes = destinatarios(estado);
+  $('#listaFirmas').innerHTML = quienes.length ? quienes.map(({ aprendiz, indice }) => {
+    const f = estado.firmas['aprendiz' + indice];
+    const nombre = normalizar(aprendiz.nombre) || `Aprendiz ${indice + 1}`;
+    return `<div class="bloque">
+      <div class="bloque-cab">
+        <strong>Firma de ${esc(nombre)}</strong>
+        ${f ? `<button type="button" class="btn-min" data-quitar-firma="aprendiz${indice}">Quitar</button>` : ''}
+      </div>
+      ${f ? `<img class="firma-previa" src="${f.datos}" alt="Firma de ${esc(nombre)}">`
+          : '<div class="firma-linea"></div>'}
+      <input type="file" accept="image/png,image/jpeg" data-firma="aprendiz${indice}">
+      <span class="msj-error" data-error="firma-aprendiz${indice}"></span>
+    </div>`;
+  }).join('')
+    : '<p class="msj-aviso">Escribe primero el nombre de los aprendices.</p>';
+}
+
+function pintarResumen() {
+  const quienes = destinatarios(estado);
+  const conM = quienes.filter(({ indice }) => {
+    const v = valoracionDe(indice);
+    return FACTORES_TECNICOS.concat(FACTORES_ACTITUDINALES).some(([c]) => v[c] === 'M');
+  }).length;
+  const filas = [
+    ['Ficha', esc(estado.grupo) || '—'],
+    ['Aprendices valorados', quienes.map(({ aprendiz, indice }) =>
+       esc(rotuloFila(indice, aprendiz))).join('<br>') || '—'],
+    ['Con algún «por mejorar»', `${conM} de ${quienes.length}`],
+    ['Momento de seguimiento', esc(textoFechaMomento(estado)) || '—'],
+    ['Modalidad', esc(estado.modalidadSeguimiento) || '—'],
+    ['Entidad', esc(estado.entidad) || '—'],
+    ['Instructor de seguimiento', esc(estado.instructorNombre) || '—'],
+    ['Entrega', estado.bloquear
+      ? (claveBloqueo ? 'Bloqueado, con contraseña' : 'Bloqueado, sin contraseña')
+      : 'Editable']
+  ];
+  $('#resumen').innerHTML = '<table class="resumen">' +
+    filas.map(([k, v]) => `<tr><th>${k}</th><td>${v}</td></tr>`).join('') + '</table>';
+  $('#nombresPrevios').innerHTML = quienes.length
+    ? quienes.map(({ aprendiz }) =>
+        `<li>${esc(nombreArchivoSeguimiento(aprendiz.nombre, estado.grado))}</li>`).join('')
+    : '<li>—</li>';
+
+  // Las firmas de los instructores no bloquean: pueden firmarse en papel.
+  const faltan = [];
+  if (!estado.firmas.instructor) faltan.push('la del instructor de seguimiento');
+  if (!estado.firmas.coformador) faltan.push('la del ente co-formador');
+  $('#avisoFirmas').textContent = faltan.length
+    ? `Falta ${enumerar(faltan)}: esa línea saldrá en blanco para firmar a mano. ` +
+      'Puedes cargarla en la tarjeta «Instructores».'
+    : '';
+}
+
+function refrescarInterfaz() {
+  pintarInstructores();
+  pintarSelectorGrado();
+  aplicarValoresDelGrado();   // al cargar un grupo cambia el grado: y con él la fecha lectiva
+  escribirCampos();
+  pintarSelectorColegio();
+  pintarValoraciones();
+  pintarFirmas();
+  pintarResumen();
+  $('#campoEnlace').classList.toggle('oculto',
+    normalizar(estado.modalidadSeguimiento).toLowerCase() !== 'virtual');
+  $('#btnAgregarIntegrante').classList.toggle('oculto',
+    estado.aprendices.length >= Math.min(CONFIG.maxAprendices, MAX_FILAS_SEGUIMIENTO));
+  $('#bloquear').checked = !!estado.bloquear;
+  $('#campoClave').classList.toggle('oculto', !estado.bloquear);
+}
+
+/* `estado` no contiene la contraseña (vive aparte, en claveBloqueo), así que
+   el borrador nunca la escribe en el navegador. */
+function guardarBorrador() {
+  try { localStorage.setItem(CLAVE_BORRADOR, JSON.stringify(estado)); }
+  catch (e) { try { localStorage.setItem(CLAVE_BORRADOR, JSON.stringify({ ...estado, firmas: {} })); } catch (e2) {} }
+}
+function cargarBorrador() {
+  try {
+    const g = JSON.parse(localStorage.getItem(CLAVE_BORRADOR) || 'null');
+    if (g) estado = { ...estado, ...g };
+  } catch (e) { /* borrador corrupto */ }
+}
+
+function validar() {
+  const errores = [];
+  const err = (c, m) => errores.push({ clave: c, msj: m });
+  const quienes = destinatarios(estado);
+  if (!quienes.length) err('grupoGuardado', 'Carga el grupo: no hay aprendices que valorar.');
+  if (!normalizar(estado.entidad)) err('entidad', 'Indica el colegio o entidad co-formadora.');
+  if (!normalizar(estado.grupo)) err('grupo', 'Indica el número de ficha.');
+  if (!estado.fechaInicioEP) err('fechaInicioEP', 'Indica la fecha de inicio de la etapa productiva.');
+  if (!estado.fechaMomentoDesde) err('fechaMomentoDesde', 'Indica la fecha del momento de seguimiento.');
+  if (estado.fechaMomentoHasta && estado.fechaMomentoHasta < estado.fechaMomentoDesde)
+    err('fechaMomentoHasta', 'La fecha final no puede ser anterior a la inicial.');
+  if (estado.fechaMomentoDesde && estado.fechaInicioEP && estado.fechaMomentoDesde < estado.fechaInicioEP)
+    err('fechaMomentoDesde', 'El seguimiento no puede ser anterior al inicio de la etapa productiva.');
+  if (normalizar(estado.modalidadSeguimiento).toLowerCase() === 'virtual' &&
+      !normalizar(estado.enlaceGrabacion))
+    err('enlaceGrabacion', 'Si el seguimiento fue virtual, indica el enlace de la grabación.');
+  if (estado.correoEntidad && !RE_CORREO.test(estado.correoEntidad)) err('correoEntidad', 'Correo inválido.');
+  if (!normalizar(estado.instructorNombre)) err('instructorNombre', 'Indica el instructor de seguimiento.');
+  quienes.forEach(({ aprendiz, indice }) => {
+    if (!normalizar(valoracionDe(indice).observaciones))
+      err('obs-' + indice, `Escribe la observación de ${normalizar(aprendiz.nombre)}.`);
+    if (!estado.firmas['aprendiz' + indice])
+      err('firma-aprendiz' + indice, `Falta la firma de ${normalizar(aprendiz.nombre)}.`);
+  });
+  return errores;
+}
+
+async function cargarPlantilla() {
+  bufferPlantilla = await obtenerPlantilla(CONFIG.plantillaSeguimiento);
+  $('#cajaPlantilla').classList.toggle('oculto', !!bufferPlantilla);
+}
+$('#archivoPlantilla').addEventListener('change', async ev => {
+  const a = ev.target.files[0];
+  if (!a) return;
+  bufferPlantilla = new Uint8Array(await a.arrayBuffer());
+  $('#cajaPlantilla').classList.add('oculto');
+});
+
+document.addEventListener('input', ev => {
+  const t = ev.target;
+  if (t.id === 'claveBloqueo') {          // no se guarda: solo vive en memoria
+    claveBloqueo = t.value;
+    marcarError('claveBloqueo', '');
+    return;
+  }
+  if (t.dataset.obs !== undefined) {
+    valoracionDe(Number(t.dataset.obs)).observaciones = t.value;
+    marcarError('obs-' + t.dataset.obs, '');
+    guardarBorrador();
+    return;
+  }
+  if (CAMPOS_PAGINA.includes(t.id)) {
+    leerCampos();
+    if (['entidad', 'nit', 'direccionEntidad'].includes(t.id)) sincronizarSelectorColegio();
+    pintarResumen();
+    guardarBorrador();
+  }
+});
+
+document.addEventListener('change', async ev => {
+  const t = ev.target;
+
+  if (t.id === 'bloquear') {
+    estado.bloquear = t.checked;
+    $('#campoClave').classList.toggle('oculto', !estado.bloquear);
+    pintarResumen();
+    guardarBorrador();
+    return;
+  }
+
+  if (t.dataset.factor !== undefined) {            // una casilla S/M
+    valoracionDe(Number(t.dataset.val))[t.dataset.factor] = t.value;
+    pintarResumen();
+    guardarBorrador();
+    return;
+  }
+
+  if (t.dataset.firma !== undefined) {             // firma de un aprendiz
+    const archivo = t.files && t.files[0];
+    if (!archivo) return;
+    marcarError('firma-' + t.dataset.firma, '');
+    try {
+      estado.firmas[t.dataset.firma] = await procesarImagenFirma(archivo);
+      pintarFirmas();
+      pintarResumen();
+      guardarBorrador();
+    } catch (e) { marcarError('firma-' + t.dataset.firma, e.message); }
+    return;
+  }
+
+  if (CAMPOS_PAGINA.includes(t.id)) {
+    leerCampos();
+    if (t.id === 'grado') aplicarValoresDelGrado();
+    if (t.id === 'colegio') {
+      marcarError('entidad', '');
+      if (t.value && t.value !== OTRO_COLEGIO) aplicarColegio(t.value);
+    }
+    if (t.id === 'modalidadSeguimiento') {
+      $('#campoEnlace').classList.toggle('oculto',
+        normalizar(estado.modalidadSeguimiento).toLowerCase() !== 'virtual');
+    }
+    pintarResumen();
+    guardarBorrador();
+  }
+});
+
+document.addEventListener('click', ev => {
+  const q = ev.target.dataset.quitarFirma;
+  if (q !== undefined) {
+    delete estado.firmas[q]; pintarFirmas(); pintarResumen(); guardarBorrador();
+    return;
+  }
+  const s = ev.target.dataset.sugerir;
+  if (s !== undefined) {
+    const caja = $('#obs-' + s);
+    const v = valoracionDe(Number(s));
+    v.observaciones = redaccionSugerida(v);
+    caja.value = v.observaciones;
+    caja.focus();
+    caja.setSelectionRange(caja.value.length, caja.value.length);
+    marcarError('obs-' + s, '');
+    guardarBorrador();
+  }
+});
+
+$('#btnAgregarIntegrante').addEventListener('click', () => {
+  if (agregarIntegrante() === null) return;
+  refrescarInterfaz();
+  guardarBorrador();
+});
+
+/* comun.js avisa cuando cambia un dato del instructor */
+function alCambiarInstructor() { pintarResumen(); }
+
+$('#btnGenerar').addEventListener('click', async () => {
+  const msj = $('#estadoGeneracion');
+  msj.className = 'msj-error';
+  msj.textContent = '';
+  document.querySelectorAll('[data-error]').forEach(s => s.textContent = '');
+  document.querySelectorAll('.malo').forEach(e => e.classList.remove('malo'));
+
+  const errores = validar();
+  if (errores.length) {
+    errores.forEach(e => marcarError(e.clave, e.msj));
+    const campo = document.querySelector(`[data-error="${errores[0].clave}"]`)
+      ?.closest('.campo')?.querySelector('input,select,textarea');
+    if (campo) { campo.classList.add('malo'); campo.focus(); }
+    return;
+  }
+  if (!bufferPlantilla) {
+    msj.textContent = 'Falta cargar la plantilla (arriba de esta página).';
+    $('#cajaPlantilla').classList.remove('oculto');
+    return;
+  }
+
+  try {
+    $('#btnGenerar').disabled = true;
+
+    /* La huella de la contraseña se calcula UNA vez para toda la tanda: son
+       decenas de miles de vueltas y tarda un par de segundos. Si el navegador
+       no ofrece criptografía, el documento sale bloqueado pero sin contraseña:
+       es peor avisar tarde que entregar algo que no protege lo que dice. */
+    let proteccion = null;
+    if (estado.bloquear) {
+      proteccion = true;
+      if (claveBloqueo) {
+        $('#btnGenerar').textContent = 'Preparando la contraseña…';
+        try {
+          proteccion = await huellaDeContrasena(claveBloqueo);
+        } catch (e) {
+          proteccion = true;
+          msj.className = 'msj-aviso';
+          msj.textContent = 'Este navegador no permite poner contraseña: el documento sale ' +
+                            'bloqueado, pero para desbloquearlo no la pedirá.';
+        }
+      }
+    }
+
+    $('#btnGenerar').textContent = 'Generando…';
+    const quienes = destinatarios(estado);
+    for (let i = 0; i < quienes.length; i++) {
+      const { aprendiz, indice } = quienes[i];
+      const { datos, faltantes } = generarDocx(fflate, bufferPlantilla,
+                                               valoresDeSeguimiento(estado, aprendiz),
+                                               firmasDeSeguimiento(estado, indice),
+                                               null, { proteccion });
+      if (faltantes.length) {
+        msj.textContent = 'La plantilla no coincide con la esperada: no se encontraron ' +
+                          faltantes.length + ' campos. Verifica que sea el modelo oficial del Momento 2.';
+        return;
+      }
+      descargar(datos, nombreArchivoSeguimiento(aprendiz.nombre, estado.grado),
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+      if (i < quienes.length - 1) await new Promise(r => setTimeout(r, 600));
+    }
+    guardarGrupoActual();
+    const comoSalio = !estado.bloquear ? 'editables'
+      : (proteccion && proteccion !== true ? 'bloqueados, con contraseña' : 'bloqueados');
+    msj.className = 'msj-aviso';
+    msj.textContent = `✓ ${quienes.length} ${quienes.length === 1 ? 'formato generado' : 'formatos generados'} (${comoSalio}). Revisa tu carpeta de descargas.`;
+  } catch (e) {
+    msj.textContent = 'No se pudo generar el formato: ' + e.message;
+  } finally {
+    $('#btnGenerar').disabled = false;
+    $('#btnGenerar').textContent = 'Generar formatos';
+  }
+});
+
+(function iniciar() {
+  cargarBorrador();
+  $('#topeFilas').textContent = MAX_FILAS_SEGUIMIENTO;
+  pintarSelectorGrado();
+  if (!normalizar(estado.fechaFinLectiva)) aplicarValoresDelGrado();
+  refrescarInterfaz();
+  conectarTarjetaGrupo();
+  conectarInstructores();   // el eco de fechas dd/mm/aa se activa solo desde comun.js
+  cargarPlantilla();
+})();
+</script>
+</body>
+</html>

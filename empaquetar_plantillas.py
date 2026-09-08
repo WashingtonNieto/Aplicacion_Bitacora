@@ -25,6 +25,11 @@ PAQUETES = {
         "GFPI-F-023_V06.__Formato_de_Planeación_Seguimiento_y_Evaluación_de_Etapa_Productiva_Grado10_Modelo.docx",
         "GFPI-F-023_V06.__Formato_de_Planeación_Seguimiento_y_Evaluación_de_Etapa_Productiva_Grado11_Modelo.docx",
     ],
+    # El Momento 2 usa una sola plantilla para los dos grados: la app le escribe
+    # encima la fecha fin de etapa lectiva que corresponda al grado.
+    "plantillas-023m2.js": [
+        "GFPI-F-023_V06.__Formato_de_Planeación_Seguimiento_y_Evaluación_de_Etapa_Productiva_Momento2_Modelo.docx",
+    ],
     "plantillas-193.js": [
         "GFPI-F-193Formato_acta_de_inicio_y_confidencialidad_del_proyecto_productivo_V3_NombreApellidosAprendiz_Modelo.docx",
     ],

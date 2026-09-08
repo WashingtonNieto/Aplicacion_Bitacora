@@ -1,19 +1,20 @@
 # Formatos de etapa productiva — GFPI-F-023, GFPI-F-193 y GFPI-F-147
 
-Aplicación web que reemplaza el diligenciamiento manual de los tres formatos del SENA que
-entregan los aprendices de Articulación con la Educación Media:
+Aplicación web que reemplaza el diligenciamiento manual de los formatos del SENA que entregan los
+aprendices de Articulación con la Educación Media:
 
 | # | Formato | Qué es | Cómo se diligencia | Salida |
 |---|---|---|---|---|
-| 1 | **GFPI-F-023 v06** | Planeación, Seguimiento y Evaluación de Etapa Productiva | **Individual**: cada documento lleva los datos de un solo aprendiz | Un `.docx` por aprendiz, **cada uno distinto** |
+| 1 | **GFPI-F-023 v06** | Planeación, Seguimiento y Evaluación de Etapa Productiva (Momento 1) | **Individual**: cada documento lleva los datos de un solo aprendiz | Un `.docx` por aprendiz, **cada uno distinto** |
 | 2 | **GFPI-F-193 v3** | Acta de inicio y confidencialidad del proyecto productivo | **Grupal**: el documento lleva a todo el equipo | Una copia por integrante, **idénticas** |
 | 3 | **GFPI-F-147 v05** | Bitácora de seguimiento de etapa productiva | **Grupal**: el documento lleva a todo el equipo | Una copia por integrante, **idénticas** |
+| 4 | **GFPI-F-023 v06 · Momento 2** | Seguimiento de la etapa productiva. **Lo diligencia el instructor** | **Mixto**: el encabezado es del aprendiz que recibe la copia; la tabla de valoración lleva a todo el equipo | Un `.docx` por aprendiz, **cada uno distinto** |
 
 En los formatos grupales el contenido es el mismo para todos y lo único que cambia es el nombre del
 archivo, para que cada integrante entregue el suyo. En el individual, cada documento trae los datos
 de su aprendiz: nombre, documento, teléfono, dirección, correos y su firma.
 
-**El equipo se arma una vez, desde cualquiera de los tres formatos** («+ Agregar integrante»,
+**El equipo se arma una vez, desde cualquiera de los formatos** («+ Agregar integrante»,
 máximo 3) y queda igual en todos. Lo mismo con **los dos instructores**: nombre, cédula, correo,
 teléfono y firma se capturan una sola vez en la tarjeta «Instructores» y quedan guardados con el
 grupo, listos para los documentos siguientes.
@@ -21,10 +22,10 @@ grupo, listos para los documentos siguientes.
 > El **instructor técnico** es la misma persona que la bitácora y el GFPI-F-023 rotulan «ente
 > co-formador»: se guarda una vez y cada formato le pone su propio rótulo.
 
-En los tres casos la app **abre la plantilla oficial y escribe dentro de ella**: nunca construye un
-documento nuevo, así que logos, tablas, bordes y textos legales quedan exactamente como los publicó
-el SENA. Y los tres comparten el mismo **grupo de trabajo**: los aprendices, el colegio, el
-instructor y las firmas se escriben una sola vez.
+En los cuatro casos la app **abre la plantilla oficial y escribe dentro de ella**: nunca construye
+un documento nuevo, así que logos, tablas, bordes y textos legales quedan exactamente como los
+publicó el SENA. Y los cuatro comparten el mismo **grupo de trabajo**: los aprendices, el colegio,
+el instructor y las firmas se escriben una sola vez.
 
 ---
 
@@ -32,17 +33,19 @@ instructor y las firmas se escriben una sola vez.
 
 | Archivo | Para qué sirve |
 |---|---|
-| `index.html` | El menú con los tres formatos |
-| `planeacion.html` | Formulario del GFPI-F-023 |
+| `index.html` | El menú con los cuatro formatos |
+| `planeacion.html` | Formulario del GFPI-F-023 (Momento 1) |
 | `acta-inicio.html` | Formulario del GFPI-F-193 |
 | `bitacora.html` | Formulario del GFPI-F-147 |
-| `comun.js` | **CONFIG** (colegios, grados, competencias) y los grupos guardados. Lo comparten las tres páginas: es el único sitio donde hay que editar esos datos |
+| `seguimiento.html` | Formulario del GFPI-F-023 **Momento 2** (valoración S/M del instructor) |
+| `comun.js` | **CONFIG** (colegios, grados, competencias, factores del Momento 2) y los grupos guardados. Lo comparten las cuatro páginas: es el único sitio donde hay que editar esos datos |
 | `docx.js` | Motor que edita los formatos de Word conservando el diseño |
 | `exceljs.min.js` · `fflate.min.js` | Librerías locales, para que funcione **sin internet** |
 | `GFPI-F-147-Bitacora-#_Modelo.xlsx` | Plantillas oficiales. **Deben estar junto a las páginas** |
-| `GFPI-F-023_..._Grado10_Modelo.docx` · `..._Grado11_Modelo.docx` · `GFPI-F-193..._Modelo.docx` | |
-| `probar.js` · `prueba_ui.py` · `prueba_formatos.py` · `verificar.py` | Pruebas automáticas |
-| `plantillas-023.js` · `plantillas-193.js` · `plantillas-147.js` | Las plantillas empaquetadas, para que funcione con doble clic. Las genera `empaquetar_plantillas.py` |
+| `GFPI-F-023_..._Grado10_Modelo.docx` · `..._Grado11_Modelo.docx` · `..._Momento2_Modelo.docx` · `GFPI-F-193..._Modelo.docx` | |
+| `probar.js` · `probar_seguimiento.js` · `prueba_ui.py` · `prueba_formatos.py` · `prueba_sin_servidor.py` · `verificar.py` · `verificar_seguimiento.py` | Pruebas automáticas |
+| `huella_referencia.py` | Segunda implementación de la huella de contraseña de Word, para contrastar la de `docx.js` |
+| `plantillas-023.js` · `plantillas-023m2.js` · `plantillas-193.js` · `plantillas-147.js` | Las plantillas empaquetadas, para que funcione con doble clic. Las genera `empaquetar_plantillas.py` |
 | `firmas_demo/` | Firmas que usan las pruebas |
 
 ---
@@ -89,11 +92,11 @@ medias. Para rehacer el mapa basta con volver a comparar plantilla vacía contra
 
 ## Qué se llena en cada formato
 
-**GFPI-F-023 — Planeación.** Momento 1 completo: ficha, fecha fin de la etapa lectiva, datos del
-aprendiz, alternativa registrada en SofiaPlus, instructor de seguimiento, ente co-formador, fechas
-y horario de la etapa productiva. Es individual: **cada aprendiz recibe su propio documento** con
-sus datos. Los momentos 2 (seguimiento) y 3 (evaluación) los completa el instructor más adelante
-sobre el mismo documento.
+**GFPI-F-023 — Planeación (Momento 1).** Ficha, fecha fin de la etapa lectiva, datos del aprendiz,
+alternativa registrada en SofiaPlus, instructor de seguimiento, ente co-formador, fechas y horario
+de la etapa productiva. Es individual: **cada aprendiz recibe su propio documento** con sus datos.
+El momento 2 tiene su propia opción en el menú (más abajo); el momento 3 (evaluación) todavía se
+completa a mano.
 
 **Hay dos plantillas, una por grado**, con valores distintos ya escritos (fechas de la etapa
 productiva, registro en SofiaPlus, competencias y resultados de aprendizaje). Al elegir el grado,
@@ -156,6 +159,70 @@ cargadas en los otros formatos.
 —«<Nombre del proyecto>», «<Ciudad y fecha>», la descripción— están en rojo a propósito: son marcas
 para quien diligencia. Si se heredara ese color, el dato real saldría rojo. La app conserva
 negrita, tamaño, fuente y alineación, y solo cambia el color.
+
+**GFPI-F-023 Momento 2 — Seguimiento.** Lo diligencia **el instructor**, una vez por visita de
+seguimiento. Es un archivo aparte del Momento 1 (`..._Momento2_Modelo.docx`): conserva el mismo
+encabezado «Información general» y en lugar de la planeación trae la tabla de valoración.
+
+Por cada aprendiz del equipo se marca **S** (satisfactorio) o **M** (por mejorar) en trece
+factores —ocho técnicos y cinco actitudinales— y se escribe una observación con el compromiso de
+mejora. **Todos empiezan en S**: solo hay que bajar a M lo que corresponda.
+
+> El botón **«Sugerir redacción a partir de las M»** arma la primera frase con los factores que
+> quedaron en M —«Presenta una valoración por mejorar (M) en el factor técnico de mejora continua y
+> en el factor actitudinal de organización. Se compromete a …»— y deja el cursor donde sigue el
+> compromiso. El compromiso lo escribe el instructor: eso no se puede adivinar.
+
+Tres diferencias con el Momento 1, que conviene tener presentes:
+
+| | Momento 1 | Momento 2 |
+|---|---|---|
+| Plantillas | Dos, una por grado | **Una sola**: la app escribe la fecha fin de etapa lectiva del grado |
+| Firmas en la plantilla | Trae las del instructor y el ente co-formador | **No trae ninguna**: la app inserta las tres |
+| Alcance | Todo el documento es de un aprendiz | Encabezado del aprendiz + tabla de todo el equipo |
+
+Se genera **un documento por aprendiz**: el encabezado cambia (es su carpeta), la tabla de
+valoración es la misma en las tres copias. La tabla del formato admite **hasta 5 aprendices**
+(la de factores técnicos trae 7 renglones y la actitudinal 5; manda la más corta); las filas que
+sobran quedan en blanco.
+
+Si el seguimiento fue **virtual**, se exige el enlace de la grabación, y la X del renglón de cierre
+—«de forma presencial ___ o virtual ___»— se pone donde corresponda. Las firmas del instructor de
+seguimiento y del ente co-formador **avisan si faltan, pero no bloquean**: esa línea puede firmarse
+a mano el día de la visita.
+
+**El documento sale bloqueado.** Una vez calificado, no debería poder modificarse: por eso el
+Momento 2 se genera con la restricción de edición de Word activada —**solo lectura**— y,
+opcionalmente, con una contraseña para quitarla. Se controla en la tarjeta «Bloqueo del documento»;
+viene marcado por defecto.
+
+> **Qué protege y qué no.** Es un **sello, no cifrado**. Evita que se cambie una calificación por
+> descuido o por las buenas, pero un .docx sigue siendo un .zip y quien tenga conocimiento técnico
+> puede borrar esa línea. Para un documento realmente cerrado, ábralo en Word y use
+> **Guardar como → PDF**.
+
+Tres consecuencias del bloqueo, que conviene tener presentes:
+
+- **Nadie puede escribir después.** Las observaciones del aprendiz y del ente co-formador tienen
+  que quedar escritas en el formulario, o anotarse a mano sobre el impreso.
+- **La contraseña no se guarda en ninguna parte** —ni en el navegador ni dentro del documento—:
+  hay que escribirla en cada tanda. Si se olvida, el documento se vuelve a generar desde la app.
+- Si el navegador no ofrece criptografía, el documento sale bloqueado **pero sin contraseña**, y la
+  app lo dice en el mensaje: es peor entregar algo que no protege lo que promete.
+
+Por dentro es la etiqueta `<w:documentProtection w:edit="readOnly" w:enforcement="1">` de
+`word/settings.xml`, con la huella SHA-512 de la contraseña calculada como la calcula Word
+(MS-OFFCRYPTO 2.3.7.1: `H0 = SHA512(sal + contraseña UTF-16LE)`, y luego
+`Hn = SHA512(Hn-1 + número de vuelta)`). El cálculo está comprobado contra una segunda
+implementación escrita aparte, en Python (`huella_referencia.py`), y LibreOffice abre el documento
+en solo lectura. Lo que no se pudo comprobar aquí es que **Word acepte la contraseña**, porque en
+este equipo no hay Word: conviene que lo verifique una vez, con un documento de prueba.
+
+**La plantilla no es coherente consigo misma y la app lo corrige.** En la tabla de valoración, unas
+casillas vienen centradas y en negrita y otras alineadas a la izquierda y más pequeñas; respetando
+cada celda tal cual, la columna de S/M sale desordenada. La app fuerza el mismo formato en las
+trece, y alinea la observación a la izquierda (el formato la trae centrada, y un párrafo largo
+centrado se lee mal). Es la única excepción a la regla de conservar el formato oficial.
 
 ---
 
@@ -378,8 +445,11 @@ const CONFIG = {
   con el formato `código - NOMBRE`.
 - **Otro calendario** → `anioBase`, `mesBase`, `bitacorasPorMes`, `totalBitacoras` y
   `mesesExcluidos` de cada grado (ver la sección «Grados y calendario»).
-- **Grupos de 4 o 5 aprendices** → sube `maxAprendices` hasta 5; el mapa de celdas y las anclas de
-  firma ya contemplan las cinco filas del formato.
+- **Grupos de 4 o 5 aprendices** → sube `maxAprendices` hasta 5; el mapa de celdas, las anclas de
+  firma y la tabla del Momento 2 ya contemplan las cinco filas del formato.
+- **Factores del Momento 2** → si el SENA cambia las columnas de la tabla de valoración, se editan
+  `FACTORES_TECNICOS` y `FACTORES_ACTITUDINALES` en `comun.js`, y los `paraId` correspondientes en
+  `FILAS_TECNICOS` / `FILAS_ACTITUDINALES` de `seguimiento.html`.
 
 ---
 
@@ -387,17 +457,19 @@ const CONFIG = {
 
 ```bash
 npm install exceljs@4.4.0 fflate
-node probar.js            # núcleo del Excel y los dos calendarios
+node probar.js                  # núcleo del Excel y los dos calendarios
+node probar_seguimiento.js      # núcleo del Momento 2: valoraciones, fechas y firmas
 
 pip install playwright openpyxl lxml && playwright install chromium
-python3 prueba_ui.py      # la bitácora en un navegador: diligenciar, firmar y descargar
-python3 prueba_formatos.py  # el menú y los dos formatos de Word
-python3 verificar.py      # los 11 criterios de aceptación del Excel
-python3 prueba_sin_servidor.py   # los tres formatos abiertos con doble clic (file://)
+python3 prueba_ui.py            # la bitácora en un navegador: diligenciar, firmar y descargar
+python3 prueba_formatos.py      # el menú y los tres formatos de Word
+python3 verificar.py            # los 11 criterios de aceptación del Excel
+python3 verificar_seguimiento.py  # el Momento 2 celda por celda (necesita probar_seguimiento.js)
+python3 prueba_sin_servidor.py  # los cuatro formatos abiertos con doble clic (file://)
 ```
 
 `prueba_ui.py` debe correr antes que `prueba_formatos.py`: la primera deja el archivo del grupo que
-la segunda importa, que es justamente lo que demuestra que los tres formatos comparten los datos.
+la segunda importa, que es justamente lo que demuestra que los formatos comparten los datos.
 
 `probar.js` **extrae el código del propio `bitacora.html`** (el bloque entre las marcas
 `==== INICIO NUCLEO ====` y `==== FIN NUCLEO ====`) en lugar de tener una copia. Así la prueba

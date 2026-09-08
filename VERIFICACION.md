@@ -52,7 +52,10 @@ de su línea, de modo que nunca invade el espacio de otro firmante.
 | `probar.js` | El núcleo de escritura, los calendarios de **los dos grados** (9 casos: quincenal de grado 11, mensual de grado 10, salto de diciembre-enero y cierre de febrero el 28), las 5 firmas y que las 3 copias sean idénticas byte a byte. Extrae el código del propio `bitacora.html`, así que no puede desincronizarse |
 | `prueba_ui.py` | La app en un navegador real: comprueba que **cambiar de grado** rehaga el calendario (grado 10 mensual, febrero cerrando el 28; grado 11 quincenal), valida el formulario, respeta el tope de 3 aprendices, bloquea fechas fuera del período, comprueba que **elegir el colegio llene dirección, NIT y correo** (y que editarlos a mano devuelva la lista a "Otra entidad"), **exige las firmas de los aprendices**, descarga una copia por aprendiz, comprueba que sean idénticas, restaura el borrador tras recargar, verifica que el **grupo quede guardado solo al generar** y que exportarlo, **limpiar todo el almacenamiento** e importarlo devuelva aprendices, colegio y firmas intactos. Sin errores de consola |
 | `verificar.py` | Los 11 criterios de esta tabla, incluida la conversión a PDF para comparar la paginación |
-| `prueba_formatos.py` | El menú y los dos formatos de Word (ver la sección final) |
+| `prueba_formatos.py` | El menú y los tres formatos de Word (ver la sección final) |
+| `probar_seguimiento.js` | El núcleo del Momento 2 fuera del navegador: el cálculo de la fecha del seguimiento, el renglón de cierre con la X, la redacción sugerida a partir de las «M» y la generación de un documento por aprendiz |
+| `verificar_seguimiento.py` | El documento del Momento 2 celda por celda: cada S/M en su columna, las filas sobrantes en blanco, las tres firmas, el texto en negro y el bloqueo de solo lectura |
+| `huella_referencia.py` | Calcula la huella de contraseña de Word por su cuenta, para contrastar la de `docx.js`. Que dos implementaciones independientes coincidan descarta errores de programación |
 
 ---
 
@@ -129,6 +132,34 @@ contra los que los aprendices habían llenado a mano:
 | El texto que escribe la app queda en **negro**, no en el rojo de los textos de ejemplo | ✅ |
 | El acta exige al menos un correo por integrante | ✅ |
 | «Grupo nuevo» vacía el formulario (aprendices, colegio y firmas) y **conserva los grupos guardados** | ✅ |
+| El menú ofrece los **cuatro** formatos, cada uno con su propio color | ✅ |
+| **Momento 2**: los aprendices del grupo aparecen numerados y los 13 factores empiezan en «S» | ✅ |
+| **Momento 2**: cada «S»/«M» cae en la columna exacta de su aprendiz, en las dos tablas | ✅ |
+| **Momento 2**: las filas que sobran de las dos tablas quedan en blanco | ✅ |
+| **Momento 2**: la sugerencia de redacción nombra los factores marcados «M» | ✅ |
+| **Momento 2**: un seguimiento virtual sin enlace de grabación queda bloqueado | ✅ |
+| **Momento 2**: exige la observación de cada aprendiz | ✅ |
+| **Momento 2**: avisa que faltan las firmas de los instructores, sin bloquear | ✅ |
+| **Momento 2**: las tres firmas se insertan (la plantilla no trae ninguna) | ✅ |
+| **Momento 2**: una copia por aprendiz, con su encabezado y la tabla de todo el equipo | ✅ |
+| **Momento 2**: una sola plantilla sirve a los dos grados, con la fecha lectiva de cada uno | ✅ |
+| **Momento 2**: el documento sale en solo lectura (`w:edit="readOnly"` + `w:enforcement="1"`) | ✅ |
+| **Momento 2**: la huella SHA-512 de la contraseña coincide con una segunda implementación escrita aparte | ✅ |
+| **Momento 2**: la contraseña NO queda escrita ni en el documento ni en el navegador | ✅ |
+| **Momento 2**: la etiqueta de protección respeta el orden que exige el esquema de Word | ✅ |
+| **Momento 2**: sin pedir bloqueo, el documento sigue saliendo editable | ✅ |
+
+---
+
+## Lo que estas pruebas NO pueden demostrar
+
+- **Que Word acepte la contraseña del bloqueo.** En este equipo no hay Word. Lo comprobado es que
+  la huella coincide con una segunda implementación del algoritmo publicado, que la etiqueta va en
+  el orden que exige el esquema y que **LibreOffice sí abre el documento en solo lectura**
+  (`LoadReadonly = true` al convertirlo, frente a `false` en el documento sin bloquear). Conviene
+  verificar la contraseña una vez, en Word, con un documento de prueba.
+- **Que el bloqueo resista a quien quiera romperlo.** No es su propósito: es un sello. El .docx es
+  un .zip y la protección es una línea de XML.
 
 ---
 
@@ -146,6 +177,7 @@ contra los que los aprendices habían llenado a mano:
 | GFPI-F-023 generado sin servidor: datos, plantilla de grado 10 y NIT correctos | ✅ |
 | GFPI-F-193 generada sin servidor: conserva las 41 partes del .docx | ✅ |
 | GFPI-F-147 generada sin servidor: 132 fusiones intactas | ✅ |
+| GFPI-F-023 Momento 2 generado sin servidor: valoración, fecha y grado correctos | ✅ |
 | Sin errores de JavaScript en ninguna página | ✅ |
 | GFPI-F-193: plantilla intacta (4 imágenes, 41 partes) | ✅ |
 | GFPI-F-193: acta, personal vinculado, párrafo de conclusiones y tabla de aprobación | ✅ |

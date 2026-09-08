@@ -31,6 +31,9 @@ prueba_ui.py
 prueba_formatos.py
 prueba_sin_servidor.py
 verificar.py
+probar_seguimiento.js
+verificar_seguimiento.py
+huella_referencia.py
 
 # Archivos temporales de Word y del sistema
 ~$*

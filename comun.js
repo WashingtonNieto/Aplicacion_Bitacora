@@ -118,8 +118,45 @@ const CONFIG = {
     alternativa: 'proyectoProductivo'
   },
 
-  tiposDocumento: ['T.I', 'C.C', 'C.E', 'PPT']
+  tiposDocumento: ['T.I', 'C.C', 'C.E', 'PPT'],
+
+  // GFPI-F-023 Momento 2 (seguimiento). A diferencia del Momento 1, aquí hay
+  // UNA sola plantilla para los dos grados: lo único que cambia entre grados es
+  // la fecha fin de la etapa lectiva, y esa la escribe la app.
+  plantillaSeguimiento:
+    'GFPI-F-023_V06.__Formato_de_Planeación_Seguimiento_y_Evaluación_de_Etapa_Productiva_Momento2_Modelo.docx',
+  ciudadPredeterminada: 'Bogotá'
 };
+
+/* Los factores que valora el instructor en el Momento 2, en el mismo orden en
+   que aparecen las columnas del formato oficial. Si el SENA cambia el formato,
+   se corrigen aquí y en MAPA_SEGUIMIENTO (seguimiento.html). */
+const FACTORES_TECNICOS = [
+  ['aplicacionConocimiento',    'Aplicación de conocimiento'],
+  ['mejoraContinua',            'Mejora continua'],
+  ['fortalecimientoOcupacional','Fortalecimiento ocupacional'],
+  ['oportunidadCalidad',        'Oportunidad y calidad'],
+  ['responsabilidadAmbiental',  'Responsabilidad ambiental'],
+  ['administracionRecursos',    'Administración de recursos'],
+  ['seguridadSalud',            'Seguridad y salud en el trabajo'],
+  ['documentacionEP',           'Documentación etapa productiva']
+];
+
+const FACTORES_ACTITUDINALES = [
+  ['relacionesInterpersonales', 'Relaciones interpersonales'],
+  ['trabajoEquipo',             'Trabajo en equipo'],
+  ['solucionProblemas',         'Solución de problemas'],
+  ['cumplimiento',              'Cumplimiento'],
+  ['organizacion',              'Organización']
+];
+
+/* Valoración vacía de un aprendiz: todo «S» (satisfactorio), que es el caso
+   normal; el instructor baja a «M» solo lo que haya que mejorar. */
+function valoracionVacia() {
+  const v = { observaciones: '' };
+  FACTORES_TECNICOS.concat(FACTORES_ACTITUDINALES).forEach(([clave]) => { v[clave] = 'S'; });
+  return v;
+}
 
 
 /* Limpia espacios raros: la plantilla y los archivos de ejemplo traen
@@ -588,6 +625,9 @@ function conectarInstructores() {
     try {
       estado.firmas[clave] = await procesarImagenFirma(archivo);
       pintarInstructores();
+      // La página puede depender de la firma (el Momento 2 avisa si falta):
+      // se le da el mismo aviso que cuando cambia un dato escrito.
+      if (typeof alCambiarInstructor === 'function') alCambiarInstructor('firma-' + clave);
       if (typeof guardarBorrador === 'function') guardarBorrador();
     } catch (e) { marcarError('firma-' + clave, e.message); }
   });
@@ -596,6 +636,7 @@ function conectarInstructores() {
     if (!clave) return;
     delete estado.firmas[clave];
     pintarInstructores();
+    if (typeof alCambiarInstructor === 'function') alCambiarInstructor('firma-' + clave);
     if (typeof guardarBorrador === 'function') guardarBorrador();
   });
   pintarInstructores();
@@ -695,5 +736,6 @@ if (typeof module !== 'undefined' && module.exports) {
                      mesDeSecuencia, periodoDeBitacora, esc, CAMPOS_GRUPO,
                      CLAVE_GRUPOS, TIPO_ARCHIVO_GRUPO, VERSION_ARCHIVO_GRUPO, nuevoGrupo,
                      agregarIntegrante, quitarIntegrante, reindexarFirmasAprendices,
-                     RE_CORREO, RE_DIGITOS, fechaCortaVisible, INSTRUCTORES };
+                     RE_CORREO, RE_DIGITOS, fechaCortaVisible, INSTRUCTORES,
+                     FACTORES_TECNICOS, FACTORES_ACTITUDINALES, valoracionVacia };
 }

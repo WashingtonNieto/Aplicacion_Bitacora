@@ -82,6 +82,57 @@ function propiedadesDeFuente(parrafoXml) {
   return primerRun ? aNegro(primerRun[1]) : '';
 }
 
+/* -------------------------------------------------------------------------
+   FORMATO FORZADO DE UNA CELDA
+   Un valor del mapa puede ser texto suelto o { texto, alinear, negrita,
+   tamano }. Hace falta porque las plantillas no siempre son coherentes consigo
+   mismas: en la tabla de valoración del Momento 2, por ejemplo, unas casillas
+   vienen centradas y en negrita y otras alineadas a la izquierda y más
+   pequeñas. Respetando cada celda tal cual, la columna de «S»/«M» sale
+   desordenada. Estas opciones son la excepción, no la regla: sin ellas el
+   motor conserva el formato del formato oficial, que es lo correcto.
+   ------------------------------------------------------------------------- */
+function opcionesDeValor(valor) {
+  return (valor && typeof valor === 'object' && !Array.isArray(valor))
+    ? valor : { texto: valor };
+}
+
+/* El orden dentro de <w:pPr> importa: <w:jc> va después del espaciado y antes
+   de <w:rPr>. Word tolera el desorden; LibreOffice no siempre. */
+function conAlineacion(pPr, alinear) {
+  if (!alinear) return pPr;
+  const jc = `<w:jc w:val="${alinear}"/>`;
+  if (!pPr) return '<w:pPr>' + jc + '</w:pPr>';
+  if (/<w:jc\b/.test(pPr)) return pPr.replace(/<w:jc\b[^>]*\/>/, jc);
+  if (pPr.includes('<w:rPr>')) return pPr.replace('<w:rPr>', jc + '<w:rPr>');
+  return pPr.replace('</w:pPr>', jc + '</w:pPr>');
+}
+
+/* Igual con <w:rPr>: <w:b/> va justo después de <w:rFonts>, y <w:sz> al final. */
+function conNegrita(rPr) {
+  if (!rPr) return '<w:rPr><w:b/><w:bCs/></w:rPr>';
+  if (/<w:b\/>/.test(rPr)) return rPr;
+  const fuentes = rPr.match(/<w:rFonts\b[^>]*\/>/);
+  return fuentes ? rPr.replace(fuentes[0], fuentes[0] + '<w:b/><w:bCs/>')
+                 : rPr.replace('<w:rPr>', '<w:rPr><w:b/><w:bCs/>');
+}
+function conTamano(rPr, medios) {
+  if (!medios) return rPr;
+  const sz = `<w:sz w:val="${medios}"/><w:szCs w:val="${medios}"/>`;
+  if (!rPr) return `<w:rPr>${sz}</w:rPr>`;
+  if (/<w:sz\b/.test(rPr)) {
+    return rPr.replace(/<w:sz\b[^>]*\/>/, `<w:sz w:val="${medios}"/>`)
+              .replace(/<w:szCs\b[^>]*\/>/, `<w:szCs w:val="${medios}"/>`);
+  }
+  return rPr.replace('</w:rPr>', sz + '</w:rPr>');
+}
+function conFormato(rPr, op) {
+  let r = rPr;
+  if (op.negrita) r = conNegrita(r);
+  if (op.tamano) r = conTamano(r, op.tamano);
+  return r;
+}
+
 /* Convierte un texto (que puede traer saltos de línea) en runs de Word */
 function runsDeTexto(texto, rPr) {
   const lineas = String(texto).split(/\r?\n/);
@@ -91,12 +142,15 @@ function runsDeTexto(texto, rPr) {
   }).join('');
 }
 
-/* Reemplaza el contenido de un párrafo conservando sus propiedades */
-function escribirParrafo(xml, paraId, texto) {
+/* Reemplaza el contenido de un párrafo conservando sus propiedades.
+   `valor` es el texto, o { texto, alinear, negrita, tamano } cuando hay que
+   forzar el formato de la celda (ver opcionesDeValor). */
+function escribirParrafo(xml, paraId, valor) {
   const lim = limitesParrafo(xml, paraId);
   if (!lim) return { xml, ok: false };
+  const op = opcionesDeValor(valor);
   const original = xml.slice(lim.inicio, lim.fin);
-  const rPr = propiedadesDeFuente(original);
+  const rPr = conFormato(propiedadesDeFuente(original), op);
 
   let cabecera, pPr = '';
   if (lim.autocerrado) {
@@ -108,7 +162,8 @@ function escribirParrafo(xml, paraId, texto) {
     // después en Word saldría en el rojo del texto de ejemplo.
     if (m) pPr = aNegro(m[0]);
   }
-  const nuevo = cabecera + pPr + runsDeTexto(texto, rPr) + '</w:p>';
+  pPr = conAlineacion(pPr, op.alinear);
+  const nuevo = cabecera + pPr + runsDeTexto(op.texto, rPr) + '</w:p>';
   return { xml: xml.slice(0, lim.inicio) + nuevo + xml.slice(lim.fin), ok: true };
 }
 
@@ -284,6 +339,109 @@ function escribirLista(xml, paraIds, textos) {
   return { xml, faltantes };
 }
 
+/* -------------------------------------------------------------------------
+   BLOQUEO DE SOLO LECTURA
+   Word guarda la restricción de edición en word/settings.xml, en la etiqueta
+   <w:documentProtection>. Con w:edit="readOnly" y w:enforcement="1" el
+   documento se abre bloqueado: se ve y se imprime, pero la cinta de edición
+   queda deshabilitada. Si además lleva contraseña, Word pide esa contraseña
+   para quitar la restricción.
+
+   IMPORTANTE, y hay que decirlo claro: esto es un SELLO, no cifrado. El .docx
+   sigue siendo un .zip y quien sepa puede borrar esta línea. Sirve para que
+   nadie cambie una calificación por descuido o por las buenas; no resiste a
+   quien quiera romperlo a propósito. El documento realmente cerrado es un PDF.
+
+   La contraseña no se guarda en ninguna parte: solo viaja su huella, y de la
+   huella no se puede volver a la contraseña.
+   ------------------------------------------------------------------------- */
+
+/* Vueltas de la función de resumen. Word escribe 100000; 50000 tarda la mitad
+   en el navegador y para un sello es de sobra. Word usa el número que venga
+   escrito en el archivo, así que cualquiera de los dos le sirve. */
+const VUELTAS_PROTECCION = 50000;
+
+function aBase64(bytes) {
+  if (typeof btoa === 'function') {
+    let s = '';
+    bytes.forEach(b => { s += String.fromCharCode(b); });
+    return btoa(s);
+  }
+  return Buffer.from(bytes).toString('base64');   // Node (pruebas)
+}
+
+/* La contraseña, en UTF-16 little endian: es como la codifica Word. */
+function utf16le(texto) {
+  const bytes = new Uint8Array(texto.length * 2);
+  for (let i = 0; i < texto.length; i++) {
+    const c = texto.charCodeAt(i);
+    bytes[2 * i] = c & 0xFF;
+    bytes[2 * i + 1] = c >>> 8;
+  }
+  return bytes;
+}
+
+function concatenar(a, b) {
+  const r = new Uint8Array(a.length + b.length);
+  r.set(a); r.set(b, a.length);
+  return r;
+}
+
+function enteroLE(n) {
+  return new Uint8Array([n & 0xFF, (n >>> 8) & 0xFF, (n >>> 16) & 0xFF, (n >>> 24) & 0xFF]);
+}
+
+/* Huella de la contraseña, según el algoritmo de Word (MS-OFFCRYPTO 2.3.7.1):
+     H0 = SHA512(sal + contraseña)
+     Hn = SHA512(Hn-1 + número de vuelta, 4 bytes little endian)
+   Es asíncrona porque usa la criptografía del navegador; se calcula UNA vez
+   por tanda, no una por documento. */
+async function huellaDeContrasena(contrasena, cripto, vueltas) {
+  const sub = (cripto || (typeof crypto !== 'undefined' ? crypto : null));
+  if (!sub || !sub.subtle) throw new Error('Este navegador no permite calcular la contraseña.');
+  const giros = vueltas || VUELTAS_PROTECCION;
+  const sal = new Uint8Array(16);
+  sub.getRandomValues(sal);
+  let h = new Uint8Array(await sub.subtle.digest('SHA-512', concatenar(sal, utf16le(contrasena))));
+  for (let i = 0; i < giros; i++) {
+    h = new Uint8Array(await sub.subtle.digest('SHA-512', concatenar(h, enteroLE(i))));
+  }
+  return { hash: aBase64(h), sal: aBase64(sal), vueltas: giros };
+}
+
+/* La etiqueta que entiende Word. Sin huella, el bloqueo no lleva contraseña:
+   se quita desde «Revisar → Restringir edición», que ya es un aviso claro. */
+function xmlDeProteccion(huella) {
+  let etiqueta = '<w:documentProtection w:edit="readOnly" w:enforcement="1"';
+  if (huella && huella.hash) {
+    etiqueta += ' w:cryptProviderType="rsaAES" w:cryptAlgorithmClass="hash"' +
+                ' w:cryptAlgorithmType="typeAny" w:cryptAlgorithmSid="14"' +   // 14 = SHA-512
+                ` w:cryptSpinCount="${huella.vueltas}"` +
+                ` w:hash="${escaparXml(huella.hash)}" w:salt="${escaparXml(huella.sal)}"`;
+  }
+  return etiqueta + '/>';
+}
+
+/* Inserta la etiqueta en word/settings.xml. El orden dentro de <w:settings>
+   está fijado por el esquema: <w:documentProtection> va justo antes de
+   <w:defaultTabStop>. Si el archivo ya trae una protección, se reemplaza. */
+function protegerSoloLectura(entradas, huella) {
+  const clave = 'word/settings.xml';
+  if (!entradas[clave]) return false;
+  const dec = new TextDecoder('utf-8'), cod = new TextEncoder();
+  let xml = dec.decode(entradas[clave]);
+  const etiqueta = xmlDeProteccion(huella);
+  if (/<w:documentProtection\b[^>]*\/>/.test(xml)) {
+    xml = xml.replace(/<w:documentProtection\b[^>]*\/>/, etiqueta);
+  } else if (xml.includes('<w:defaultTabStop')) {
+    xml = xml.replace('<w:defaultTabStop', etiqueta + '<w:defaultTabStop');
+  } else {
+    xml = xml.replace(/(<w:settings[^>]*>)/, '$1' + etiqueta);
+  }
+  entradas[clave] = cod.encode(xml);
+  return true;
+}
+
 /* Aplica un mapa { paraId: texto } sobre el document.xml.
    Devuelve el XML nuevo y la lista de paraId que no se encontraron, para que
    la aplicación pueda avisar en vez de entregar un documento incompleto. */
@@ -302,8 +460,10 @@ function aplicarMapaDocx(xml, valores) {
 
 /* Abre la plantilla, aplica el mapa y devuelve el .docx listo para descargar.
    `fflateRef` es el objeto fflate (unzipSync / zipSync).
-   `bufferPlantilla` es un Uint8Array con el .docx original. */
-function generarDocx(fflateRef, bufferPlantilla, valores, imagenes, listas) {
+   `bufferPlantilla` es un Uint8Array con el .docx original.
+   `opciones.proteccion` bloquea el documento en solo lectura: `true` sin
+   contraseña, o la huella que devuelve huellaDeContrasena() para pedirla. */
+function generarDocx(fflateRef, bufferPlantilla, valores, imagenes, listas, opciones) {
   const entradas = fflateRef.unzipSync(new Uint8Array(bufferPlantilla));
   if (!entradas['word/document.xml']) throw new Error('El archivo no parece un documento de Word válido.');
 
@@ -331,6 +491,11 @@ function generarDocx(fflateRef, bufferPlantilla, valores, imagenes, listas) {
 
   entradas['word/document.xml'] = codificador.encode(nuevoXml);
 
+  const proteccion = (opciones || {}).proteccion;
+  if (proteccion && !protegerSoloLectura(entradas, proteccion === true ? null : proteccion)) {
+    throw new Error('La plantilla no trae word/settings.xml: no se puede bloquear.');
+  }
+
   // level 6: mismo nivel de compresión que usa Word, tamaño y velocidad razonables
   const salida = fflateRef.zipSync(entradas, { level: 6 });
   return { datos: salida, faltantes };
@@ -342,5 +507,8 @@ if (typeof module !== 'undefined' && module.exports) {
   module.exports = { escaparXml, limitesParrafo, propiedadesDeFuente, runsDeTexto,
                      escribirParrafo, aplicarMapaDocx, generarDocx,
                      base64ABytes, extensionDeImagen, escribirImagen,
-                     clonarParrafo, escribirLista, parrafoAnterior, esSeparador, aNegro };
+                     clonarParrafo, escribirLista, parrafoAnterior, esSeparador, aNegro,
+                     opcionesDeValor, conAlineacion, conNegrita, conTamano,
+                     huellaDeContrasena, xmlDeProteccion, protegerSoloLectura,
+                     VUELTAS_PROTECCION, utf16le };
 }

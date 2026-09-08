@@ -35,6 +35,8 @@
   .formato.acta{--c-fondo:#EDF3F9;--c-borde:#7AA5CC;--c-texto:#2F5C86;--c-numero:#DEEAF5}
   /* 3 · Bitácora — durazno */
   .formato.bitacora{--c-fondo:#FBF1E7;--c-borde:#D9A470;--c-texto:#8A5620;--c-numero:#F6E4D2}
+  /* 4 · Seguimiento (Momento 2) — lila */
+  .formato.seguimiento{--c-fondo:#F4F1F8;--c-borde:#9B8AC4;--c-texto:#584684;--c-numero:#E7E1F1}
 
   .numero{flex:0 0 44px;height:44px;border-radius:50%;background:var(--c-numero);color:var(--c-texto);
           display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.1rem}
@@ -62,7 +64,7 @@
 
 <main>
   <p class="intro">Elige el formato que vas a diligenciar. Los datos del grupo —aprendices, colegio,
-    instructor y firmas— se comparten entre los tres: se escriben una sola vez.</p>
+    instructor y firmas— se comparten entre los cuatro: se escriben una sola vez.</p>
 
   <div class="formatos">
 
@@ -108,12 +110,27 @@
       </span>
     </a>
 
+    <a class="formato seguimiento" href="seguimiento.html">
+      <span class="numero">4</span>
+      <span>
+        <span class="codigo">GFPI-F-023 v06 · Momento 2</span>
+        <h2>Seguimiento de la etapa productiva</h2>
+        <p>Lo diligencia el instructor en la visita de seguimiento: valora cada aprendiz con
+          <strong>S</strong> o <strong>M</strong> en los factores técnicos y actitudinales, y escribe
+          los compromisos de mejora. Se descarga un documento por aprendiz.</p>
+        <span class="etiquetas">
+          <span class="etiqueta">Word (.docx)</span>
+          <span class="etiqueta">Lo llena el instructor</span>
+        </span>
+      </span>
+    </a>
+
   </div>
 
   <div class="nota">
     <h3>Antes de empezar</h3>
     <p>Si es la primera vez, entra a cualquiera de los formatos y guarda tu grupo: los aprendices con
-      sus documentos, correos y direcciones, el colegio y las firmas quedan disponibles para los tres
+      sus documentos, correos y direcciones, el colegio y las firmas quedan disponibles para los cuatro
       formatos y no hay que volver a escribirlos.</p>
   </div>
 </main>
