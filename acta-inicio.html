@@ -101,8 +101,9 @@
 
   <section class="tarjeta">
     <h2>Datos del acta</h2>
-    <p class="sub">Lo que cambia de un proyecto a otro. El resto del acta —objetivos, compromiso de
-      confidencialidad y textos legales— ya viene en el formato oficial y no se toca.</p>
+    <p class="sub">Lo que cambia de un proyecto a otro. El resto del acta —objetivo general,
+      compromiso de confidencialidad y textos legales— ya viene en el formato oficial y no se
+      toca.</p>
     <div class="rejilla">
       <div class="campo"><label for="ciudad">Ciudad</label>
         <input type="text" id="ciudad" value="Bogotá"></div>
@@ -117,6 +118,15 @@
           <span class="pista">(puedes escribir varios párrafos)</span></label>
         <textarea id="descripcion"></textarea>
         <span class="msj-error" data-error="descripcion"></span></div>
+      <div class="campo ancho">
+        <label for="objetivosEspecificos">Objetivos específicos del proyecto (punto 1.1)
+          <span class="pista">(uno por renglón; los numera la app)</span></label>
+        <textarea id="objetivosEspecificos" rows="5"
+          placeholder="Diseñar la base de datos del sistema de inventario.&#10;Construir la interfaz de registro de productos.&#10;Validar el prototipo con los usuarios del colegio."></textarea>
+        <span class="pista">Salen del plan de negocio (enfoque empresarial) o de la vigilancia
+          tecnológica (enfoque I+D+i). El <strong>objetivo general</strong> no se escribe: el formato
+          ya trae el del SENA, que es el mismo para todos los proyectos.</span>
+        <span class="msj-error" data-error="objetivosEspecificos"></span></div>
       <div class="campo"><label for="enfoque">Enfoque del proyecto productivo</label>
         <select id="enfoque">
           <option value="empresarial">Enfoque empresarial</option>
@@ -183,6 +193,17 @@
 /* ==== INICIO NUCLEO ACTA ==== */
 const PLANTILLA_ACTA = 'GFPI-F-193Formato_acta_de_inicio_y_confidencialidad_del_proyecto_productivo_V3_NombreApellidosAprendiz_Modelo.docx';
 
+/* Los objetivos específicos se escriben uno por renglón. La app los numera,
+   salvo que ya vengan numerados o con viñeta: el instructor suele pegarlos
+   desde el plan de negocio, y numerar encima daría «1. 1. Diseñar…». */
+function textoObjetivos(texto) {
+  const lineas = String(texto || '').split(/\r?\n/)
+    .map(l => normalizar(l)).filter(Boolean);
+  const yaVienenMarcadas = lineas.length > 0 &&
+    lineas.every(l => /^(\d+[.)]|[a-zA-Z][.)]|[-•*·–])\s*\S/.test(l));
+  return lineas.map((l, i) => yaVienenMarcadas ? l : `${i + 1}. ${l}`).join('\n');
+}
+
 const MAPA_ACTA = {
   ciudadYFecha:      '294EE1FE',
   nombreProyecto:    '2BF62EEB',
@@ -192,6 +213,10 @@ const MAPA_ACTA = {
   listaAprendices:   ['429A4432', '6058E51B'],
   listaInstructores: ['49164E48', '7F934EA2'],
   descripcion:       '67BAF786',
+  // 1.1 Objetivos específicos: el formato trae ahí la instrucción de qué
+  // escribir («Listar los objetivos específicos…»), y esa instrucción es
+  // justamente lo que hay que reemplazar.
+  objetivosEspecificos: '01480FB7',
   conclusiones:      '3FF94BCA',
   registroFecha:     '20C1512B',
   objetivoActa:      '6C9C67E9',
@@ -268,6 +293,11 @@ function valoresDelActa(acta) {
     [MAPA_ACTA.ciudadYFecha]: `${normalizar(acta.ciudad)}, ${fechaEnLetras(acta.fechaActa)}`,
     [MAPA_ACTA.nombreProyecto]: normalizar(acta.nombreProyecto),
     [MAPA_ACTA.descripcion]: acta.descripcion || '',
+    // A la izquierda a propósito: el párrafo del formato viene justificado, y
+    // como los objetivos van separados por saltos de línea, cada renglón se
+    // estiraba de margen a margen («1.   Diseñar   la   base   de   datos»).
+    [MAPA_ACTA.objetivosEspecificos]:
+      { texto: textoObjetivos(acta.objetivosEspecificos), alinear: 'left' },
     [MAPA_ACTA.conclusiones]: conclusiones,
     [MAPA_ACTA.objetivoActa]: 'Dar inicio al proyecto productivo',
     [MAPA_ACTA.registroFecha]:
@@ -361,15 +391,16 @@ let bufferPlantilla = null;
 
 let estado = {
   grupoGuardado: '',
-  ciudad: 'Bogotá', fechaActa: '', nombreProyecto: '', descripcion: '', enfoque: 'empresarial',
+  ciudad: 'Bogotá', fechaActa: '', nombreProyecto: '', descripcion: '',
+  objetivosEspecificos: '', enfoque: 'empresarial',
   dependencia: 'CENTRO DE DISEÑO Y METROLOGIA',
   aprendices: [aprendizVacio()],
   firmas: {}
 };
 CAMPOS_GRUPO.forEach(c => { if (estado[c] === undefined) estado[c] = CONFIG.predeterminados[c] ?? ''; });
 
-const CAMPOS_ACTA = ['ciudad', 'fechaActa', 'nombreProyecto', 'descripcion', 'enfoque',
-  'dependencia'];
+const CAMPOS_ACTA = ['ciudad', 'fechaActa', 'nombreProyecto', 'descripcion',
+  'objetivosEspecificos', 'enfoque', 'dependencia'];
 
 function leerCampos() {
   CAMPOS_ACTA.forEach(id => { const e = $('#' + id); if (e) estado[id] = e.value; });
@@ -428,7 +459,9 @@ function pintarResumen() {
           .filter(Boolean).join(' · '))}</span>`).join('<br>') || '—'],
     ['Instructor de seguimiento', esc(estado.instructorNombre) || '—'],
     ['Instructor técnico', esc(nombreTecnico(estado)) || '—'],
-    ['Descripción', estado.descripcion ? esc(estado.descripcion.slice(0, 160)) + (estado.descripcion.length > 160 ? '…' : '') : '—']
+    ['Descripción', estado.descripcion ? esc(estado.descripcion.slice(0, 160)) + (estado.descripcion.length > 160 ? '…' : '') : '—'],
+    ['Objetivos específicos', textoObjetivos(estado.objetivosEspecificos)
+      ? textoObjetivos(estado.objetivosEspecificos).split('\n').map(esc).join('<br>') : '—']
   ];
   $('#resumen').innerHTML = '<table class="resumen">' +
     filas.map(([k, v]) => `<tr><th>${k}</th><td>${v}</td></tr>`).join('') + '</table>';
@@ -516,6 +549,8 @@ function validar() {
   if (!normalizar(estado.nombreProyecto)) err('nombreProyecto', 'Escribe el nombre del proyecto.');
   if (!estado.fechaActa) err('fechaActa', 'Indica la fecha del acta.');
   if (!normalizar(estado.descripcion)) err('descripcion', 'Describe el alcance y el impacto del proyecto.');
+  if (!textoObjetivos(estado.objetivosEspecificos))
+    err('objetivosEspecificos', 'Escribe los objetivos específicos, uno por renglón.');
   if (!estado.aprendices.some(a => normalizar(a.nombre)))
     err('ap0nombre', 'Escribe al menos un integrante del equipo.');
   estado.aprendices.forEach((a, i) => {

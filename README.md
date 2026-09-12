@@ -131,10 +131,18 @@ vienen dentro de la plantilla; la app agrega la del aprendiz, en el espacio en b
 rótulo «Firma del aprendiz» (párrafo `5448632A`). Si el aprendiz ya cargó su firma en la bitácora,
 aparece puesta sin volver a pedirla.
 
-**GFPI-F-193 — Acta de inicio.** Ciudad y fecha, nombre y descripción del proyecto, personal
-vinculado (aprendices e instructores con su documento), el párrafo de conclusiones —que se arma
-solo con los nombres— y la tabla de registro de aprobación. Las copias son idénticas: cambia el
-nombre del archivo para que cada aprendiz entregue el suyo.
+**GFPI-F-193 — Acta de inicio.** Ciudad y fecha, nombre y descripción del proyecto, **los objetivos
+específicos (punto 1.1)**, personal vinculado (aprendices e instructores con su documento), el
+párrafo de conclusiones —que se arma solo con los nombres— y la tabla de registro de aprobación.
+Las copias son idénticas: cambia el nombre del archivo para que cada aprendiz entregue el suyo.
+
+**Los objetivos específicos se escriben uno por renglón** y la app los numera. Si se pegan desde el
+plan de negocio ya numerados —o con viñeta, o con guion—, se respetan tal cual: numerar encima
+daría «1. 1. Diseñar…». El párrafo del formato viene justificado, así que la app lo pasa a la
+izquierda: con saltos de línea, cada renglón se estiraba de margen a margen.
+
+> El **objetivo general** (punto 1) no se pide: el formato ya trae el del SENA, que es el mismo
+> para todos los proyectos productivos, y la app no lo toca.
 
 El acta es el primer formato del ciclo, así que **el equipo se puede escribir ahí mismo** con
 «+ Agregar integrante», sin necesidad de un grupo previo. Lo que se escriba queda guardado y
@@ -309,6 +317,22 @@ corresponde.
 
 El grado **no se escribe en el Excel**: el formato GFPI-F-147 no tiene ese campo. Solo determina
 el calendario y las competencias.
+
+---
+
+## Las fechas van con el año completo
+
+En todos los formatos, las fechas que escribe la app salen como **26/11/2026**, con las cuatro
+cifras del año. Son documentos que se archivan y se consultan años después: «26/11/26» obliga a
+adivinar el siglo, y en una carpeta con bitácoras de 2026 y 2027 la diferencia importa.
+
+Vale para los cuatro formatos: las fechas de la etapa productiva y del registro en SofiaPlus en el
+GFPI-F-023, las del momento de seguimiento y el renglón de cierre en el Momento 2, las de inicio y
+fin de cada actividad en la bitácora, y el eco que aparece bajo cada campo de fecha.
+
+> Los **rótulos impresos** del formato oficial siguen diciendo «(dd/mm/aa)» o «(DD/MM/AA)». No se
+> tocan: son texto del SENA, y la regla de esta aplicación es escribir dentro del formato sin
+> alterar lo que el SENA publicó. Si el centro autoriza cambiarlos, se hace en un momento.
 
 ---
 
@@ -491,11 +515,11 @@ desaparecía. La app la vuelve a insertar como imagen en la misma posición
 
 **Fechas en el formulario.** Los campos `<input type="date">` los dibuja el navegador con el
 formato de **su** idioma: en inglés se ven `07/15/2026` y en español `15/07/2026`. La página no
-puede cambiarlo. Por eso, bajo cada campo, la app muestra la fecha en `dd/mm/aa` — exactamente como
+puede cambiarlo. Por eso, bajo cada campo, la app muestra la fecha en `dd/mm/aaaa` — exactamente como
 va a quedar escrita en el formato oficial. Está en `comun.js` (`ecoDeFechas`) y funciona en los tres
 formularios.
 
-**Fechas en el archivo.** Se escriben como objetos `Date` en UTC con formato `dd/mm/yy`. Usar fechas locales
+**Fechas en el archivo.** Se escriben como objetos `Date` en UTC con formato `dd/mm/yyyy`. Usar fechas locales
 hace que Excel muestre el día anterior; usar texto hace que dejen de ser fechas (el archivo de
 ejemplo tenía una escrita como `15/7/0206`).
 

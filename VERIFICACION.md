@@ -12,7 +12,7 @@ el archivo original que ya estaba en la carpeta.
 | 2 | Logos, fusiones, bordes y encabezado intactos | ✅ Cumple | 3 → 9 imágenes · 132 → 137 fusiones · **0 fusiones perdidas** · encabezado y bordes idénticos |
 | 3 | Hojas `Hoja1` e `Instructivo` presentes e intactas | ✅ Cumple | Comparación celda por celda: sin diferencias |
 | 4 | Datos en las celdas del mapa, sin desplazamientos | ✅ Cumple | 15/15 celdas de control correctas |
-| 5 | Fechas como fecha real con formato `dd/mm/yy` | ✅ Cumple | 9 celdas de fecha verificadas como `datetime` |
+| 5 | Fechas como fecha real con formato `dd/mm/yyyy` | ✅ Cumple | 9 celdas de fecha verificadas como `datetime`, ninguna celda desbordada |
 | 6 | Documentos y teléfonos completos, como texto | ✅ Cumple | 6/6 valores exactos, sin notación científica |
 | 7 | Exactamente una `"X"` en la alternativa | ✅ Cumple | Solo `H45` (proyecto productivo) |
 | 8 | Rótulos de firma intactos y misma paginación | ✅ Cumple | Ningún rótulo sobrescrito · 2 páginas la plantilla, 2 la salida |
@@ -126,6 +126,9 @@ contra los que los aprendices habían llenado a mano:
 | **Grupal**: los 3 integrantes salen en el personal vinculado y en las conclusiones del acta, y las 3 copias son idénticas | ✅ |
 | **Individual**: cada copia del 023 trae los datos de su propio aprendiz | ✅ |
 | El acta pide los dos correos y los pone en su única columna, institucional arriba y personal debajo | ✅ |
+| El acta pide los **objetivos específicos (1.1)** y reemplaza con ellos la instrucción de la plantilla | ✅ |
+| Los objetivos sin numerar salen numerados; los que ya vienen numerados se respetan tal cual | ✅ |
+| El **objetivo general** del formato (punto 1) no se toca | ✅ |
 | Una viñeta por persona: con 3 aprendices el acta muestra a., b. y c., no los tres dentro de la «a.» | ✅ |
 | Lo mismo en la lista de instructores (a., b.) | ✅ |
 | Los 3 aprendices firman su fila en la columna «FIRMA» de la tabla de aprobación | ✅ |

@@ -345,15 +345,9 @@ const FIRMAS_SEGUIMIENTO = {
   coformador:  '306C9954'
 };
 
-/* dd/mm/aa, como lo pide el rótulo del formato */
-function fechaCorta(iso) {
-  const f = aFechaUTC(iso);
-  if (!f) return '';
-  const dd = String(f.getUTCDate()).padStart(2, '0');
-  const mm = String(f.getUTCMonth() + 1).padStart(2, '0');
-  return `${dd}/${mm}/${String(f.getUTCFullYear()).slice(2)}`;
-}
-function fechaLarga(iso) {
+/* dd/mm/aaaa. El año va con sus cuatro cifras: en un documento que se archiva
+   y se consulta años después, «26/11/26» obliga a adivinar el siglo. */
+function fechaDdMmAaaa(iso) {
   const f = aFechaUTC(iso);
   if (!f) return '';
   const dd = String(f.getUTCDate()).padStart(2, '0');
@@ -382,8 +376,8 @@ function soloConValor(valores) {
 
 /* Texto de la fecha del momento: una fecha, o un período si hay «hasta». */
 function textoFechaMomento(datos) {
-  const desde = fechaCorta(datos.fechaMomentoDesde);
-  const hasta = fechaCorta(datos.fechaMomentoHasta);
+  const desde = fechaDdMmAaaa(datos.fechaMomentoDesde);
+  const hasta = fechaDdMmAaaa(datos.fechaMomentoHasta);
   if (!desde) return '';
   return hasta && hasta !== desde ? `${desde} – ${hasta}` : desde;
 }
@@ -392,7 +386,7 @@ function textoFechaMomento(datos) {
    forma presencial ___ o virtual ___», con la X donde corresponda. */
 function textoCiudadFecha(datos) {
   const ciudad = normalizar(datos.ciudad);
-  const fecha = fechaLarga(datos.fechaMomentoDesde);
+  const fecha = fechaDdMmAaaa(datos.fechaMomentoDesde);
   if (!ciudad && !fecha) return '';
   const presencial = normalizar(datos.modalidadSeguimiento).toLowerCase() !== 'virtual';
   return `Ciudad ${ciudad || '____________'} y fecha de diligenciamiento: ${fecha || '___/___/____'} ` +
@@ -451,7 +445,7 @@ function valoresDeSeguimiento(datos, aprendiz) {
     [M.correoPersonal]: normalizar(aprendiz.correoPersonal),
     [M.correoInstitucional]: normalizar(aprendiz.correoInstitucional),
     [M.alternativa]: normalizar(datos.alternativaRegistrada),
-    [M.fechaRegistroSofia]: fechaLarga(datos.fechaRegistroSofia),
+    [M.fechaRegistroSofia]: fechaDdMmAaaa(datos.fechaRegistroSofia),
     [M.instructorNombre]: normalizar(datos.instructorNombre),
     [M.instructorTelefono]: normalizar(datos.instructorTelefono),
     [M.instructorCorreo]: normalizar(datos.instructorCorreo),
@@ -462,7 +456,7 @@ function valoresDeSeguimiento(datos, aprendiz) {
     [M.jefeNombre]: normalizar(datos.jefeNombre),
     [M.jefeCargo]: normalizar(datos.jefeCargo),
     [M.jefeTelefono]: normalizar(datos.jefeTelefono),
-    [M.fechaInicioEP]: fechaCorta(datos.fechaInicioEP),
+    [M.fechaInicioEP]: fechaDdMmAaaa(datos.fechaInicioEP),
     [M.fechaMomento]: textoFechaMomento(datos),
     [M.modalidad]: normalizar(datos.modalidadSeguimiento),
     [M.enlaceGrabacion]: normalizar(datos.enlaceGrabacion),
@@ -949,7 +943,7 @@ $('#btnGenerar').addEventListener('click', async () => {
   if (!normalizar(estado.fechaFinLectiva)) aplicarValoresDelGrado();
   refrescarInterfaz();
   conectarTarjetaGrupo();
-  conectarInstructores();   // el eco de fechas dd/mm/aa se activa solo desde comun.js
+  conectarInstructores();   // el eco de fechas dd/mm/aaaa se activa solo desde comun.js
   cargarPlantilla();
 })();
 </script>

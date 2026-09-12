@@ -285,16 +285,9 @@ const MAPA_PLANEACION = {
   horario:            '0B66C6E8'
 };
 
-/* dd/mm/aa, como lo pide el formato */
-function fechaCorta(iso) {
-  const f = aFechaUTC(iso);
-  if (!f) return '';
-  const dd = String(f.getUTCDate()).padStart(2, '0');
-  const mm = String(f.getUTCMonth() + 1).padStart(2, '0');
-  return `${dd}/${mm}/${String(f.getUTCFullYear()).slice(2)}`;
-}
-/* dd/mm/aaaa, para la fecha de registro en SofiaPlus */
-function fechaLarga(iso) {
+/* dd/mm/aaaa. El año va con sus cuatro cifras: en un documento que se archiva
+   y se consulta años después, «26/11/26» obliga a adivinar el siglo. */
+function fechaDdMmAaaa(iso) {
   const f = aFechaUTC(iso);
   if (!f) return '';
   const dd = String(f.getUTCDate()).padStart(2, '0');
@@ -333,7 +326,7 @@ function valoresDePlaneacion(datos, aprendiz) {
     [M.correoPersonal]: normalizar(aprendiz.correoPersonal),
     [M.correoInstitucional]: normalizar(aprendiz.correoInstitucional),
     [M.alternativa]: normalizar(datos.alternativaRegistrada),
-    [M.fechaRegistroSofia]: fechaLarga(datos.fechaRegistroSofia),
+    [M.fechaRegistroSofia]: fechaDdMmAaaa(datos.fechaRegistroSofia),
     [M.instructorNombre]: normalizar(datos.instructorNombre),
     [M.instructorTelefono]: normalizar(datos.instructorTelefono),
     [M.instructorCorreo]: normalizar(datos.instructorCorreo),
@@ -344,8 +337,8 @@ function valoresDePlaneacion(datos, aprendiz) {
     [M.jefeNombre]: normalizar(datos.jefeNombre),
     [M.jefeCargo]: normalizar(datos.jefeCargo),
     [M.jefeTelefono]: normalizar(datos.jefeTelefono),
-    [M.fechaInicioEP]: fechaCorta(datos.fechaInicioEP),
-    [M.fechaFinEP]: fechaCorta(datos.fechaFinEP),
+    [M.fechaInicioEP]: fechaDdMmAaaa(datos.fechaInicioEP),
+    [M.fechaFinEP]: fechaDdMmAaaa(datos.fechaFinEP),
     [M.horario]: normalizar(datos.horario)
   });
 }
@@ -551,7 +544,7 @@ function pintarResumen() {
     ['Ficha', esc(estado.grupo) || '—'],
     ['Aprendices', quienes.map(({ aprendiz: a }) =>
        `${esc(a.nombre)} — ${esc(a.tipoDocumento)} ${esc(a.numeroDocumento)}`).join('<br>') || '—'],
-    ['Etapa productiva', `${fechaCorta(estado.fechaInicioEP) || '—'} a ${fechaCorta(estado.fechaFinEP) || '—'}`],
+    ['Etapa productiva', `${fechaDdMmAaaa(estado.fechaInicioEP) || '—'} a ${fechaDdMmAaaa(estado.fechaFinEP) || '—'}`],
     ['Horario', esc(estado.horario) || '—'],
     ['Entidad', esc(estado.entidad) || '—'],
     ['Instructor de seguimiento', esc(estado.instructorNombre) || '—']

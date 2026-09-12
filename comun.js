@@ -468,7 +468,7 @@ const RE_DIGITOS = /^\d{7,12}$/;
    Los campos <input type="date"> los dibuja el navegador con el formato de SU
    idioma: en inglés se ven como 07/15/2026 y en español como 15/07/2026. La
    página no puede cambiarlo. Para que no quede duda de qué día se eligió, bajo
-   cada campo se muestra la fecha en dd/mm/aa, que es exactamente como va a
+   cada campo se muestra la fecha en dd/mm/aaaa, que es exactamente como va a
    quedar escrita en el formato oficial.
    ------------------------------------------------------------------------- */
 function fechaCortaVisible(iso) {
@@ -476,7 +476,7 @@ function fechaCortaVisible(iso) {
   if (!f) return '';
   const dd = String(f.getUTCDate()).padStart(2, '0');
   const mm = String(f.getUTCMonth() + 1).padStart(2, '0');
-  return `${dd}/${mm}/${String(f.getUTCFullYear()).slice(2)}`;
+  return `${dd}/${mm}/${f.getUTCFullYear()}`;
 }
 
 let ecoOcupado = false;
