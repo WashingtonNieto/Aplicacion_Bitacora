@@ -296,7 +296,7 @@ function fechaDdMmAaaa(iso) {
 }
 
 function nombreArchivoPlaneacion(nombreAprendiz, grado) {
-  const limpio = normalizar(nombreAprendiz).replace(/[\\/:*?"<>|]/g, '').replace(/\s+/g, ' ').trim();
+  const limpio = nombrePropio(nombreAprendiz).replace(/[\\/:*?"<>|]/g, '').replace(/\s+/g, ' ').trim();
   const g = CONFIG.grados[grado] || CONFIG.grados[CONFIG.gradoPredeterminado];
   return `GFPI-F-023_V06.__Formato_de_Planeación_Seguimiento_y_Evaluación_de_Etapa_Productiva_` +
          `${g.etiquetaArchivo}_${limpio || 'Aprendiz'}.docx`;
@@ -318,7 +318,7 @@ function valoresDePlaneacion(datos, aprendiz) {
   return soloConValor({
     [M.grupo]: normalizar(datos.grupo),
     [M.fechaFinLectiva]: normalizar(datos.fechaFinLectiva),
-    [M.nombre]: normalizar(aprendiz.nombre),
+    [M.nombre]: nombrePropio(aprendiz.nombre),
     [M.tipoDocumento]: normalizar(aprendiz.tipoDocumento),
     [M.numeroDocumento]: normalizar(aprendiz.numeroDocumento),
     [M.telefono]: normalizar(aprendiz.telefono),
@@ -327,14 +327,14 @@ function valoresDePlaneacion(datos, aprendiz) {
     [M.correoInstitucional]: normalizar(aprendiz.correoInstitucional),
     [M.alternativa]: normalizar(datos.alternativaRegistrada),
     [M.fechaRegistroSofia]: fechaDdMmAaaa(datos.fechaRegistroSofia),
-    [M.instructorNombre]: normalizar(datos.instructorNombre),
+    [M.instructorNombre]: nombrePropio(datos.instructorNombre),
     [M.instructorTelefono]: normalizar(datos.instructorTelefono),
     [M.instructorCorreo]: normalizar(datos.instructorCorreo),
     [M.entidad]: normalizar(datos.entidad),
     [M.direccionEntidad]: normalizar(datos.direccionEntidad),
     [M.nit]: normalizar(datos.nit),
     [M.correoEntidad]: normalizar(datos.correoEntidad),
-    [M.jefeNombre]: normalizar(datos.jefeNombre),
+    [M.jefeNombre]: nombrePropio(datos.jefeNombre),
     [M.jefeCargo]: normalizar(datos.jefeCargo),
     [M.jefeTelefono]: normalizar(datos.jefeTelefono),
     [M.fechaInicioEP]: fechaDdMmAaaa(datos.fechaInicioEP),
@@ -464,8 +464,11 @@ function aplicarColegio(nombre) {
   $('#direccionEntidad').value = c.direccion;
   $('#nit').value = c.nit;
   if ($('#correoEntidad')) $('#correoEntidad').value = estado.correoEntidad;
-  // Cada colegio tiene su ficha. Si el aprendiz ya escribió otra, se respeta.
-  if (c.ficha && !normalizar(estado.grupo)) {
+  /* Cada colegio tiene su ficha. Se respeta la que el aprendiz haya escrito a
+     mano, pero si la que hay es la de OTRO colegio de la lista —porque la puso
+     la app al elegirlo antes— se reemplaza: si no, al cambiar de colegio el
+     documento saldría con la ficha del anterior. */
+  if (c.ficha && (!normalizar(estado.grupo) || esFichaDeColegio(estado.grupo))) {
     estado.grupo = c.ficha;
     $('#grupo').value = c.ficha;
   }

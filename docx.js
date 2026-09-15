@@ -297,17 +297,33 @@ function clonarParrafo(modeloXml, texto) {
   return cabecera + pPr + runsDeTexto(texto, rPr) + '</w:p>';
 }
 
-/* Devuelve el párrafo anterior al que empieza en `inicio`, o null.
+/* Límites del párrafo anterior al que empieza en `inicio`, o null.
    Sirve para detectar el renglón en blanco que el formato deja entre viñeta y
    viñeta: si se clona solo la viñeta, la lista queda con espacios desiguales. */
-function parrafoAnterior(xml, inicio) {
+function limitesAnterior(xml, inicio) {
   const fin = xml.lastIndexOf('</w:p>', inicio);
   if (fin < 0) return null;
   const ini = xml.lastIndexOf('<w:p ', fin);
   if (ini < 0) return null;
   const bloque = xml.slice(ini, fin + 6);
   if (bloque.indexOf('<w:p ', 1) > 0) return null;      // hay anidamiento: mejor no tocar
-  return bloque;
+  return { ini, fin: fin + 6, bloque };
+}
+function parrafoAnterior(xml, inicio) {
+  const lim = limitesAnterior(xml, inicio);
+  return lim ? lim.bloque : null;
+}
+
+/* Quita del documento un renglón de la lista, junto con el párrafo en blanco
+   que lo separa del anterior. Se usa con los renglones que el formato trae de
+   más: dejarlos vacíos deja una viñeta «b.» sin nada al lado, que en un
+   documento oficial se lee como un error. */
+function borrarParrafo(xml, paraId) {
+  const lim = limitesParrafo(xml, paraId);
+  if (!lim) return { xml, ok: false };
+  const ant = limitesAnterior(xml, lim.inicio);
+  const desde = (ant && esSeparador(ant.bloque)) ? ant.ini : lim.inicio;
+  return { xml: xml.slice(0, desde) + xml.slice(lim.fin), ok: true };
 }
 
 function esSeparador(parrafoXml) {
@@ -318,11 +334,19 @@ function esSeparador(parrafoXml) {
    falta más, y vaciando los que sobren. */
 function escribirLista(xml, paraIds, textos) {
   const faltantes = [];
-  paraIds.forEach((pid, i) => {
-    const r = escribirParrafo(xml, pid, i < textos.length ? textos[i] : '');
-    if (!r.ok) faltantes.push(pid);
+  const usados = Math.min(paraIds.length, textos.length);
+  for (let i = 0; i < usados; i++) {
+    const r = escribirParrafo(xml, paraIds[i], textos[i]);
+    if (!r.ok) faltantes.push(paraIds[i]);
     xml = r.xml;
-  });
+  }
+  // Los renglones que sobran se quitan, de atrás hacia adelante para que los
+  // que faltan por borrar no se muevan de sitio.
+  for (let i = paraIds.length - 1; i >= usados; i--) {
+    const r = borrarParrafo(xml, paraIds[i]);
+    if (!r.ok) faltantes.push(paraIds[i]);
+    xml = r.xml;
+  }
   if (textos.length > paraIds.length) {
     const ultimo = paraIds[paraIds.length - 1];
     const lim = limitesParrafo(xml, ultimo);
@@ -507,7 +531,8 @@ if (typeof module !== 'undefined' && module.exports) {
   module.exports = { escaparXml, limitesParrafo, propiedadesDeFuente, runsDeTexto,
                      escribirParrafo, aplicarMapaDocx, generarDocx,
                      base64ABytes, extensionDeImagen, escribirImagen,
-                     clonarParrafo, escribirLista, parrafoAnterior, esSeparador, aNegro,
+                     clonarParrafo, escribirLista, parrafoAnterior, limitesAnterior,
+                     borrarParrafo, esSeparador, aNegro,
                      opcionesDeValor, conAlineacion, conNegrita, conTamano,
                      huellaDeContrasena, xmlDeProteccion, protegerSoloLectura,
                      VUELTAS_PROTECCION, utf16le };

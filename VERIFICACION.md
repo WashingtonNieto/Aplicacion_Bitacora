@@ -119,7 +119,16 @@ contra los que los aprendices habían llenado a mano:
 | GFPI-F-023: por defecto genera **solo el del aprendiz elegido**, y «Todo el grupo» genera los de todos | ✅ |
 | GFPI-F-023: un aprendiz sin grupo escribe sus datos, elige su colegio y descarga **un solo archivo** | ✅ |
 | Elegir el colegio llena también la **ficha** y el **correo de la entidad**, en la bitácora y en el 023 | ✅ |
-| Cambiar de colegio no pisa una ficha ya escrita | ✅ |
+| **La ficha es obligatoria en los cuatro formatos**: sin ella ninguno genera | ✅ |
+| En la bitácora la ficha queda **centrada** en su celda, como el resto de su fila | ✅ |
+| Al cambiar de colegio, la ficha que puso la app se reemplaza por la del colegio nuevo | ✅ |
+| Una ficha escrita a mano no se pisa al cambiar de colegio | ✅ |
+| El acta pone al **instructor técnico** en la viñeta de «instructor proyecto productivo», una sola vez | ✅ |
+| Los nombres de persona salen como **nombre propio** en los cuatro formatos, aunque se escriban en mayúscula sostenida | ✅ |
+| También en el nombre de los archivos generados | ✅ |
+| Las partículas van en minúscula (`Juan de la Cruz`) y las siglas se respetan (`SENA-Washington`) | ✅ |
+| El nombre de la entidad y el cargo **no** se tocan | ✅ |
+| Los renglones de lista que sobran se **quitan**, no quedan como una viñeta vacía | ✅ |
 | Los dos instructores (nombre, cédula, correo, teléfono y firma) se capturan una vez y llegan a los tres formatos | ✅ |
 | El equipo se puede armar **desde el acta**, sin grupo previo, y topa en 3 integrantes | ✅ |
 | Ese equipo aparece después en el 023 (3 destinatarios) y en la bitácora (3 aprendices) | ✅ |

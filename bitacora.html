@@ -357,7 +357,7 @@ function restaurarCuadroPublica(libro, hoja) {
    el suyo en el espacio que le corresponde. */
 function nombreArchivo(bitacora, indiceAprendiz) {
   const i = indiceAprendiz || 0;
-  const quien = normalizar(bitacora.aprendices?.[i]?.nombre) || 'Aprendiz';
+  const quien = nombrePropio(bitacora.aprendices?.[i]?.nombre) || 'Aprendiz';
   const limpio = quien.replace(/[\\/:*?"<>|]/g, '').replace(/\s+/g, ' ').trim();
   return `GFPI-F-147-Bitacora-${bitacora.numeroBitacora}_${limpio}.xlsx`;
 }
@@ -484,6 +484,15 @@ function prepararFilaActividad(hoja, fila) {
    atributo (negrita, tamaño, bordes, relleno, alineación). */
 const COLORES_RESIDUALES = ['FFA5A5A5', 'FFBFBFBF', 'FF595959', 'FF0000FF'];
 
+/* Centra el contenido de una celda conservando lo demás (el alto, el ajuste de
+   texto y la alineación vertical). Se usa donde la plantilla no es coherente
+   consigo misma: la celda de la ficha viene alineada a la izquierda mientras
+   todas las de su misma fila —modalidad, programa, ejecución— están centradas,
+   y el número quedaba descolgado contra el borde. */
+function centrarCelda(celda) {
+  celda.alignment = { ...(celda.alignment || {}), horizontal: 'center' };
+}
+
 function asegurarLegible(celda) {
   const argb = celda.font && celda.font.color && celda.font.color.argb;
   if (argb && COLORES_RESIDUALES.includes(String(argb).toUpperCase())) {
@@ -520,7 +529,7 @@ function escribirBitacora(hoja, bitacora) {
   bitacora.aprendices.forEach((ap, i) => {
     const m = MAPA.aprendices[i];
     if (!m) return;
-    escribirTexto(hoja, m.nombre, `${i + 1}. ${normalizar(ap.nombre)}`);
+    escribirTexto(hoja, m.nombre, `${i + 1}. ${nombrePropio(ap.nombre)}`);
     escribirTexto(hoja, m.documento, `${ap.tipoDocumento} ${normalizar(ap.numeroDocumento)}`);
     escribirTexto(hoja, m.telefono, ap.telefono);
     escribirTexto(hoja, m.correoInst, ap.correoInstitucional);
@@ -530,17 +539,18 @@ function escribirBitacora(hoja, bitacora) {
 
   // --- Programa y entidad ---
   escribirTexto(hoja, MAPA.grupo, bitacora.grupo);
+  if (normalizar(bitacora.grupo)) centrarCelda(hoja.getCell(MAPA.grupo));
   escribirTexto(hoja, MAPA.modalidadFormacion, bitacora.modalidadFormacion);
   escribirTexto(hoja, MAPA.programa, bitacora.programa);
   escribirTexto(hoja, MAPA.modalidadEjecucion, bitacora.modalidadEjecucion);
   escribirTexto(hoja, MAPA.entidad, bitacora.entidad);
   escribirTexto(hoja, MAPA.nit, bitacora.nit);
   escribirTexto(hoja, MAPA.direccionEntidad, bitacora.direccionEntidad);
-  escribirTexto(hoja, MAPA.jefeNombre, bitacora.jefeNombre);
+  escribirTexto(hoja, MAPA.jefeNombre, nombrePropio(bitacora.jefeNombre));
   escribirTexto(hoja, MAPA.jefeCargo, bitacora.jefeCargo);
   escribirTexto(hoja, MAPA.jefeTelefono, bitacora.jefeTelefono);
   escribirTexto(hoja, MAPA.jefeCorreo, bitacora.jefeCorreo);
-  escribirTexto(hoja, MAPA.instructorNombre, bitacora.instructorNombre);
+  escribirTexto(hoja, MAPA.instructorNombre, nombrePropio(bitacora.instructorNombre));
   escribirTexto(hoja, MAPA.instructorCorreo, bitacora.instructorCorreo);
 
   // --- Alternativa: exactamente una "X" ---
@@ -733,8 +743,11 @@ function aplicarColegio(nombre) {
   $('#direccionEntidad').value = c.direccion;
   $('#nit').value = c.nit;
   if ($('#correoEntidad')) $('#correoEntidad').value = estado.correoEntidad;
-  // Cada colegio tiene su ficha. Si ya hay una escrita, no se pisa.
-  if (c.ficha && !normalizar(estado.grupo)) {
+  /* Cada colegio tiene su ficha. Se respeta la que el aprendiz haya escrito a
+     mano, pero si la que hay es la de OTRO colegio de la lista —porque la puso
+     la app al elegirlo antes— se reemplaza: si no, al cambiar de colegio el
+     documento saldría con la ficha del anterior. */
+  if (c.ficha && (!normalizar(estado.grupo) || esFichaDeColegio(estado.grupo))) {
     estado.grupo = c.ficha;
     $('#grupo').value = c.ficha;
   }
@@ -936,6 +949,9 @@ function validarPaso(paso) {
   }
 
   if (paso === 2) {
+    // La ficha es obligatoria en los cuatro formatos: va impresa en B27 y sin
+    // ella el documento no se puede asociar al grupo en SofiaPlus.
+    if (!normalizar(estado.grupo)) err('grupo', 'Indica el número de grupo (ficha).');
     if (!estado.colegio) err('colegio', 'Elige el colegio de la lista.');
     if (!normalizar(estado.entidad)) err('entidad', 'Indica la entidad co-formadora.');
     if (!normalizar(estado.nit)) err('nit', 'Indica el NIT de la entidad.');

@@ -106,8 +106,8 @@ const CONFIG = {
     entidad: '',
     nit: '',
     direccionEntidad: '',
-    jefeNombre: 'Washington Nieto Arce',
-    jefeDocumento: '',
+    jefeNombre: 'Washington Leon Nieto Arce',
+    jefeDocumento: '79289525',
     jefeCargo: 'Instructor',
     jefeTelefono: '',
     jefeCorreo: 'wnieto@sena.edu.co',
@@ -159,11 +159,50 @@ function valoracionVacia() {
 }
 
 
+/* ¿Este número de ficha es el de alguno de los colegios de la lista?
+   Sirve para distinguir una ficha que puso la app al elegir el colegio de una
+   que escribió a mano el aprendiz: la primera se puede reemplazar al cambiar de
+   colegio, la segunda no. */
+function esFichaDeColegio(valor) {
+  const ficha = String(valor ?? '').trim();
+  return !!ficha && CONFIG.colegios.some(c => c.ficha === ficha);
+}
+
 /* Limpia espacios raros: la plantilla y los archivos de ejemplo traen
    espacios de no separación (NBSP, U+00A0) que rompen comparaciones y búsquedas. */
 function normalizar(texto) {
   if (texto === null || texto === undefined) return '';
   return String(texto).replace(/ /g, ' ').replace(/\s+/g, ' ').trim();
+}
+
+/* Partículas que en castellano van en minúscula dentro de un nombre: «Juan de
+   la Cruz», no «Juan De La Cruz». Solo cuando NO son la primera palabra. */
+const PARTICULAS_NOMBRE = ['de', 'del', 'la', 'las', 'los', 'y', 'e',
+                           'da', 'das', 'do', 'dos', 'van', 'von', 'di', 'du'];
+
+/* Pasa un nombre a mayúscula inicial: «SANTIAGO PINEDA MEJIA» o
+   «santiago pineda mejia» → «Santiago Pineda Mejia». Se aplica a los nombres de
+   PERSONA en los cuatro formatos, para que salgan iguales venga como venga el
+   dato. No se tocan los acentos: si el nombre se escribió sin tilde, sigue sin
+   tilde. Tampoco se toca el nombre de las entidades («COLEGIO TECNICO PALERMO
+   I.E.D» va así en el formato) ni el cargo. */
+const SIGLAS_NOMBRE = ['sena', 'sennova', 'ied', 'i.e.d', 'i.e.d.'];
+
+function tramoPropio(tramo) {
+  if (!tramo) return tramo;
+  if (SIGLAS_NOMBRE.includes(tramo)) return tramo.toUpperCase();   // «SENA-Washington»
+  return tramo.charAt(0).toUpperCase() + tramo.slice(1);
+}
+
+function nombrePropio(texto) {
+  const limpio = normalizar(texto).toLowerCase();
+  if (!limpio) return '';
+  return limpio.split(' ').map((palabra, i) => {
+    if (i > 0 && PARTICULAS_NOMBRE.includes(palabra)) return palabra;
+    // Los compuestos llevan mayúscula en cada parte: «Ana-María», «D'Costa»
+    return palabra.split(/([-'’])/)
+      .map(t => /^[-'’]$/.test(t) ? t : tramoPropio(t)).join('');
+  }).join(' ');
 }
 
 /* Convierte 'aaaa-mm-dd' (lo que entrega <input type="date">) en un Date UTC.
@@ -736,6 +775,6 @@ if (typeof module !== 'undefined' && module.exports) {
                      mesDeSecuencia, periodoDeBitacora, esc, CAMPOS_GRUPO,
                      CLAVE_GRUPOS, TIPO_ARCHIVO_GRUPO, VERSION_ARCHIVO_GRUPO, nuevoGrupo,
                      agregarIntegrante, quitarIntegrante, reindexarFirmasAprendices,
-                     RE_CORREO, RE_DIGITOS, fechaCortaVisible, INSTRUCTORES,
+                     RE_CORREO, RE_DIGITOS, fechaCortaVisible, INSTRUCTORES, esFichaDeColegio, nombrePropio,
                      FACTORES_TECNICOS, FACTORES_ACTITUDINALES, valoracionVacia };
 }

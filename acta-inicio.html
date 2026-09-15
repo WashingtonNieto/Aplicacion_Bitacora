@@ -105,6 +105,12 @@
       compromiso de confidencialidad y textos legales— ya viene en el formato oficial y no se
       toca.</p>
     <div class="rejilla">
+      <div class="campo"><label for="grupo">Ficha
+          <span class="pista">(número de grupo)</span></label>
+        <input type="text" id="grupo" inputmode="numeric">
+        <span class="pista">El acta no la imprime, pero queda guardada con el grupo y sale en el
+          GFPI-F-023 y en las bitácoras.</span>
+        <span class="msj-error" data-error="grupo"></span></div>
       <div class="campo"><label for="ciudad">Ciudad</label>
         <input type="text" id="ciudad" value="Bogotá"></div>
       <div class="campo"><label for="fechaActa">Fecha del acta</label>
@@ -211,7 +217,13 @@ const MAPA_ACTA = {
   // una; si el equipo es más grande, el motor clona el último y Word sigue
   // numerando solo.
   listaAprendices:   ['429A4432', '6058E51B'],
+  // «…con rol de: instructor de seguimiento y/o instructor técnico»
   listaInstructores: ['49164E48', '7F934EA2'],
+  // «…facilitador de seguimiento etapa productiva (Convocatoria nacional),
+  //  instructor proyecto productivo o instructor de investigación - SENNOVA»:
+  //  ahí va el instructor técnico, que es quien acompaña el proyecto productivo.
+  //  El formato deja un solo renglón; si hicieran falta más, el motor los clona.
+  listaFacilitadores: ['564D0E81'],
   descripcion:       '67BAF786',
   // 1.1 Objetivos específicos: el formato trae ahí la instrucción de qué
   // escribir («Listar los objetivos específicos…»), y esa instrucción es
@@ -252,11 +264,11 @@ function fechaEnLetras(iso) {
 /* «Nombre TI 1234» tal como lo escribieron los aprendices en el acta real */
 function personaConDocumento(nombre, tipo, numero) {
   const doc = normalizar(numero);
-  return `${normalizar(nombre)}${doc ? ` ${normalizar(tipo) || 'CC'} ${doc}` : ''}`.trim();
+  return `${nombrePropio(nombre)}${doc ? ` ${normalizar(tipo) || 'CC'} ${doc}` : ''}`.trim();
 }
 
 function nombreArchivoActa(acta, indiceAprendiz) {
-  const quien = normalizar(acta.aprendices?.[indiceAprendiz || 0]?.nombre) || 'Aprendiz';
+  const quien = nombrePropio(acta.aprendices?.[indiceAprendiz || 0]?.nombre) || 'Aprendiz';
   const limpio = quien.replace(/[\\/:*?"<>|]/g, '').replace(/\s+/g, ' ').trim();
   return `GFPI-F-193_Acta_de_inicio_${limpio}.docx`;
 }
@@ -276,12 +288,16 @@ function valoresDelActa(acta) {
     instructores.push(personaConDocumento(nombreTecnico(acta), 'CC', acta.jefeDocumento));
   }
 
-  const nombresAprendices = aprendices.map(a => normalizar(a.nombre)).join(', ');
+  // En las conclusiones los nombres van dentro de una frase redactada, así que
+  // se escriben como nombre propio aunque en los datos estén en mayúscula
+  // sostenida. En el «Personal vinculado» y en la tabla de aprobación se
+  // respeta lo que se escribió, porque ahí son un registro, no una redacción.
+  const nombresAprendices = aprendices.map(a => nombrePropio(a.nombre)).join(', ');
   const conclusiones =
     'Luego de postularse y pasar el proceso inicial de la convocatoria de proyecto productivo, ' +
     'firman la presente acta la(s) persona(s) con rol de: aprendiz ' + nombresAprendices +
-    ',  instructor de seguimiento: ' + normalizar(acta.instructorNombre) +
-    ', instructor técnico ' + nombreTecnico(acta) +
+    ',  instructor de seguimiento: ' + nombrePropio(acta.instructorNombre) +
+    ', instructor técnico ' + nombrePropio(nombreTecnico(acta)) +
     ' y facilitador de seguimiento etapa productiva o instructor a cargo.';
 
   const f = aFechaUTC(acta.fechaActa);
@@ -328,7 +344,7 @@ function valoresDelActa(acta) {
     }
     valores[fila.num] = String(i + 1);
     valores[fila.autoriza] = 'SI';
-    valores[fila.nombre] = normalizar(persona.nombre);
+    valores[fila.nombre] = nombrePropio(persona.nombre);
     valores[fila.documento] = normalizar(persona.documento);
     valores[fila.rol] = persona.rol;
     valores[fila.correo] = String(persona.correo || '')
@@ -364,19 +380,22 @@ function firmasDelActa(acta) {
 /* Un renglón por persona en las listas con viñeta del acta.
    El formato trae dos renglones de cada lista; si el equipo es más grande, el
    motor clona el último y Word sigue con la letra que corresponde. */
+/* Cada persona aparece UNA vez, bajo el rótulo que le corresponde: el
+   instructor de seguimiento en su viñeta y el técnico en la del «instructor
+   proyecto productivo». La viñeta del medio dice «y/o», así que admitiría a los
+   dos, pero nombrar dos veces a la misma persona en un acta de una página se
+   lee como un error. */
 function listasDelActa(acta) {
   const aprendices = acta.aprendices.filter(a => normalizar(a.nombre));
-  const instructores = [];
-  if (normalizar(acta.instructorNombre)) {
-    instructores.push(personaConDocumento(acta.instructorNombre, 'CC', acta.instructorDocumento));
-  }
-  if (normalizar(acta.jefeNombre)) {
-    instructores.push(personaConDocumento(nombreTecnico(acta), 'CC', acta.jefeDocumento));
-  }
+  const seguimiento = normalizar(acta.instructorNombre)
+    ? [personaConDocumento(acta.instructorNombre, 'CC', acta.instructorDocumento)] : [];
+  const tecnico = normalizar(acta.jefeNombre)
+    ? [personaConDocumento(nombreTecnico(acta), 'CC', acta.jefeDocumento)] : [];
   return [
     { paraIds: MAPA_ACTA.listaAprendices,
       textos: aprendices.map(a => personaConDocumento(a.nombre, a.tipoDocumento, a.numeroDocumento)) },
-    { paraIds: MAPA_ACTA.listaInstructores, textos: instructores }
+    { paraIds: MAPA_ACTA.listaInstructores,   textos: seguimiento },
+    { paraIds: MAPA_ACTA.listaFacilitadores,  textos: tecnico }
   ];
 }
 /* ==== FIN NUCLEO ACTA ==== */
@@ -399,7 +418,7 @@ let estado = {
 };
 CAMPOS_GRUPO.forEach(c => { if (estado[c] === undefined) estado[c] = CONFIG.predeterminados[c] ?? ''; });
 
-const CAMPOS_ACTA = ['ciudad', 'fechaActa', 'nombreProyecto', 'descripcion',
+const CAMPOS_ACTA = ['grupo', 'ciudad', 'fechaActa', 'nombreProyecto', 'descripcion',
   'objetivosEspecificos', 'enfoque', 'dependencia'];
 
 function leerCampos() {
@@ -452,6 +471,7 @@ function pintarResumen() {
   const aprendices = estado.aprendices.filter(a => normalizar(a.nombre));
   const filas = [
     ['Ciudad y fecha', `${esc(estado.ciudad)}, ${esc(fechaEnLetras(estado.fechaActa)) || '—'}`],
+    ['Ficha', esc(estado.grupo) || '—'],
     ['Proyecto', esc(estado.nombreProyecto) || '—'],
     ['Aprendices', aprendices.map(a =>
        esc(personaConDocumento(a.nombre, a.tipoDocumento, a.numeroDocumento)) +
@@ -546,6 +566,9 @@ function cargarBorrador() {
 function validar() {
   const errores = [];
   const err = (c, m) => errores.push({ clave: c, msj: m });
+  // La ficha es obligatoria en los cuatro formatos: sin ella los documentos no
+  // se pueden asociar al grupo en SofiaPlus.
+  if (!normalizar(estado.grupo)) err('grupo', 'Indica el número de ficha.');
   if (!normalizar(estado.nombreProyecto)) err('nombreProyecto', 'Escribe el nombre del proyecto.');
   if (!estado.fechaActa) err('fechaActa', 'Indica la fecha del acta.');
   if (!normalizar(estado.descripcion)) err('descripcion', 'Describe el alcance y el impacto del proyecto.');

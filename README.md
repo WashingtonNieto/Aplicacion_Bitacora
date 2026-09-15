@@ -154,8 +154,21 @@ dos: el institucional arriba y el personal debajo. Se exige al menos uno.
 
 **Una viñeta por persona.** El formato trae dos renglones en «Personal vinculado» (a. y b.). Si el
 equipo es de tres, la app **clona el renglón** —con su viñeta y con el espacio en blanco que el
-formato deja entre uno y otro— y Word sigue numerando solo: a., b., c. Lo mismo para la lista de
-instructores. Antes los tres nombres caían dentro de la «a.» y la «b.» quedaba vacía.
+formato deja entre uno y otro— y Word sigue numerando solo: a., b., c. Antes los tres nombres caían
+dentro de la «a.» y la «b.» quedaba vacía. Y al revés: los renglones que **sobran se quitan**, no se
+dejan en blanco, porque una viñeta «b.» sin nada al lado se lee como un error en un acta oficial.
+
+**Cada instructor en su viñeta.** El «Personal vinculado» tiene tres viñetas y la app pone a cada
+quien una sola vez:
+
+| Viñeta del formato | Quién va ahí |
+|---|---|
+| «…con rol de aprendiz» | los integrantes del equipo |
+| «…instructor de seguimiento y/o instructor técnico» | el **instructor de seguimiento** |
+| «…facilitador de seguimiento etapa productiva…, **instructor proyecto productivo** o instructor de investigación - SENNOVA» | el **instructor técnico**, que es quien acompaña el proyecto productivo |
+
+> La viñeta del medio dice «y/o», así que admitiría a los dos. Se dejó uno en cada una porque
+> nombrar dos veces a la misma persona en un acta de una página se lee como un error.
 
 **GFPI-F-147 — Bitácora.** Lo de siempre: período, actividades, evidencias, ARL y firmas.
 
@@ -317,6 +330,44 @@ corresponde.
 
 El grado **no se escribe en el Excel**: el formato GFPI-F-147 no tiene ese campo. Solo determina
 el calendario y las competencias.
+
+---
+
+## Los nombres salen como nombre propio
+
+En los **cuatro formatos**, los nombres de persona se escriben con mayúscula inicial, venga el dato
+como venga: `SANTIAGO PINEDA MEJIA` y `santiago pineda mejia` salen los dos como
+**`Santiago Pineda Mejia`**. Así el documento se ve igual aunque cada aprendiz escriba su nombre a
+su manera. Alcanza a los aprendices y a los dos instructores, en el texto de los formatos y también
+en el **nombre de los archivos**.
+
+Tres detalles del tratamiento:
+
+- **Las partículas van en minúscula**: `Juan de la Cruz`, no `Juan De La Cruz`.
+- **Las siglas se respetan**: `SENA-Washington Leon Nieto Arce` no se convierte en `Sena-Washington`.
+  La lista está en `SIGLAS_NOMBRE` (`comun.js`), por si hay que agregar alguna.
+- **Los acentos no se inventan**: si el nombre se escribió sin tilde, sigue sin tilde. Adivinar
+  acentos daría errores en apellidos.
+
+No se tocan el nombre de la **entidad** (`COLEGIO TECNICO PALERMO I.E.D` va así en el formato) ni el
+**cargo** (`INSTRUCTOR`): no son nombres de persona.
+
+---
+
+## La ficha es obligatoria
+
+El **número de grupo (ficha)** no puede faltar en ninguno de los cuatro formularios: sin él los
+documentos no se pueden asociar al grupo en SofiaPlus. Si está vacío, ninguno de los cuatro genera
+nada y el error señala el campo.
+
+Va impreso en el **GFPI-F-023** (los dos momentos, en «No. Grupo») y en la **bitácora GFPI-F-147**
+(celda `B27`, «Número de grupo», **centrado**: la plantilla trae esa celda alineada a la izquierda
+mientras todas las de su fila están centradas, y el número quedaba descolgado contra el borde). El **acta GFPI-F-193** no tiene casilla para la ficha, pero
+también la exige: queda guardada con el grupo y de ahí sale en los otros tres.
+
+**Al cambiar de colegio, la ficha se actualiza.** La app distingue una ficha que puso ella al elegir
+un colegio —la reemplaza por la del colegio nuevo— de una que se escribió a mano, que respeta. Antes
+se conservaba siempre, y al pasar de un colegio a otro el documento salía con la ficha del anterior.
 
 ---
 
