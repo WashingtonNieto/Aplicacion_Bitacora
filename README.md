@@ -515,7 +515,9 @@ const CONFIG = {
 ```
 
 - **Colegios** → edita `colegios` (ver la sección anterior).
-- **Otra ficha, instructor o jefe inmediato** → cambia `predeterminados`.
+- **Otra ficha, instructor o jefe inmediato** → cambia `predeterminados`. Ojo: eso solo afecta a
+  los grupos **nuevos**. Los grupos ya guardados en el navegador conservan lo que tenían; para
+  actualizarlos hay que abrirlos, corregir la tarjeta «Instructores» y volver a guardar.
 - **Competencias de tu ficha** → agrégalas al arreglo `competencias` **del grado que corresponda**,
   con el formato `código - NOMBRE`.
 - **Otro calendario** → `anioBase`, `mesBase`, `bitacorasPorMes`, `totalBitacoras` y

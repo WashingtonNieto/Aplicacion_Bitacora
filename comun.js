@@ -111,10 +111,10 @@ const CONFIG = {
     jefeCargo: 'Instructor',
     jefeTelefono: '',
     jefeCorreo: 'wnieto@sena.edu.co',
-    instructorNombre: 'Daniel Alberto Ardila Carrasquilla',
-    instructorDocumento: '',
-    instructorCorreo: 'dardilac@sena.edu.co',
-    instructorTelefono: '',
+    instructorNombre: 'Sandra Cristina Muñoz Castillo',
+    instructorDocumento: '37123131',
+    instructorCorreo: 'scmunoz000001@gmail.com',
+    instructorTelefono: '3186388275',
     alternativa: 'proyectoProductivo'
   },
 
