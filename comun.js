@@ -641,7 +641,66 @@ function pintarInstructores() {
         <span class="msj-error" data-error="firma-${inst.clave}"></span>
       </div>
     </div>`;
-  }).join('');
+  }).join('') + `
+    <div class="acciones">
+      <button type="button" class="btn-sec" id="btnInstructoresATodos">
+        Aplicar estos instructores a todos mis grupos guardados</button>
+    </div>
+    <span id="avisoInstructores" class="msj-aviso"></span>`;
+}
+
+/* Cuando el centro cambia de instructor, la tarjeta solo arregla el grupo que
+   se esté editando: los demás grupos guardados siguen con el anterior, nombre
+   Y FIRMA. Este botón copia los dos instructores de la tarjeta a todos los
+   grupos guardados de una vez.
+
+   Copia también las firmas TAL COMO ESTÉN, incluso si están vacías. Es a
+   propósito: dejar la firma del instructor anterior junto al nombre del nuevo
+   sería un documento falso, y un espacio en blanco para firmar a mano no lo es. */
+const CAMPOS_INSTRUCTORES = [
+  'instructorNombre', 'instructorDocumento', 'instructorCorreo', 'instructorTelefono',
+  'jefeNombre', 'jefeDocumento', 'jefeCargo', 'jefeCorreo', 'jefeTelefono'
+];
+
+function aplicarInstructoresATodos() {
+  const grupos = leerGrupos();
+  const aviso = document.getElementById('avisoInstructores');
+  const decir = t => { if (aviso) aviso.textContent = t; };
+  if (!grupos.length) { decir('No hay grupos guardados todavía.'); return 0; }
+
+  const seguimiento = normalizar(estado.instructorNombre) || '(sin nombre)';
+  const tecnico = normalizar(estado.jefeNombre) || '(sin nombre)';
+  const sinFirma = [];
+  if (!(estado.firmas || {}).instructor) sinFirma.push('la del instructor de seguimiento');
+  if (!(estado.firmas || {}).coformador) sinFirma.push('la del ente co-formador');
+
+  if (!confirm(
+      `¿Aplicar estos instructores a los ${grupos.length} grupos guardados?\n\n` +
+      `  Instructor de seguimiento: ${seguimiento}\n` +
+      `  Instructor técnico: ${tecnico}\n\n` +
+      'Se reemplazan nombre, cédula, correo, teléfono y FIRMA en todos los grupos.' +
+      (sinFirma.length
+        ? `\n\nOJO: falta ${sinFirma.join(' y ')}. Esos grupos quedarán sin firma, para ` +
+          'firmar a mano. Cárgala antes si quieres que vaya dentro del documento.'
+        : ''))) {
+    return 0;
+  }
+
+  grupos.forEach(g => {
+    g.datos = g.datos || {};
+    CAMPOS_INSTRUCTORES.forEach(c => { g.datos[c] = estado[c] ?? ''; });
+    g.datos.firmas = g.datos.firmas || {};
+    ['instructor', 'coformador'].forEach(clave => {
+      const f = (estado.firmas || {})[clave];
+      if (f) g.datos.firmas[clave] = JSON.parse(JSON.stringify(f));
+      else delete g.datos.firmas[clave];
+    });
+    g.actualizado = new Date().toISOString();
+  });
+  try { escribirGrupos(grupos); }
+  catch (e) { decir('No se pudo guardar: ' + e.message); return 0; }
+  decir(`✓ ${grupos.length} ${grupos.length === 1 ? 'grupo actualizado' : 'grupos actualizados'}.`);
+  return grupos.length;
 }
 
 /* Conecta la tarjeta. Cada página la llama una vez, después de definir su
@@ -671,6 +730,7 @@ function conectarInstructores() {
     } catch (e) { marcarError('firma-' + clave, e.message); }
   });
   document.addEventListener('click', ev => {
+    if (ev.target.id === 'btnInstructoresATodos') { aplicarInstructoresATodos(); return; }
     const clave = ev.target.dataset && ev.target.dataset.quitarFirmaInst;
     if (!clave) return;
     delete estado.firmas[clave];
@@ -775,6 +835,6 @@ if (typeof module !== 'undefined' && module.exports) {
                      mesDeSecuencia, periodoDeBitacora, esc, CAMPOS_GRUPO,
                      CLAVE_GRUPOS, TIPO_ARCHIVO_GRUPO, VERSION_ARCHIVO_GRUPO, nuevoGrupo,
                      agregarIntegrante, quitarIntegrante, reindexarFirmasAprendices,
-                     RE_CORREO, RE_DIGITOS, fechaCortaVisible, INSTRUCTORES, esFichaDeColegio, nombrePropio,
+                     RE_CORREO, RE_DIGITOS, fechaCortaVisible, INSTRUCTORES, esFichaDeColegio, nombrePropio, CAMPOS_INSTRUCTORES,
                      FACTORES_TECNICOS, FACTORES_ACTITUDINALES, valoracionVacia };
 }

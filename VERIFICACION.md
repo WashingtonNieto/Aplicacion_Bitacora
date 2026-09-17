@@ -129,7 +129,9 @@ contra los que los aprendices habían llenado a mano:
 | Las partículas van en minúscula (`Juan de la Cruz`) y las siglas se respetan (`SENA-Washington`) | ✅ |
 | El nombre de la entidad y el cargo **no** se tocan | ✅ |
 | Los renglones de lista que sobran se **quitan**, no quedan como una viñeta vacía | ✅ |
-| Los dos instructores (nombre, cédula, correo, teléfono y firma) se capturan una vez y llegan a los tres formatos | ✅ |
+| Los dos instructores (nombre, cédula, correo, teléfono y firma) se capturan una vez y llegan a los cuatro formatos | ✅ |
+| «Aplicar estos instructores a todos mis grupos guardados» actualiza todos los grupos de una vez | ✅ |
+| …y reemplaza también la **firma**: la del instructor anterior no queda junto al nombre del nuevo | ✅ |
 | El equipo se puede armar **desde el acta**, sin grupo previo, y topa en 3 integrantes | ✅ |
 | Ese equipo aparece después en el 023 (3 destinatarios) y en la bitácora (3 aprendices) | ✅ |
 | **Grupal**: los 3 integrantes salen en el personal vinculado y en las conclusiones del acta, y las 3 copias son idénticas | ✅ |

@@ -22,6 +22,15 @@ grupo, listos para los documentos siguientes.
 > El **instructor técnico** es la misma persona que la bitácora y el GFPI-F-023 rotulan «ente
 > co-formador»: se guarda una vez y cada formato le pone su propio rótulo.
 
+**Cuando cambia un instructor**, corregir la tarjeta arregla solo el grupo que se esté editando: los
+demás grupos guardados siguen con el anterior —nombre **y firma**—. Para eso está el botón
+**«Aplicar estos instructores a todos mis grupos guardados»**, al pie de la tarjeta: copia los dos
+instructores, con su firma, a todos los grupos de una vez.
+
+> Copia la firma **tal como esté, incluso vacía**. Es a propósito: dejar la firma del instructor
+> anterior junto al nombre del nuevo sería un documento falso; un espacio en blanco para firmar a
+> mano, no. Si falta alguna firma, el aviso de confirmación lo dice antes de hacer nada.
+
 En los cuatro casos la app **abre la plantilla oficial y escribe dentro de ella**: nunca construye
 un documento nuevo, así que logos, tablas, bordes y textos legales quedan exactamente como los
 publicó el SENA. Y los cuatro comparten el mismo **grupo de trabajo**: los aprendices, el colegio,
