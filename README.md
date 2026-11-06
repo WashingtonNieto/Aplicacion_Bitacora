@@ -440,8 +440,29 @@ cifras del año. Son documentos que se archivan y se consultan años después: �
 adivinar el siglo, y en una carpeta con bitácoras de 2026 y 2027 la diferencia importa.
 
 Vale para los cinco formatos: las fechas de la etapa productiva y del registro en SofiaPlus en el
-GFPI-F-023, las del momento de seguimiento y el renglón de cierre en el Momento 2, las de inicio y
-fin de cada actividad en la bitácora, y el eco que aparece bajo cada campo de fecha.
+GFPI-F-023, las del momento de seguimiento y el renglón de cierre en el Momento 2, las de la
+evaluación y el juicio en el Momento 3, y las de inicio y fin de cada actividad en la bitácora.
+
+**Y también en la pantalla.** El campo `<input type="date">` del navegador se dibuja con el idioma
+**del navegador**, no con el de la página: con Chrome en inglés, el 5 de enero se ve `01/05/2026` y
+el campo vacío dice `mm/dd/yyyy`. En un formato del SENA esa ambigüedad es un error de fecha
+esperando a pasar, y no hay atributo ni CSS que lo cambie.
+
+La app pone **su propia casilla** delante de cada campo de fecha: siempre `dd/mm/aaaa`, con las
+barras puestas mientras se escribe (`3` → `30` → `30/0` → `30/07` → `30/07/2026`) y el teclado
+numérico en el móvil. El `<input type="date">` original no desaparece: queda detrás, invisible,
+guardando el valor en `aaaa-mm-dd` y conservando su `id`, de modo que validaciones, borradores y
+grupos guardados siguen leyendo exactamente lo mismo que antes. El **botón del calendario** a la
+derecha abre el selector del navegador (`showPicker()`), que sigue siendo lo cómodo para elegir un
+día suelto.
+
+> Una fecha que no existe **no se convierte calladamente**: `31/02/2026` deja el campo vacío y se
+> marca en rojo al salir de él, en vez de volverse el 3 de marzo. El aviso espera al final: marcar
+> en rojo mientras alguien va por el primer dígito es regañarlo a mitad de la palabra.
+
+Todo esto vive en **un solo sitio** (`comun.js`, bloque «Campos de fecha en dd/mm/aaaa») y se
+aplica solo a cualquier campo de fecha de cualquier página, incluidos los que aparecen al agregar
+una actividad a la bitácora.
 
 > Los **rótulos impresos** del formato oficial siguen diciendo «(dd/mm/aa)» o «(DD/MM/AA)». No se
 > tocan: son texto del SENA, y la regla de esta aplicación es escribir dentro del formato sin
@@ -631,9 +652,11 @@ desaparecía. La app la vuelve a insertar como imagen en la misma posición
 
 **Fechas en el formulario.** Los campos `<input type="date">` los dibuja el navegador con el
 formato de **su** idioma: en inglés se ven `07/15/2026` y en español `15/07/2026`. La página no
-puede cambiarlo. Por eso, bajo cada campo, la app muestra la fecha en `dd/mm/aaaa` — exactamente como
-va a quedar escrita en el formato oficial. Está en `comun.js` (`ecoDeFechas`) y funciona en los tres
-formularios.
+puede cambiarlo. Por eso la app pone delante su propia casilla, siempre en `dd/mm/aaaa` y con la
+máscara puesta al escribir, y deja el campo nativo detrás, invisible, con el valor en `aaaa-mm-dd`
+y su `id` intacto —así nada más de la aplicación tuvo que cambiar— y accesible desde el botón del
+calendario. Está en `comun.js` (bloque «Campos de fecha en dd/mm/aaaa») y funciona en los cinco
+formularios, incluidos los campos que aparecen al agregar una actividad.
 
 **Fechas en el archivo.** Se escriben como objetos `Date` en UTC con formato `dd/mm/yyyy`. Usar fechas locales
 hace que Excel muestre el día anterior; usar texto hace que dejen de ser fechas (el archivo de

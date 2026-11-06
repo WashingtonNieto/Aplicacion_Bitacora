@@ -148,6 +148,11 @@ contra los que los aprendices habían llenado a mano:
 | El acta exige al menos un correo por integrante | ✅ |
 | «Grupo nuevo» vacía el formulario (aprendices, colegio y firmas) y **conserva los grupos guardados** | ✅ |
 | El menú ofrece los **cinco** formatos, cada uno con su propio color | ✅ |
+| Los campos de fecha se ven en **dd/mm/aaaa** aunque el navegador esté en inglés (las pruebas corren con `locale="en-US"`, que es el caso que fallaba) | ✅ |
+| La máscara pone las barras sola mientras se escribe, y al borrar no queda ninguna suelta | ✅ |
+| Una fecha a medias deja el campo real **vacío**, no con el valor anterior escondido | ✅ |
+| `31/02/2026` se rechaza y se marca, en vez de convertirse en el 3 de marzo | ✅ |
+| El botón del calendario abre el selector del navegador | ✅ |
 | **Momento 2**: los aprendices del grupo aparecen numerados y los 13 factores empiezan en «S» | ✅ |
 | **Momento 2**: cada «S»/«M» cae en la columna exacta de su aprendiz, en las dos tablas | ✅ |
 | **Momento 2**: las filas que sobran de las dos tablas quedan en blanco | ✅ |

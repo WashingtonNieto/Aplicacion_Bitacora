@@ -508,12 +508,20 @@ const RE_CORREO = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const RE_DIGITOS = /^\d{7,12}$/;
 
 /* -------------------------------------------------------------------------
-   ECO DE FECHAS
-   Los campos <input type="date"> los dibuja el navegador con el formato de SU
-   idioma: en inglés se ven como 07/15/2026 y en español como 15/07/2026. La
-   página no puede cambiarlo. Para que no quede duda de qué día se eligió, bajo
-   cada campo se muestra la fecha en dd/mm/aaaa, que es exactamente como va a
-   quedar escrita en el formato oficial.
+   CAMPOS DE FECHA EN dd/mm/aaaa
+
+   El navegador dibuja <input type="date"> con el formato de SU idioma: si
+   Chrome está en inglés, el campo se ve «mm/dd/yyyy» y el 5 de enero aparece
+   como 01/05/2026. La página no puede cambiarlo —no hay atributo ni CSS que
+   lo haga— y en un formato del SENA esa ambigüedad es un error de fecha.
+
+   La solución: delante de cada campo de fecha se pone una casilla de texto
+   propia, siempre en dd/mm/aaaa, con la máscara puesta mientras se escribe.
+   El <input type="date"> original NO desaparece: queda detrás, invisible,
+   conservando su id, su name y su valor en aaaa-mm-dd. Así el resto de la
+   aplicación —validaciones, borradores, grupos guardados— sigue leyendo
+   exactamente lo mismo que antes, y el botón del calendario sigue abriendo el
+   selector del navegador (showPicker), que es cómodo para elegir un día suelto.
    ------------------------------------------------------------------------- */
 function fechaCortaVisible(iso) {
   const f = aFechaUTC(iso);
@@ -523,47 +531,158 @@ function fechaCortaVisible(iso) {
   return `${dd}/${mm}/${f.getUTCFullYear()}`;
 }
 
-let ecoOcupado = false;
-function ecoDeFechas() {
-  if (ecoOcupado) return;
-  ecoOcupado = true;
-  document.querySelectorAll('input[type="date"]').forEach(campo => {
-    let eco = campo.nextElementSibling;
-    if (!eco || !eco.classList.contains('fecha-eco')) {
-      eco = document.createElement('span');
-      eco.className = 'fecha-eco';
-      eco.setAttribute('aria-hidden', 'true');   // el valor ya lo anuncia el propio campo
-      campo.insertAdjacentElement('afterend', eco);
-    }
-    const texto = fechaCortaVisible(campo.value);
-    if (eco.textContent !== texto) eco.textContent = texto;
-  });
-  ecoOcupado = false;
+/* Va poniendo las barras mientras se escribe: 1 → 15 → 15/0 → 15/07/2026.
+   Al borrar no deja una barra colgando, porque se rearma desde los dígitos. */
+function mascaraFecha(texto) {
+  const d = String(texto ?? '').replace(/\D/g, '').slice(0, 8);
+  if (d.length <= 2) return d;
+  if (d.length <= 4) return d.slice(0, 2) + '/' + d.slice(2);
+  return d.slice(0, 2) + '/' + d.slice(2, 4) + '/' + d.slice(4);
 }
 
-/* Se activa sola: al cargar, al escribir y cada vez que un formulario repinta
-   sus listas (actividades, aprendices, integrantes). */
-function activarEcoDeFechas() {
+/* 'dd/mm/aaaa' → 'aaaa-mm-dd'. Devuelve '' si está incompleta o si el día no
+   existe: 31/02/2026 se rechaza, no se convierte calladamente en el 3 de marzo. */
+function isoDesdeVisible(texto) {
+  const m = String(texto ?? '').trim().match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (!m) return '';
+  const dia = Number(m[1]), mes = Number(m[2]), anio = Number(m[3]);
+  const iso = `${anio}-${String(mes).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
+  const f = aFechaUTC(iso);
+  if (!f || f.getUTCDate() !== dia || f.getUTCMonth() + 1 !== mes) return '';
+  return iso;
+}
+
+function envolverCampoFecha(nativo) {
+  if (nativo.dataset.fechaLista) return;
+  nativo.dataset.fechaLista = '1';
+
+  const caja = document.createElement('span');
+  caja.className = 'fecha-caja';
+  nativo.insertAdjacentElement('beforebegin', caja);
+
+  const visible = document.createElement('input');
+  visible.type = 'text';
+  visible.className = 'fecha-visible';
+  visible.inputMode = 'numeric';
+  visible.maxLength = 10;
+  visible.placeholder = 'dd/mm/aaaa';
+  visible.autocomplete = 'off';
+  if (nativo.id) visible.id = nativo.id + '-visible';
+  if (nativo.disabled) visible.disabled = true;
+
+  const boton = document.createElement('button');
+  boton.type = 'button';
+  boton.className = 'fecha-boton';
+  boton.tabIndex = -1;
+  boton.title = 'Abrir el calendario';
+  boton.setAttribute('aria-label', 'Abrir el calendario');
+  // Un calendario dibujado, no el emoji: el emoji sale a todo color y con el
+  // día 17 de julio escrito dentro, que en un campo de fecha despista.
+  boton.innerHTML =
+    '<svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" ' +
+    'stroke-width="1.4" aria-hidden="true">' +
+    '<rect x="1.4" y="2.9" width="13.2" height="11.7" rx="1.6"/>' +
+    '<path d="M1.4 6.3h13.2M5 1.4v2.6M11 1.4v2.6"/></svg>';
+
+  /* La casilla visible va PRIMERO: varias páginas buscan el campo de un error
+     con `.campo.querySelector('input')` para marcarlo en rojo y poner el
+     cursor, y lo que tienen que encontrar es la que se ve. */
+  caja.append(visible, boton, nativo);
+
+  // El rótulo pasa a señalar la casilla visible; el campo nativo se esconde
+  // también del teclado y de los lectores de pantalla.
+  const rotulo = nativo.id ? document.querySelector(`label[for="${nativo.id}"]`) : null;
+  if (rotulo) { rotulo.setAttribute('for', visible.id); visible.setAttribute('aria-describedby', ''); }
+  else if (nativo.getAttribute('aria-label')) visible.setAttribute('aria-label', nativo.getAttribute('aria-label'));
+  nativo.tabIndex = -1;
+  nativo.setAttribute('aria-hidden', 'true');
+
+  /* El valor del campo nativo se escribe desde muchos sitios (`escribirCampos`,
+     cargar un grupo, restaurar el borrador) y asignar `.value` no dispara
+     ningún evento. Para no quedarnos con la casilla visible desactualizada se
+     intercepta la propiedad: cada vez que alguien le pone un valor al nativo,
+     la casilla visible se repinta sola. */
+  const propiedad = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value');
+  Object.defineProperty(nativo, 'value', {
+    configurable: true,
+    get() { return propiedad.get.call(this); },
+    set(v) { propiedad.set.call(this, v); pintarVisible(); }
+  });
+
+  function pintarVisible() {
+    // Mientras se está escribiendo no se le toca el texto a nadie
+    if (document.activeElement === visible) return;
+    const texto = fechaCortaVisible(propiedad.get.call(nativo));
+    if (visible.value !== texto) visible.value = texto;
+    visible.classList.remove('malo');
+  }
+
+  function ponerEnNativo(iso) {
+    if (propiedad.get.call(nativo) === iso) return;
+    propiedad.set.call(nativo, iso);
+    // Los mismos dos eventos que lanza un <input type="date"> de verdad
+    nativo.dispatchEvent(new Event('input', { bubbles: true }));
+    nativo.dispatchEvent(new Event('change', { bubbles: true }));
+  }
+
+  visible.addEventListener('input', () => {
+    visible.value = mascaraFecha(visible.value);
+    visible.classList.remove('malo');
+    ponerEnNativo(isoDesdeVisible(visible.value));
+  });
+
+  /* El aviso de fecha imposible espera a que el campo se deje: marcar en rojo
+     mientras alguien va por «3» sería regañarlo a mitad de la palabra. */
+  visible.addEventListener('blur', () => {
+    const iso = isoDesdeVisible(visible.value);
+    visible.classList.toggle('malo', !!visible.value.trim() && !iso);
+    if (iso) visible.value = fechaCortaVisible(iso);
+  });
+
+  boton.addEventListener('click', () => {
+    try {
+      if (typeof nativo.showPicker === 'function') { nativo.showPicker(); return; }
+    } catch (e) { /* el navegador no deja abrirlo así: se recurre al campo */ }
+    nativo.focus();
+    nativo.click();
+  });
+
+  // Elegir un día en el calendario del navegador repinta la casilla visible
+  nativo.addEventListener('change', pintarVisible);
+  nativo.addEventListener('input', pintarVisible);
+
+  pintarVisible();
+}
+
+function activarCamposDeFecha() {
   const estilo = document.createElement('style');
   estilo.textContent =
-    '.fecha-eco{display:block;min-height:1em;margin-top:3px;font-size:.74rem;' +
-    'color:var(--suave,#5c665e);font-variant-numeric:tabular-nums;letter-spacing:.02em}' +
-    '.fecha-eco:not(:empty)::before{content:"→ ";opacity:.6}';
+    '.fecha-caja{position:relative;display:block}' +
+    '.fecha-caja > .fecha-visible{width:100%;padding-right:38px;' +
+      'font-variant-numeric:tabular-nums;letter-spacing:.02em}' +
+    /* El campo nativo sigue ahí —invisible pero dibujado—, porque showPicker()
+       no funciona sobre un elemento con display:none. */
+    '.fecha-caja > input[type="date"]{position:absolute;left:0;bottom:0;' +
+      'width:1px;height:1px;min-width:0;padding:0;margin:0;border:0;opacity:0;' +
+      'pointer-events:none}' +
+    '.fecha-boton{position:absolute;right:2px;top:50%;transform:translateY(-50%);' +
+      'display:flex;align-items:center;background:none;border:0;padding:6px 9px;' +
+      'line-height:0;cursor:pointer;color:var(--suave,#5c665e);opacity:.7}' +
+    '.fecha-boton:hover{opacity:1;color:var(--verde-osc,#2d8500)}';
   document.head.appendChild(estilo);
 
-  document.addEventListener('input', ecoDeFechas);
-  document.addEventListener('change', ecoDeFechas);
-  new MutationObserver(() => ecoDeFechas())
-    .observe(document.body, { childList: true, subtree: true });
-  ecoDeFechas();
+  const repasar = () => document.querySelectorAll('input[type="date"]').forEach(envolverCampoFecha);
+  // Las listas que se repintan (actividades, aprendices) traen campos nuevos
+  new MutationObserver(repasar).observe(document.body, { childList: true, subtree: true });
+  repasar();
 }
 // La comprobación de `document` va primero: este archivo también se ejecuta en
 // Node cuando corren las pruebas, y ahí no existe.
 if (typeof document !== 'undefined') {
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', activarEcoDeFechas);
+    document.addEventListener('DOMContentLoaded', activarCamposDeFecha);
   } else {
-    activarEcoDeFechas();
+    activarCamposDeFecha();
   }
 }
 
@@ -840,6 +959,6 @@ if (typeof module !== 'undefined' && module.exports) {
                      mesDeSecuencia, periodoDeBitacora, esc, CAMPOS_GRUPO,
                      CLAVE_GRUPOS, TIPO_ARCHIVO_GRUPO, VERSION_ARCHIVO_GRUPO, nuevoGrupo,
                      agregarIntegrante, quitarIntegrante, reindexarFirmasAprendices,
-                     RE_CORREO, RE_DIGITOS, fechaCortaVisible, INSTRUCTORES, esFichaDeColegio, nombrePropio, CAMPOS_INSTRUCTORES,
+                     RE_CORREO, RE_DIGITOS, fechaCortaVisible, mascaraFecha, isoDesdeVisible, INSTRUCTORES, esFichaDeColegio, nombrePropio, CAMPOS_INSTRUCTORES,
                      FACTORES_TECNICOS, FACTORES_ACTITUDINALES, valoracionVacia };
 }
