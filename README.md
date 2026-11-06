@@ -9,6 +9,7 @@ aprendices de Articulación con la Educación Media:
 | 2 | **GFPI-F-193 v3** | Acta de inicio y confidencialidad del proyecto productivo | **Grupal**: el documento lleva a todo el equipo | Una copia por integrante, **idénticas** |
 | 3 | **GFPI-F-147 v05** | Bitácora de seguimiento de etapa productiva | **Grupal**: el documento lleva a todo el equipo | Una copia por integrante, **idénticas** |
 | 4 | **GFPI-F-023 v06 · Momento 2** | Seguimiento de la etapa productiva. **Lo diligencia el instructor** | **Mixto**: el encabezado es del aprendiz que recibe la copia; la tabla de valoración lleva a todo el equipo | Un `.docx` por aprendiz, **cada uno distinto** |
+| 5 | **GFPI-F-023 v06 · Momento 3** | Evaluación de la etapa productiva, al cerrarla. **Lo diligencia el instructor** | **Grupal**: evalúa a todo el equipo en un solo documento, con el juicio de aprobado / no aprobado de cada uno | Una copia por integrante, **idénticas** |
 
 En los formatos grupales el contenido es el mismo para todos y lo único que cambia es el nombre del
 archivo, para que cada integrante entregue el suyo. En el individual, cada documento trae los datos
@@ -31,9 +32,9 @@ instructores, con su firma, a todos los grupos de una vez.
 > anterior junto al nombre del nuevo sería un documento falso; un espacio en blanco para firmar a
 > mano, no. Si falta alguna firma, el aviso de confirmación lo dice antes de hacer nada.
 
-En los cuatro casos la app **abre la plantilla oficial y escribe dentro de ella**: nunca construye
+En los cinco casos la app **abre la plantilla oficial y escribe dentro de ella**: nunca construye
 un documento nuevo, así que logos, tablas, bordes y textos legales quedan exactamente como los
-publicó el SENA. Y los cuatro comparten el mismo **grupo de trabajo**: los aprendices, el colegio,
+publicó el SENA. Y los cinco comparten el mismo **grupo de trabajo**: los aprendices, el colegio,
 el instructor y las firmas se escriben una sola vez.
 
 ---
@@ -42,19 +43,20 @@ el instructor y las firmas se escriben una sola vez.
 
 | Archivo | Para qué sirve |
 |---|---|
-| `index.html` | El menú con los cuatro formatos |
+| `index.html` | El menú con los cinco formatos |
 | `planeacion.html` | Formulario del GFPI-F-023 (Momento 1) |
 | `acta-inicio.html` | Formulario del GFPI-F-193 |
 | `bitacora.html` | Formulario del GFPI-F-147 |
 | `seguimiento.html` | Formulario del GFPI-F-023 **Momento 2** (valoración S/M del instructor) |
-| `comun.js` | **CONFIG** (colegios, grados, competencias, factores del Momento 2) y los grupos guardados. Lo comparten las cuatro páginas: es el único sitio donde hay que editar esos datos |
+| `evaluacion.html` | Formulario del GFPI-F-023 **Momento 3** (evaluación final y juicio de aprobación) |
+| `comun.js` | **CONFIG** (colegios, grados, competencias, factores de los Momentos 2 y 3) y los grupos guardados. Lo comparten las cinco páginas: es el único sitio donde hay que editar esos datos |
 | `docx.js` | Motor que edita los formatos de Word conservando el diseño |
 | `exceljs.min.js` · `fflate.min.js` | Librerías locales, para que funcione **sin internet** |
 | `GFPI-F-147-Bitacora-#_Modelo.xlsx` | Plantillas oficiales. **Deben estar junto a las páginas** |
-| `GFPI-F-023_..._Grado10_Modelo.docx` · `..._Grado11_Modelo.docx` · `..._Momento2_Modelo.docx` · `GFPI-F-193..._Modelo.docx` | |
-| `probar.js` · `probar_seguimiento.js` · `prueba_ui.py` · `prueba_formatos.py` · `prueba_sin_servidor.py` · `verificar.py` · `verificar_seguimiento.py` | Pruebas automáticas |
+| `GFPI-F-023_..._Grado10_Modelo.docx` · `..._Grado11_Modelo.docx` · `..._Momento2_Modelo.docx` · `..._Momento3_Modelo.docx` · `GFPI-F-193..._Modelo.docx` | |
+| `probar.js` · `probar_seguimiento.js` · `probar_evaluacion.js` · `prueba_ui.py` · `prueba_formatos.py` · `prueba_sin_servidor.py` · `verificar.py` · `verificar_seguimiento.py` | Pruebas automáticas |
 | `huella_referencia.py` | Segunda implementación de la huella de contraseña de Word, para contrastar la de `docx.js` |
-| `plantillas-023.js` · `plantillas-023m2.js` · `plantillas-193.js` · `plantillas-147.js` | Las plantillas empaquetadas, para que funcione con doble clic. Las genera `empaquetar_plantillas.py` |
+| `plantillas-023.js` · `plantillas-023m2.js` · `plantillas-023m3.js` · `plantillas-193.js` · `plantillas-147.js` | Las plantillas empaquetadas, para que funcione con doble clic. Las genera `empaquetar_plantillas.py` |
 | `firmas_demo/` | Firmas que usan las pruebas |
 
 ---
@@ -253,6 +255,57 @@ casillas vienen centradas y en negrita y otras alineadas a la izquierda y más p
 cada celda tal cual, la columna de S/M sale desordenada. La app fuerza el mismo formato en las
 trece, y alinea la observación a la izquierda (el formato la trae centrada, y un párrafo largo
 centrado se lee mal). Es la única excepción a la regla de conservar el formato oficial.
+El Momento 3 tiene el mismo problema y la misma corrección.
+
+---
+
+**GFPI-F-023 Momento 3 — Evaluación.** Es el cierre de la etapa productiva y se diligencia **una
+sola vez, al terminarla**. Lo diligencia el instructor, con su propia plantilla
+(`..._Momento3_Modelo.docx`).
+
+A diferencia de los Momentos 1 y 2, este documento **es autónomo**: no trae el apartado
+«Información general», así que no lleva los datos personales del aprendiz en el encabezado y **no
+depende del grado**. Lo que sí trae, y los otros no:
+
+- La **retroalimentación de cada aprendiz** sobre su propia etapa —proceso y desempeño—, en su
+  propia tabla.
+- La **retroalimentación del ente co-formador** y la **del instructor de seguimiento**, una para
+  todo el equipo.
+- El **juicio de evaluación**: «Aprobado ☐  No aprobado ☐», con casillas de verificación de verdad.
+
+**El juicio empieza sin marcar, a propósito.** Las trece valoraciones S/M arrancan en S porque ese
+es el caso normal y se baja lo que haga falta; aprobar o no aprobar una etapa productiva, en
+cambio, es una decisión y no un valor por omisión. Mientras falte el juicio de alguno, la app no
+deja generar y dice de quién se trata; el resumen va contando «2 aprobados, 1 no aprobado ·
+**falta marcar 1**».
+
+> **Cómo se marca la casilla.** En la plantilla, el cuadro `☐` vive en su propio run, en Calibri de
+> 20 puntos. Si se reescribiera el párrafo entero —que es lo que hace el motor con cualquier otro
+> texto— el cuadro saldría del tamaño del texto normal, mucho más pequeño. Por eso aquí se cambia
+> **solo el carácter**, dentro de su run: `☐` pasa a `☒` y conserva fuente y tamaño. Las pruebas
+> lo comprueban leyendo el `w:sz` del run marcado, no solo el texto.
+
+Las copias son **idénticas**: el documento evalúa a todo el equipo a la vez, así que lo único que
+cambia entre copias es el nombre del archivo, para que cada aprendiz conserve la suya. La tabla
+admite **hasta 5 aprendices** y las filas que sobran quedan en blanco, con sus dos casillas vacías
+por si hay que llenarlas a mano.
+
+Los cinco espacios de firma están rotulados «**Nombre y Firma** del aprendiz N», así que la app
+escribe el nombre debajo de la imagen, en el mismo párrafo. Dos detalles que solo se vieron
+renderizando el PDF:
+
+- Esas celdas vienen **justificadas**, y con el nombre debajo los apellidos se repartían de margen
+  a margen —«Barrera     Hernandez»—. Van centradas.
+- Las columnas de aprendiz miden 1 984 twips (poco más de 3 cm): con el tope normal de firma, la
+  imagen se salía de la celda y Word la recortaba. En esta tabla el tope es más estrecho.
+- La celda del instructor de seguimiento trae **cuatro renglones en blanco** y la del ente
+  co-formador uno solo, así que la fila quedaba tan alta que se partía entre dos páginas: la firma
+  en una y su rótulo en la siguiente. Al poner la firma, los tres renglones que sobran se quitan.
+  **Si no hay firma se dejan**, porque son el espacio para firmar a mano.
+
+El bloqueo en solo lectura funciona igual que en el Momento 2, con las mismas advertencias:
+viene marcado por defecto, la contraseña es opcional y no se guarda en ninguna parte, y es un
+sello, no cifrado.
 
 ---
 
@@ -344,7 +397,7 @@ el calendario y las competencias.
 
 ## Los nombres salen como nombre propio
 
-En los **cuatro formatos**, los nombres de persona se escriben con mayúscula inicial, venga el dato
+En los **cinco formatos**, los nombres de persona se escriben con mayúscula inicial, venga el dato
 como venga: `SANTIAGO PINEDA MEJIA` y `santiago pineda mejia` salen los dos como
 **`Santiago Pineda Mejia`**. Así el documento se ve igual aunque cada aprendiz escriba su nombre a
 su manera. Alcanza a los aprendices y a los dos instructores, en el texto de los formatos y también
@@ -365,8 +418,8 @@ No se tocan el nombre de la **entidad** (`COLEGIO TECNICO PALERMO I.E.D` va así
 
 ## La ficha es obligatoria
 
-El **número de grupo (ficha)** no puede faltar en ninguno de los cuatro formularios: sin él los
-documentos no se pueden asociar al grupo en SofiaPlus. Si está vacío, ninguno de los cuatro genera
+El **número de grupo (ficha)** no puede faltar en ninguno de los cinco formularios: sin él los
+documentos no se pueden asociar al grupo en SofiaPlus. Si está vacío, ninguno de los cinco genera
 nada y el error señala el campo.
 
 Va impreso en el **GFPI-F-023** (los dos momentos, en «No. Grupo») y en la **bitácora GFPI-F-147**
@@ -386,7 +439,7 @@ En todos los formatos, las fechas que escribe la app salen como **26/11/2026**, 
 cifras del año. Son documentos que se archivan y se consultan años después: «26/11/26» obliga a
 adivinar el siglo, y en una carpeta con bitácoras de 2026 y 2027 la diferencia importa.
 
-Vale para los cuatro formatos: las fechas de la etapa productiva y del registro en SofiaPlus en el
+Vale para los cinco formatos: las fechas de la etapa productiva y del registro en SofiaPlus en el
 GFPI-F-023, las del momento de seguimiento y el renglón de cierre en el Momento 2, las de inicio y
 fin de cada actividad en la bitácora, y el eco que aparece bajo cada campo de fecha.
 
@@ -473,7 +526,7 @@ La app lo advierte en pantalla justo debajo del botón.
 ### Opción A — publicarla en GitHub Pages (recomendada para los aprendices)
 
 1. Crea un repositorio nuevo en GitHub, por ejemplo `bitacora-gfpi`.
-2. Sube **todos** los archivos a la raíz: las cuatro páginas `.html`, `comun.js`, `docx.js`,
+2. Sube **todos** los archivos a la raíz: las cinco páginas `.html`, `comun.js`, `docx.js`,
    `exceljs.min.js`, `fflate.min.js` y las tres plantillas oficiales.
 3. En el repositorio: **Settings → Pages → Source: Deploy from a branch → Branch: `main` / carpeta `/ (root)`** → *Save*.
 4. A los dos minutos la app queda en `https://TU-USUARIO.github.io/bitacora-gfpi/`.
@@ -545,13 +598,14 @@ const CONFIG = {
 npm install exceljs@4.4.0 fflate
 node probar.js                  # núcleo del Excel y los dos calendarios
 node probar_seguimiento.js      # núcleo del Momento 2: valoraciones, fechas y firmas
+node probar_evaluacion.js       # núcleo del Momento 3: valoraciones, juicio y firmas
 
 pip install playwright openpyxl lxml && playwright install chromium
 python3 prueba_ui.py            # la bitácora en un navegador: diligenciar, firmar y descargar
-python3 prueba_formatos.py      # el menú y los tres formatos de Word
+python3 prueba_formatos.py      # el menú y los cuatro formatos de Word
 python3 verificar.py            # los 11 criterios de aceptación del Excel
 python3 verificar_seguimiento.py  # el Momento 2 celda por celda (necesita probar_seguimiento.js)
-python3 prueba_sin_servidor.py  # los cuatro formatos abiertos con doble clic (file://)
+python3 prueba_sin_servidor.py  # los cinco formatos abiertos con doble clic (file://)
 ```
 
 `prueba_ui.py` debe correr antes que `prueba_formatos.py`: la primera deja el archivo del grupo que

@@ -20,6 +20,12 @@
 
 /* ==== INICIO NUCLEO DOCX ==== */
 
+/* Quita espacios raros. El motor no depende de comun.js, así que lleva el suyo. */
+function normalizarTexto(texto) {
+  if (texto === null || texto === undefined) return '';
+  return String(texto).replace(/\u00a0/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
 /* Escapa lo que va dentro de una etiqueta XML */
 function escaparXml(texto) {
   return String(texto === null || texto === undefined ? '' : texto)
@@ -269,7 +275,47 @@ function escribirImagen(entradas, xml, paraId, firma, indice) {
     const m = original.match(/<w:pPr>[\s\S]*?<\/w:pPr>/);
     if (m) pPr = m[0];
   }
-  const nuevo = cabecera + pPr + xmlDeImagen(rId, cx, cy, 900 + indice, 'Firma') + '</w:p>';
+  /* Varias celdas de firma vienen justificadas (`jc="both"`). Con el nombre
+     escrito debajo, justificar reparte los apellidos de margen a margen
+     —«Barrera   Hernandez»— y se lee fatal. `alinear` lo corrige. */
+  if (firma.alinear) pPr = conAlineacion(pPr, firma.alinear);
+  /* Algunos formatos rotulan el espacio «Nombre y Firma»: ahí la imagen sola no
+     basta. Con `textoDebajo` el nombre va en el MISMO párrafo, bajo la firma,
+     con la fuente que el formato tenga puesta en ese renglón. */
+  let debajo = '';
+  if (normalizarTexto(firma.textoDebajo)) {
+    const rPr = propiedadesDeFuente(original);
+    debajo = `<w:r>${rPr}<w:br/><w:t xml:space="preserve">` +
+             escaparXml(normalizarTexto(firma.textoDebajo)) + '</w:t></w:r>';
+  }
+  const nuevo = cabecera + pPr + xmlDeImagen(rId, cx, cy, 900 + indice, 'Firma') + debajo + '</w:p>';
+  return { xml: xml.slice(0, lim.inicio) + nuevo + xml.slice(lim.fin), ok: true };
+}
+
+/* -------------------------------------------------------------------------
+   CASILLAS DE VERIFICACIÓN
+   El Momento 3 trae «Aprobado □        No aprobado □», y esos cuadros viven en
+   runs propios, en Calibri de 20 puntos. Si se reescribiera el párrafo entero
+   se perderían esas propiedades y los cuadros saldrían del tamaño del texto
+   normal. Por eso aquí se cambia SOLO el carácter, dentro de su run: el cuadro
+   marcado conserva el tamaño y la fuente que le puso el SENA.
+   ------------------------------------------------------------------------- */
+const CASILLA_VACIA = '\u25A1';     // □
+const CASILLA_MARCADA = '\u2612';   // ☒
+
+function marcarCasilla(xml, paraId, cual) {
+  const lim = limitesParrafo(xml, paraId);
+  if (!lim) return { xml, ok: false };
+  const original = xml.slice(lim.inicio, lim.fin);
+  let n = 0, encontrada = false;
+  const nuevo = original.replace(/<w:t[^>]*>[^<]*<\/w:t>/g, etiqueta => {
+    if (!etiqueta.includes(CASILLA_VACIA)) return etiqueta;
+    n++;
+    if (n !== cual) return etiqueta;
+    encontrada = true;
+    return etiqueta.replace(CASILLA_VACIA, CASILLA_MARCADA);
+  });
+  if (!encontrada) return { xml, ok: false };
   return { xml: xml.slice(0, lim.inicio) + nuevo + xml.slice(lim.fin), ok: true };
 }
 
@@ -324,6 +370,15 @@ function borrarParrafo(xml, paraId) {
   const ant = limitesAnterior(xml, lim.inicio);
   const desde = (ant && esSeparador(ant.bloque)) ? ant.ini : lim.inicio;
   return { xml: xml.slice(0, desde) + xml.slice(lim.fin), ok: true };
+}
+
+/* Borra EXACTAMENTE ese párrafo. A diferencia de borrarParrafo no se lleva por
+   delante el renglón en blanco anterior: eso solo tiene sentido en una lista
+   con viñetas, donde el blanco es el separador del elemento. */
+function borrarParrafoExacto(xml, paraId) {
+  const lim = limitesParrafo(xml, paraId);
+  if (!lim) return { xml, ok: false };
+  return { xml: xml.slice(0, lim.inicio) + xml.slice(lim.fin), ok: true };
 }
 
 function esSeparador(parrafoXml) {
@@ -503,12 +558,30 @@ function generarDocx(fflateRef, bufferPlantilla, valores, imagenes, listas, opci
     nuevoXml = r.xml;
   });
 
+  // Párrafos sobrantes a quitar. Va al final, cuando ya se escribieron los
+  // valores y las firmas, para no invalidar las posiciones de los demás.
+  const aBorrar = ((opciones || {}).borrar || []);
+
+  // Casillas a marcar: [{ paraId, cual }] — `cual` es la casilla dentro del
+  // párrafo, empezando en 1 («Aprobado» es la 1, «No aprobado» la 2).
+  ((opciones || {}).casillas || []).forEach(c => {
+    const r = marcarCasilla(nuevoXml, c.paraId, c.cual);
+    if (!r.ok) faltantes.push(c.paraId);
+    nuevoXml = r.xml;
+  });
+
   // Firmas: cada una es { paraId: {datos, ancho, alto} }
   let i = 0;
   Object.keys(imagenes || {}).forEach(paraId => {
     const firma = imagenes[paraId];
     if (!firma || !firma.datos) return;
     const r = escribirImagen(entradas, nuevoXml, paraId, firma, ++i);
+    if (!r.ok) faltantes.push(paraId);
+    nuevoXml = r.xml;
+  });
+
+  aBorrar.forEach(paraId => {
+    const r = borrarParrafoExacto(nuevoXml, paraId);
     if (!r.ok) faltantes.push(paraId);
     nuevoXml = r.xml;
   });
@@ -534,6 +607,8 @@ if (typeof module !== 'undefined' && module.exports) {
                      clonarParrafo, escribirLista, parrafoAnterior, limitesAnterior,
                      borrarParrafo, esSeparador, aNegro,
                      opcionesDeValor, conAlineacion, conNegrita, conTamano,
+                     marcarCasilla, CASILLA_VACIA, CASILLA_MARCADA, normalizarTexto,
+                     borrarParrafoExacto,
                      huellaDeContrasena, xmlDeProteccion, protegerSoloLectura,
                      VUELTAS_PROTECCION, utf16le };
 }

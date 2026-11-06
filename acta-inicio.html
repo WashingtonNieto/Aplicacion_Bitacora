@@ -566,7 +566,7 @@ function cargarBorrador() {
 function validar() {
   const errores = [];
   const err = (c, m) => errores.push({ clave: c, msj: m });
-  // La ficha es obligatoria en los cuatro formatos: sin ella los documentos no
+  // La ficha es obligatoria en los cinco formatos: sin ella los documentos no
   // se pueden asociar al grupo en SofiaPlus.
   if (!normalizar(estado.grupo)) err('grupo', 'Indica el número de ficha.');
   if (!normalizar(estado.nombreProyecto)) err('nombreProyecto', 'Escribe el nombre del proyecto.');

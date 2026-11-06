@@ -125,6 +125,11 @@ const CONFIG = {
   // la fecha fin de la etapa lectiva, y esa la escribe la app.
   plantillaSeguimiento:
     'GFPI-F-023_V06.__Formato_de_Planeación_Seguimiento_y_Evaluación_de_Etapa_Productiva_Momento2_Modelo.docx',
+
+  // GFPI-F-023 Momento 3 (evaluación). Documento autónomo: no trae la
+  // «Información general», así que no depende del grado. Una sola plantilla.
+  plantillaEvaluacion:
+    'GFPI-F-023_V06.__Formato_de_Planeación_Seguimiento_y_Evaluación_de_Etapa_Productiva_Momento3_Modelo.docx',
   ciudadPredeterminada: 'Bogotá'
 };
 
@@ -182,7 +187,7 @@ const PARTICULAS_NOMBRE = ['de', 'del', 'la', 'las', 'los', 'y', 'e',
 
 /* Pasa un nombre a mayúscula inicial: «SANTIAGO PINEDA MEJIA» o
    «santiago pineda mejia» → «Santiago Pineda Mejia». Se aplica a los nombres de
-   PERSONA en los cuatro formatos, para que salgan iguales venga como venga el
+   PERSONA en los cinco formatos, para que salgan iguales venga como venga el
    dato. No se tocan los acentos: si el nombre se escribió sin tilde, sigue sin
    tilde. Tampoco se toca el nombre de las entidades («COLEGIO TECNICO PALERMO
    I.E.D» va así en el formato) ni el cargo. */

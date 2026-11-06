@@ -52,9 +52,10 @@ de su línea, de modo que nunca invade el espacio de otro firmante.
 | `probar.js` | El núcleo de escritura, los calendarios de **los dos grados** (9 casos: quincenal de grado 11, mensual de grado 10, salto de diciembre-enero y cierre de febrero el 28), las 5 firmas y que las 3 copias sean idénticas byte a byte. Extrae el código del propio `bitacora.html`, así que no puede desincronizarse |
 | `prueba_ui.py` | La app en un navegador real: comprueba que **cambiar de grado** rehaga el calendario (grado 10 mensual, febrero cerrando el 28; grado 11 quincenal), valida el formulario, respeta el tope de 3 aprendices, bloquea fechas fuera del período, comprueba que **elegir el colegio llene dirección, NIT y correo** (y que editarlos a mano devuelva la lista a "Otra entidad"), **exige las firmas de los aprendices**, descarga una copia por aprendiz, comprueba que sean idénticas, restaura el borrador tras recargar, verifica que el **grupo quede guardado solo al generar** y que exportarlo, **limpiar todo el almacenamiento** e importarlo devuelva aprendices, colegio y firmas intactos. Sin errores de consola |
 | `verificar.py` | Los 11 criterios de esta tabla, incluida la conversión a PDF para comparar la paginación |
-| `prueba_formatos.py` | El menú y los tres formatos de Word (ver la sección final) |
+| `prueba_formatos.py` | El menú y los cuatro formatos de Word (ver la sección final) |
 | `probar_seguimiento.js` | El núcleo del Momento 2 fuera del navegador: el cálculo de la fecha del seguimiento, el renglón de cierre con la X, la redacción sugerida a partir de las «M» y la generación de un documento por aprendiz |
 | `verificar_seguimiento.py` | El documento del Momento 2 celda por celda: cada S/M en su columna, las filas sobrantes en blanco, las tres firmas, el texto en negro y el bloqueo de solo lectura |
+| `probar_evaluacion.js` | El núcleo del Momento 3 fuera del navegador: las cuatro tablas por aprendiz, la casilla del juicio —que se marca sin perder su tamaño de 20 puntos—, el nombre bajo cada firma, los renglones sobrantes que se quitan y el bloqueo |
 | `huella_referencia.py` | Calcula la huella de contraseña de Word por su cuenta, para contrastar la de `docx.js`. Que dos implementaciones independientes coincidan descarta errores de programación |
 
 ---
@@ -119,17 +120,17 @@ contra los que los aprendices habían llenado a mano:
 | GFPI-F-023: por defecto genera **solo el del aprendiz elegido**, y «Todo el grupo» genera los de todos | ✅ |
 | GFPI-F-023: un aprendiz sin grupo escribe sus datos, elige su colegio y descarga **un solo archivo** | ✅ |
 | Elegir el colegio llena también la **ficha** y el **correo de la entidad**, en la bitácora y en el 023 | ✅ |
-| **La ficha es obligatoria en los cuatro formatos**: sin ella ninguno genera | ✅ |
+| **La ficha es obligatoria en los cinco formatos**: sin ella ninguno genera | ✅ |
 | En la bitácora la ficha queda **centrada** en su celda, como el resto de su fila | ✅ |
 | Al cambiar de colegio, la ficha que puso la app se reemplaza por la del colegio nuevo | ✅ |
 | Una ficha escrita a mano no se pisa al cambiar de colegio | ✅ |
 | El acta pone al **instructor técnico** en la viñeta de «instructor proyecto productivo», una sola vez | ✅ |
-| Los nombres de persona salen como **nombre propio** en los cuatro formatos, aunque se escriban en mayúscula sostenida | ✅ |
+| Los nombres de persona salen como **nombre propio** en los cinco formatos, aunque se escriban en mayúscula sostenida | ✅ |
 | También en el nombre de los archivos generados | ✅ |
 | Las partículas van en minúscula (`Juan de la Cruz`) y las siglas se respetan (`SENA-Washington`) | ✅ |
 | El nombre de la entidad y el cargo **no** se tocan | ✅ |
 | Los renglones de lista que sobran se **quitan**, no quedan como una viñeta vacía | ✅ |
-| Los dos instructores (nombre, cédula, correo, teléfono y firma) se capturan una vez y llegan a los cuatro formatos | ✅ |
+| Los dos instructores (nombre, cédula, correo, teléfono y firma) se capturan una vez y llegan a los cinco formatos | ✅ |
 | «Aplicar estos instructores a todos mis grupos guardados» actualiza todos los grupos de una vez | ✅ |
 | …y reemplaza también la **firma**: la del instructor anterior no queda junto al nombre del nuevo | ✅ |
 | El equipo se puede armar **desde el acta**, sin grupo previo, y topa en 3 integrantes | ✅ |
@@ -146,7 +147,7 @@ contra los que los aprendices habían llenado a mano:
 | El texto que escribe la app queda en **negro**, no en el rojo de los textos de ejemplo | ✅ |
 | El acta exige al menos un correo por integrante | ✅ |
 | «Grupo nuevo» vacía el formulario (aprendices, colegio y firmas) y **conserva los grupos guardados** | ✅ |
-| El menú ofrece los **cuatro** formatos, cada uno con su propio color | ✅ |
+| El menú ofrece los **cinco** formatos, cada uno con su propio color | ✅ |
 | **Momento 2**: los aprendices del grupo aparecen numerados y los 13 factores empiezan en «S» | ✅ |
 | **Momento 2**: cada «S»/«M» cae en la columna exacta de su aprendiz, en las dos tablas | ✅ |
 | **Momento 2**: las filas que sobran de las dos tablas quedan en blanco | ✅ |
@@ -162,6 +163,19 @@ contra los que los aprendices habían llenado a mano:
 | **Momento 2**: la contraseña NO queda escrita ni en el documento ni en el navegador | ✅ |
 | **Momento 2**: la etiqueta de protección respeta el orden que exige el esquema de Word | ✅ |
 | **Momento 2**: sin pedir bloqueo, el documento sigue saliendo editable | ✅ |
+| **Momento 3**: los 13 factores empiezan en «S» y el juicio de evaluación, **sin marcar** | ✅ |
+| **Momento 3**: cada «S»/«M» cae en la columna exacta de su aprendiz, en las dos tablas | ✅ |
+| **Momento 3**: sin el juicio de algún aprendiz no deja generar, y dice de quién se trata | ✅ |
+| **Momento 3**: el juicio marca la casilla elegida y deja la otra vacía | ✅ |
+| **Momento 3**: el cuadro marcado conserva sus 20 puntos (se cambia el carácter, no el párrafo) | ✅ |
+| **Momento 3**: las filas sobrantes quedan con sus dos casillas vacías, para llenarlas a mano | ✅ |
+| **Momento 3**: el resumen cuenta los aprobados, los no aprobados y los que faltan por marcar | ✅ |
+| **Momento 3**: las cinco firmas se insertan con el nombre debajo (la plantilla no trae ninguna) | ✅ |
+| **Momento 3**: ninguna firma se sale de su columna (1 984 twips) | ✅ |
+| **Momento 3**: con firma del instructor se quitan los 3 renglones sobrantes; sin firma, se dejan | ✅ |
+| **Momento 3**: una evaluación virtual sin enlace de grabación queda bloqueada | ✅ |
+| **Momento 3**: las copias son idénticas (el documento evalúa a todo el equipo a la vez) | ✅ |
+| **Momento 3**: el documento sale en solo lectura, con contraseña y sin la contraseña dentro | ✅ |
 
 ---
 
@@ -180,25 +194,26 @@ contra los que los aprendices habían llenado a mano:
 ## Modo «doble clic» (sin servidor web)
 
 `prueba_sin_servidor.py` abre la app con `file://`, como cuando el aprendiz hace doble clic sobre
-`index.html` desde una carpeta o una USB, y genera los tres formatos:
+`index.html` desde una carpeta o una USB, y genera los cinco formatos:
 
 | Comprobación | Resultado |
 |---|---|
 | El menú abre con doble clic | ✅ |
-| Los tres formatos encuentran su plantilla **sin pedirla a mano** | ✅ |
+| Los cinco formatos encuentran su plantilla **sin pedirla a mano** | ✅ |
 | Cambiar de grado en el 023 tampoco la pide | ✅ |
-| El grupo guardado en un formato llega a los otros dos | ✅ |
+| El grupo guardado en un formato llega a los demás | ✅ |
 | GFPI-F-023 generado sin servidor: datos, plantilla de grado 10 y NIT correctos | ✅ |
 | GFPI-F-193 generada sin servidor: conserva las 41 partes del .docx | ✅ |
 | GFPI-F-147 generada sin servidor: 132 fusiones intactas | ✅ |
 | GFPI-F-023 Momento 2 generado sin servidor: valoración, fecha y grado correctos | ✅ |
+| GFPI-F-023 Momento 3 generado sin servidor: valoración, juicio marcado y fechas correctas | ✅ |
 | Sin errores de JavaScript en ninguna página | ✅ |
 | GFPI-F-193: plantilla intacta (4 imágenes, 41 partes) | ✅ |
 | GFPI-F-193: acta, personal vinculado, párrafo de conclusiones y tabla de aprobación | ✅ |
 | GFPI-F-193: las filas sobrantes de la tabla quedan en blanco | ✅ |
 | GFPI-F-193: las copias son idénticas byte a byte | ✅ |
 | Validaciones bloquean la generación (horario, fechas, documentos) | ✅ |
-| Sin errores de consola en ninguna de las cuatro páginas | ✅ |
+| Sin errores de consola en ninguna de las cinco páginas | ✅ |
 
 La prueba del 023 no se limita a «hay texto»: compara contra los 22 valores exactos del documento
 que llenó Danna, `paraId` por `paraId`. Si el mapa se desalineara aunque fuera un párrafo, la

@@ -949,7 +949,7 @@ function validarPaso(paso) {
   }
 
   if (paso === 2) {
-    // La ficha es obligatoria en los cuatro formatos: va impresa en B27 y sin
+    // La ficha es obligatoria en los cinco formatos: va impresa en B27 y sin
     // ella el documento no se puede asociar al grupo en SofiaPlus.
     if (!normalizar(estado.grupo)) err('grupo', 'Indica el número de grupo (ficha).');
     if (!estado.colegio) err('colegio', 'Elige el colegio de la lista.');
