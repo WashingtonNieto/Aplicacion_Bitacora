@@ -300,8 +300,13 @@ function escribirImagen(entradas, xml, paraId, firma, indice) {
    normal. Por eso aquí se cambia SOLO el carácter, dentro de su run: el cuadro
    marcado conserva el tamaño y la fuente que le puso el SENA.
    ------------------------------------------------------------------------- */
-const CASILLA_VACIA = '\u25A1';     // □
-const CASILLA_MARCADA = '\u2612';   // ☒
+const CASILLA_VACIA = '\u25A1';     // □  cuadro vacío
+/* Cuadro NEGRO LLENO (U+25A0), no el cuadro con equis (U+2612): Calibri —la
+   fuente del formato— no trae el de la equis, así que Word lo sustituía por un
+   signo de otra fuente que salía pequeño y flotando sobre el renglón. El negro
+   lleno vive en el mismo bloque Unicode que el vacío que ya trae la plantilla,
+   de modo que lo dibuja la misma fuente, del mismo tamaño y en la misma línea. */
+const CASILLA_MARCADA = '\u25A0';   // ■
 
 function marcarCasilla(xml, paraId, cual) {
   const lim = limitesParrafo(xml, paraId);

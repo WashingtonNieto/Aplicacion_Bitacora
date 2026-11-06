@@ -282,7 +282,7 @@ deja generar y dice de quién se trata; el resumen va contando «2 aprobados, 1 
 > **Cómo se marca la casilla.** En la plantilla, el cuadro `☐` vive en su propio run, en Calibri de
 > 20 puntos. Si se reescribiera el párrafo entero —que es lo que hace el motor con cualquier otro
 > texto— el cuadro saldría del tamaño del texto normal, mucho más pequeño. Por eso aquí se cambia
-> **solo el carácter**, dentro de su run: `☐` pasa a `☒` y conserva fuente y tamaño. Las pruebas
+> **solo el carácter**, dentro de su run: `☐` pasa a `■` y conserva fuente y tamaño. Las pruebas
 > lo comprueban leyendo el `w:sz` del run marcado, no solo el texto.
 
 Las copias son **idénticas**: el documento evalúa a todo el equipo a la vez, así que lo único que
