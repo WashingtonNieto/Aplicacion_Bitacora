@@ -316,6 +316,25 @@ renderizando el PDF:
   en una y su rótulo en la siguiente. Al poner la firma, los tres renglones que sobran se quitan.
   **Si no hay firma se dejan**, porque son el espacio para firmar a mano.
 
+**El formato cabe en dos páginas, y eso hay que defenderlo.** El Momento 3 trae **seis renglones en
+blanco** repartidos por el cuerpo: tres entre la tabla grande y la de firmas, y tres entre las
+firmas y el renglón de cierre. Con ellos, el bloque de firmas se partía y la hoja 3 salía con dos
+rótulos sueltos y nada más. La app los quita todos.
+
+> **Menos uno, y por una razón concreta.** En un `.docx`, dos tablas sin ningún párrafo entre
+> medias **se funden en una sola**, y estas dos no tienen ni el mismo número de columnas. Así que
+> el párrafo que las separa se conserva —pero se deja de **un punto de alto y sin espaciado**, de
+> modo que cumple su papel sin gastar renglón. La prueba comprueba las dos cosas: que el párrafo
+> siga ahí y que no queden dos `</w:tbl><w:tbl>` seguidos.
+
+Tocar el XML a mano tiene este riesgo: el orden de los hijos de `<w:pPr>` y de `<w:rPr>` lo fija el
+esquema de Word y no es negociable —`<w:spacing>` antes que `<w:jc>`, `<w:rPr>` de último dentro de
+`<w:pPr>`, `<w:sz>` después de `<w:color>` y antes de `<w:u>`—. Un documento con las etiquetas
+desordenadas Word **ni lo abre**. Por eso `achicarParrafo()` reemplaza lo que ya hay en su sitio en
+vez de añadir al principio, y la prueba del núcleo verifica que el XML siga cuadrando (etiquetas
+abiertas y cerradas, y ningún `<w:sz>` fuera de orden) antes de mirar el contenido. El primer
+intento sí se desordenó, y lo que lo delató fue que LibreOffice se negó a abrir el archivo.
+
 El bloqueo en solo lectura funciona igual que en el Momento 2, con las mismas advertencias:
 viene marcado por defecto, la contraseña es opcional y no se guarda en ninguna parte, y es un
 sello, no cifrado.

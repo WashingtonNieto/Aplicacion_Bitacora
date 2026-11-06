@@ -400,6 +400,24 @@ const ALTO_MAX_FIRMA_APRENDIZ  = 420000;
    si no hay firma se dejan, porque son el espacio para firmar a mano. */
 const SOBRANTES_FIRMA_INSTRUCTOR = ['598C2D73', '4CB1C6F9', '747E6192'];
 
+/* Renglones en blanco del cuerpo del formato. El Momento 3 trae tres entre la
+   tabla grande y la de firmas, y otros tres entre las firmas y el renglón de
+   cierre: seis líneas que no dicen nada y que empujan las firmas y el cierre a
+   una página de más. Se quitan siempre.
+
+   De los tres primeros se deja UNO a propósito: en un .docx, dos tablas sin
+   ningún párrafo entre medias se funden en una sola, y estas dos tienen
+   distinto número de columnas. Ese párrafo que queda es el único separador. */
+const SOBRANTES_CUERPO = [
+  '56799930', '20EDDAA9',                  // antes de la tabla de firmas (queda 3A913249)
+  '5A2054EC', '255ADD04', '41B10931',      // entre las firmas y el renglón de cierre
+  '4BDE9CD0'                               // el último del documento, después del cierre
+];
+
+/* El separador que hay que conservar entre las dos tablas: no se borra, pero
+   se deja de un punto de alto, así que no se nota y no gasta renglón. */
+const SEPARADOR_TABLAS = '3A913249';
+
 /* dd/mm/aaaa, con el año completo: el documento se archiva y se consulta años
    después, y «26/11/26» obliga a adivinar el siglo. */
 function fechaDdMmAaaa(iso) {
@@ -556,9 +574,13 @@ function firmasDeEvaluacion(datos) {
   return imagenes;
 }
 
-/* Los renglones en blanco que sobran tras poner la firma del instructor. */
+/* Los renglones en blanco que hay que quitar: los del cuerpo, siempre, y los
+   de la celda del instructor solo si lleva firma (si no, son el espacio para
+   firmar a mano). */
 function sobrantesDeEvaluacion(datos) {
-  return (datos.firmas || {}).instructor ? SOBRANTES_FIRMA_INSTRUCTOR.slice() : [];
+  const fuera = SOBRANTES_CUERPO.slice();
+  if ((datos.firmas || {}).instructor) fuera.push(...SOBRANTES_FIRMA_INSTRUCTOR);
+  return fuera;
 }
 
 /* Quiénes reciben documento: todos los del equipo con nombre. */
@@ -1066,7 +1088,8 @@ $('#btnGenerar').addEventListener('click', async () => {
       null,
       { proteccion,
         casillas: casillasDeJuicio(equipo, estado.evaluaciones),
-        borrar: sobrantesDeEvaluacion(estado) });
+        borrar: sobrantesDeEvaluacion(estado),
+        achicar: [SEPARADOR_TABLAS] });
     if (faltantes.length) {
       msj.textContent = 'La plantilla no coincide con la esperada: no se encontraron ' +
                         faltantes.length + ' campos. Verifica que sea el modelo oficial del Momento 3.';

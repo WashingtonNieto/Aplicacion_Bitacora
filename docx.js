@@ -404,6 +404,63 @@ function borrarParrafoExacto(xml, paraId) {
   return { xml: xml.slice(0, lim.inicio) + xml.slice(lim.fin), ok: true };
 }
 
+/* Deja un párrafo en blanco ocupando casi nada: un punto de alto y sin
+   separación arriba ni abajo. Sirve para los renglones que NO se pueden
+   borrar pero tampoco deben gastar espacio —el que separa dos tablas, por
+   ejemplo, que si falta hace que Word las funda en una sola—.
+
+   El orden de los hijos de <w:pPr> y de <w:rPr> lo fija el esquema de Word y
+   no es negociable: <w:spacing> va antes que <w:jc>, <w:rPr> va de último
+   dentro de <w:pPr>, y <w:sz> va después de <w:color> y antes de <w:u>. Por
+   eso aquí se REEMPLAZA lo que ya haya en su sitio en vez de añadir al
+   principio: un documento con las etiquetas desordenadas Word ni lo abre. */
+function achicarParrafo(xml, paraId, medios) {
+  const lim = limitesParrafo(xml, paraId);
+  if (!lim) return { xml, ok: false };
+  const original = xml.slice(lim.inicio, lim.fin);     // incluye su </w:p>
+  const alto = String(medios || 2);
+  const sz = `<w:sz w:val="${alto}"/><w:szCs w:val="${alto}"/>`;
+  const espaciado = '<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>';
+
+  // <w:p .../> sin nada dentro: se le crea el pPr completo
+  if (lim.autocerrado) {
+    return { xml: xml.slice(0, lim.inicio) +
+                  original.replace(/\/>\s*$/, `><w:pPr>${espaciado}<w:rPr>${sz}</w:rPr></w:pPr></w:p>`) +
+                  xml.slice(lim.fin), ok: true };
+  }
+
+  const mPPr = original.match(/<w:pPr>[\s\S]*?<\/w:pPr>/);
+  const viejo = mPPr ? mPPr[0] : '';
+  const dentro = viejo ? viejo.slice('<w:pPr>'.length, -'</w:pPr>'.length) : '';
+  const j = dentro.indexOf('<w:rPr>');
+  let antes = j >= 0 ? dentro.slice(0, j) : dentro;
+  let rPr = j >= 0 ? dentro.slice(j) : '';
+
+  // El espaciado del párrafo, nunca el de la marca (que vive dentro de rPr)
+  antes = /<w:spacing\b[^>]*\/>/.test(antes)
+    ? antes.replace(/<w:spacing\b[^>]*\/>/, espaciado)
+    : espaciado + antes;
+
+  if (!rPr) {
+    rPr = `<w:rPr>${sz}</w:rPr>`;
+  } else if (/<w:sz\b[^>]*\/>/.test(rPr)) {
+    rPr = rPr.replace(/<w:sz\b[^>]*\/>/, `<w:sz w:val="${alto}"/>`)
+             .replace(/<w:szCs\b[^>]*\/>/, `<w:szCs w:val="${alto}"/>`);
+    if (!/<w:szCs\b/.test(rPr)) rPr = rPr.replace(/<w:sz\b[^>]*\/>/, m => m + `<w:szCs w:val="${alto}"/>`);
+  } else {
+    // No lo traía: va justo antes del primero que el esquema pone detrás de él
+    const detras = rPr.search(/<w:(u|highlight|lang|rtl|em|rStyle)\b/);
+    rPr = detras > 0 ? rPr.slice(0, detras) + sz + rPr.slice(detras)
+                     : rPr.replace('</w:rPr>', sz + '</w:rPr>');
+  }
+
+  const nuevoPPr = `<w:pPr>${antes}${rPr}</w:pPr>`;
+  const cuerpo = viejo
+    ? original.replace(viejo, nuevoPPr)
+    : original.replace(/^(<w:p(?:\s[^>]*)?>)/, '$1' + nuevoPPr);
+  return { xml: xml.slice(0, lim.inicio) + cuerpo + xml.slice(lim.fin), ok: true };
+}
+
 function esSeparador(parrafoXml) {
   return !!parrafoXml && !/<w:t[ >]/.test(parrafoXml) && !parrafoXml.includes('<w:numPr>');
 }
@@ -609,6 +666,13 @@ function generarDocx(fflateRef, bufferPlantilla, valores, imagenes, listas, opci
     nuevoXml = r.xml;
   });
 
+  // Párrafos que no se pueden quitar pero sí encoger hasta casi desaparecer
+  ((opciones || {}).achicar || []).forEach(paraId => {
+    const r = achicarParrafo(nuevoXml, paraId);
+    if (!r.ok) faltantes.push(paraId);
+    nuevoXml = r.xml;
+  });
+
   entradas['word/document.xml'] = codificador.encode(nuevoXml);
 
   const proteccion = (opciones || {}).proteccion;
@@ -632,7 +696,7 @@ if (typeof module !== 'undefined' && module.exports) {
                      opcionesDeValor, conAlineacion, conNegrita, conTamano,
                      marcarCasilla, CASILLA_VACIA, CASILLA_MARCADA, FUENTE_CASILLA,
                      conFuente, normalizarTexto,
-                     borrarParrafoExacto,
+                     borrarParrafoExacto, achicarParrafo,
                      huellaDeContrasena, xmlDeProteccion, protegerSoloLectura,
                      VUELTAS_PROTECCION, utf16le };
 }

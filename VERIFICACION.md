@@ -181,6 +181,9 @@ contra los que los aprendices habían llenado a mano:
 | **Momento 3**: las cinco firmas se insertan con el nombre debajo (la plantilla no trae ninguna) | ✅ |
 | **Momento 3**: ninguna firma se sale de su columna (1 984 twips) | ✅ |
 | **Momento 3**: con firma del instructor se quitan los 3 renglones sobrantes; sin firma, se dejan | ✅ |
+| **Momento 3**: se quitan los 6 renglones en blanco del cuerpo, y el documento cabe en **2 páginas** con las firmas y el cierre juntos (se cuenta convirtiéndolo a PDF) | ✅ |
+| **Momento 3**: el párrafo que separa las dos tablas se conserva —de 1 punto— para que Word no las funda en una sola | ✅ |
+| **Momento 3**: el XML sigue cuadrando tras la cirugía (etiquetas abiertas = cerradas, ningún `<w:sz>` fuera del orden del esquema) | ✅ |
 | **Momento 3**: una evaluación virtual sin enlace de grabación queda bloqueada | ✅ |
 | **Momento 3**: las copias son idénticas (el documento evalúa a todo el equipo a la vez) | ✅ |
 | **Momento 3**: el documento sale en solo lectura, con contraseña y sin la contraseña dentro | ✅ |
