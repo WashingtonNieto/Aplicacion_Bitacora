@@ -175,6 +175,7 @@ contra los que los aprendices habían llenado a mano:
 | **Momento 3**: sin el juicio de algún aprendiz no deja generar, y dice de quién se trata | ✅ |
 | **Momento 3**: el juicio marca la casilla elegida y deja la otra vacía | ✅ |
 | **Momento 3**: el cuadro marcado conserva sus 20 puntos (se cambia el carácter, no el párrafo) | ✅ |
+| **Momento 3**: el cuadro marcado lleva `w:rFonts` con Arial —Calibri no trae el cuadro negro y Word sacaba un garabato— y el vacío se queda en Calibri | ✅ |
 | **Momento 3**: las filas sobrantes quedan con sus dos casillas vacías, para llenarlas a mano | ✅ |
 | **Momento 3**: el resumen cuenta los aprobados, los no aprobados y los que faltan por marcar | ✅ |
 | **Momento 3**: las cinco firmas se insertan con el nombre debajo (la plantilla no trae ninguna) | ✅ |

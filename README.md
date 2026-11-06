@@ -283,11 +283,20 @@ cambio, es una decisión y no un valor por omisión. Mientras falte el juicio de
 deja generar y dice de quién se trata; el resumen va contando «2 aprobados, 1 no aprobado ·
 **falta marcar 1**».
 
-> **Cómo se marca la casilla.** En la plantilla, el cuadro `☐` vive en su propio run, en Calibri de
-> 20 puntos. Si se reescribiera el párrafo entero —que es lo que hace el motor con cualquier otro
-> texto— el cuadro saldría del tamaño del texto normal, mucho más pequeño. Por eso aquí se cambia
-> **solo el carácter**, dentro de su run: `☐` pasa a `■` y conserva fuente y tamaño. Las pruebas
-> lo comprueban leyendo el `w:sz` del run marcado, no solo el texto.
+> **Cómo se marca la casilla, y por qué cuesta.** En la plantilla, el cuadro `☐` vive en su propio
+> run, en Calibri de 20 puntos. Dos cosas hay que respetar a la vez:
+>
+> 1. **No reescribir el párrafo.** Es lo que el motor hace con cualquier otro texto, pero aquí
+>    perdería el `w:sz` de 20 puntos y el cuadro saldría del tamaño de la letra normal. Se cambia
+>    **solo el carácter**, dentro de su run.
+> 2. **Nombrar la fuente.** Calibri trae el cuadro vacío pero **no el negro lleno** —no cubre WGL4
+>    entero—, así que Word se lo buscaba por su cuenta en otra fuente y sacaba un garabato en su
+>    lugar: una «≈» flotando sobre el renglón, o una «n» suelta. Al run marcado se le pone
+>    `<w:rFonts>` con **Arial**, que sí lo trae y está en cualquier Windows. Tamaño, negrita y
+>    color no se tocan, y el cuadro **vacío se queda en Calibri**, tal como lo publicó el SENA.
+>
+> Las pruebas comprueban las dos cosas en el XML —`w:sz` y `w:rFonts`—, no solo que el texto tenga
+> un cuadrito: el primer intento pasaba la prueba de texto y se veía mal en Word.
 
 Las copias son **idénticas**: el documento evalúa a todo el equipo a la vez, así que lo único que
 cambia entre copias es el nombre del archivo, para que cada aprendiz conserve la suya. La tabla

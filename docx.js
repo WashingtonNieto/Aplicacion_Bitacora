@@ -301,24 +301,42 @@ function escribirImagen(entradas, xml, paraId, firma, indice) {
    marcado conserva el tamaño y la fuente que le puso el SENA.
    ------------------------------------------------------------------------- */
 const CASILLA_VACIA = '\u25A1';     // □  cuadro vacío
-/* Cuadro NEGRO LLENO (U+25A0), no el cuadro con equis (U+2612): Calibri —la
-   fuente del formato— no trae el de la equis, así que Word lo sustituía por un
-   signo de otra fuente que salía pequeño y flotando sobre el renglón. El negro
-   lleno vive en el mismo bloque Unicode que el vacío que ya trae la plantilla,
-   de modo que lo dibuja la misma fuente, del mismo tamaño y en la misma línea. */
-const CASILLA_MARCADA = '\u25A0';   // ■
+const CASILLA_MARCADA = '\u25A0';   // ■  cuadro negro lleno
+
+/* La casilla marcada CAMBIA DE FUENTE, y esa es la parte que importa.
+   El formato escribe los cuadros en Calibri, pero Calibri solo trae el cuadro
+   vacío: no tiene el negro lleno (ni el de la equis). Cuando Word se topa con
+   un carácter que la fuente no tiene, lo busca por su cuenta en otra, y ahí es
+   donde salían los garabatos —una «≈» flotando, o una «n» suelta— en vez del
+   cuadro. Arial sí lo trae (cubre WGL4 entero, Calibri no) y está en cualquier
+   Windows, así que al nombrarla de forma explícita Word ya no tiene que
+   adivinar. El tamaño, la negrita y el color del renglón no se tocan: la
+   casilla marcada queda del mismo porte que la vacía de al lado. */
+const FUENTE_CASILLA = 'Arial';
+
+/* Pone —o cambia— la fuente de un run. <w:rFonts> va de primero dentro de
+   <w:rPr>, que es lo que exige el esquema de Word. */
+function conFuente(runXml, fuente) {
+  const rFonts = `<w:rFonts w:ascii="${fuente}" w:hAnsi="${fuente}" w:cs="${fuente}"/>`;
+  if (/<w:rFonts\b[^>]*\/>/.test(runXml)) return runXml.replace(/<w:rFonts\b[^>]*\/>/, rFonts);
+  if (runXml.includes('<w:rPr>')) return runXml.replace('<w:rPr>', '<w:rPr>' + rFonts);
+  return runXml.replace(/^(<w:r(?:\s[^>]*)?>)/, `$1<w:rPr>${rFonts}</w:rPr>`);
+}
 
 function marcarCasilla(xml, paraId, cual) {
   const lim = limitesParrafo(xml, paraId);
   if (!lim) return { xml, ok: false };
   const original = xml.slice(lim.inicio, lim.fin);
   let n = 0, encontrada = false;
-  const nuevo = original.replace(/<w:t[^>]*>[^<]*<\/w:t>/g, etiqueta => {
-    if (!etiqueta.includes(CASILLA_VACIA)) return etiqueta;
+  /* Se trabaja sobre el run entero —no solo sobre su texto— porque además de
+     cambiar el carácter hay que nombrarle la fuente. Todo lo demás del run se
+     queda como está: tamaño, negrita, color e idioma. */
+  const nuevo = original.replace(/<w:r(?:\s[^>]*)?>[\s\S]*?<\/w:r>/g, run => {
+    if (!run.includes(CASILLA_VACIA)) return run;
     n++;
-    if (n !== cual) return etiqueta;
+    if (n !== cual) return run;
     encontrada = true;
-    return etiqueta.replace(CASILLA_VACIA, CASILLA_MARCADA);
+    return conFuente(run.replace(CASILLA_VACIA, CASILLA_MARCADA), FUENTE_CASILLA);
   });
   if (!encontrada) return { xml, ok: false };
   return { xml: xml.slice(0, lim.inicio) + nuevo + xml.slice(lim.fin), ok: true };
@@ -612,7 +630,8 @@ if (typeof module !== 'undefined' && module.exports) {
                      clonarParrafo, escribirLista, parrafoAnterior, limitesAnterior,
                      borrarParrafo, esSeparador, aNegro,
                      opcionesDeValor, conAlineacion, conNegrita, conTamano,
-                     marcarCasilla, CASILLA_VACIA, CASILLA_MARCADA, normalizarTexto,
+                     marcarCasilla, CASILLA_VACIA, CASILLA_MARCADA, FUENTE_CASILLA,
+                     conFuente, normalizarTexto,
                      borrarParrafoExacto,
                      huellaDeContrasena, xmlDeProteccion, protegerSoloLectura,
                      VUELTAS_PROTECCION, utf16le };
