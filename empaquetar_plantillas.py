@@ -30,6 +30,11 @@ PAQUETES = {
     "plantillas-023m2.js": [
         "GFPI-F-023_V06.__Formato_de_Planeación_Seguimiento_y_Evaluación_de_Etapa_Productiva_Momento2_Modelo.docx",
     ],
+    # El Momento 3 es un documento autónomo: solo trae su propia sección, sin
+    # la «Información general», así que no depende del grado. Una sola plantilla.
+    "plantillas-023m3.js": [
+        "GFPI-F-023_V06.__Formato_de_Planeación_Seguimiento_y_Evaluación_de_Etapa_Productiva_Momento3_Modelo.docx",
+    ],
     "plantillas-193.js": [
         "GFPI-F-193Formato_acta_de_inicio_y_confidencialidad_del_proyecto_productivo_V3_NombreApellidosAprendiz_Modelo.docx",
     ],
