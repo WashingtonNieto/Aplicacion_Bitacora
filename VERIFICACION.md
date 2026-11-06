@@ -148,6 +148,8 @@ contra los que los aprendices habían llenado a mano:
 | El acta exige al menos un correo por integrante | ✅ |
 | «Grupo nuevo» vacía el formulario (aprendices, colegio y firmas) y **conserva los grupos guardados** | ✅ |
 | El menú ofrece los **cinco** formatos, cada uno con su propio color | ✅ |
+| Cambiar de instructor y pulsar «Aplicar a todos» corrige los grupos guardados **y los formularios a medio llenar** de las otras páginas | ✅ |
+| Al abrir otro formato, el instructor ya sale corregido (el borrador no resucita al anterior) | ✅ |
 | Los campos de fecha se ven en **dd/mm/aaaa** aunque el navegador esté en inglés (las pruebas corren con `locale="en-US"`, que es el caso que fallaba) | ✅ |
 | La máscara pone las barras sola mientras se escribe, y al borrar no queda ninguna suelta | ✅ |
 | Una fecha a medias deja el campo real **vacío**, no con el valor anterior escondido | ✅ |

@@ -786,11 +786,65 @@ const CAMPOS_INSTRUCTORES = [
   'jefeNombre', 'jefeDocumento', 'jefeCargo', 'jefeCorreo', 'jefeTelefono'
 ];
 
+/* Copia los instructores de `estado` en un objeto de datos cualquiera —el de un
+   grupo guardado o el de un borrador—, firmas incluidas. */
+function volcarInstructoresEn(datos) {
+  CAMPOS_INSTRUCTORES.forEach(c => { datos[c] = estado[c] ?? ''; });
+  datos.firmas = datos.firmas || {};
+  ['instructor', 'coformador'].forEach(clave => {
+    const f = (estado.firmas || {})[clave];
+    // La firma se copia TAL COMO ESTÉ, incluso vacía: dejar la del instructor
+    // anterior junto al nombre del nuevo sería un documento falso.
+    if (f) datos.firmas[clave] = JSON.parse(JSON.stringify(f));
+    else delete datos.firmas[clave];
+  });
+}
+
+/* Cada página guarda aparte su propio borrador —lo que se estaba escribiendo— y
+   al abrirla el borrador MANDA sobre el grupo guardado. Si solo se arreglaran
+   los grupos, el instructor viejo reaparecería al entrar a los otros formatos.
+   Por eso se repasan también todos los borradores que haya en el navegador. */
+function aplicarInstructoresABorradores() {
+  let tocados = 0;
+  let claves = [];
+  try { claves = Object.keys(localStorage); } catch (e) { return 0; }
+  claves.filter(k => k.includes('borrador')).forEach(clave => {
+    let b;
+    try { b = JSON.parse(localStorage.getItem(clave) || 'null'); }
+    catch (e) { return; }                       // borrador corrupto: se deja
+    if (!b || typeof b !== 'object') return;
+    // Solo los borradores que de verdad llevan instructores
+    if (!CAMPOS_INSTRUCTORES.some(c => c in b)) return;
+    volcarInstructoresEn(b);
+    try { localStorage.setItem(clave, JSON.stringify(b)); tocados++; }
+    catch (e) { /* sin espacio: el grupo guardado sigue bien */ }
+  });
+  return tocados;
+}
+
+/* ¿Hay algún borrador con instructores? Sirve para no decir «no hay nada que
+   hacer» cuando todavía no se ha guardado ningún grupo pero sí hay formularios
+   a medio llenar. */
+function aplicarInstructoresABorradoresHay() {
+  let claves = [];
+  try { claves = Object.keys(localStorage); } catch (e) { return false; }
+  return claves.filter(k => k.includes('borrador')).some(clave => {
+    try {
+      const b = JSON.parse(localStorage.getItem(clave) || 'null');
+      return !!b && typeof b === 'object' && CAMPOS_INSTRUCTORES.some(c => c in b);
+    } catch (e) { return false; }
+  });
+}
+
 function aplicarInstructoresATodos() {
   const grupos = leerGrupos();
   const aviso = document.getElementById('avisoInstructores');
   const decir = t => { if (aviso) aviso.textContent = t; };
-  if (!grupos.length) { decir('No hay grupos guardados todavía.'); return 0; }
+
+  if (!grupos.length && !aplicarInstructoresABorradoresHay()) {
+    decir('No hay grupos guardados ni formularios a medio llenar todavía.');
+    return 0;
+  }
 
   const seguimiento = normalizar(estado.instructorNombre) || '(sin nombre)';
   const tecnico = normalizar(estado.jefeNombre) || '(sin nombre)';
@@ -798,11 +852,15 @@ function aplicarInstructoresATodos() {
   if (!(estado.firmas || {}).instructor) sinFirma.push('la del instructor de seguimiento');
   if (!(estado.firmas || {}).coformador) sinFirma.push('la del ente co-formador');
 
+  const dondeVa = grupos.length
+    ? `a los ${grupos.length} grupos guardados`
+    : 'a los formularios a medio llenar';
   if (!confirm(
-      `¿Aplicar estos instructores a los ${grupos.length} grupos guardados?\n\n` +
+      `¿Aplicar estos instructores ${dondeVa}?\n\n` +
       `  Instructor de seguimiento: ${seguimiento}\n` +
       `  Instructor técnico: ${tecnico}\n\n` +
-      'Se reemplazan nombre, cédula, correo, teléfono y FIRMA en todos los grupos.' +
+      'Se reemplazan nombre, cédula, correo, teléfono y FIRMA en todos los grupos\n' +
+      'y en lo que esté a medio escribir en los cinco formatos.' +
       (sinFirma.length
         ? `\n\nOJO: falta ${sinFirma.join(' y ')}. Esos grupos quedarán sin firma, para ` +
           'firmar a mano. Cárgala antes si quieres que vaya dentro del documento.'
@@ -812,18 +870,15 @@ function aplicarInstructoresATodos() {
 
   grupos.forEach(g => {
     g.datos = g.datos || {};
-    CAMPOS_INSTRUCTORES.forEach(c => { g.datos[c] = estado[c] ?? ''; });
-    g.datos.firmas = g.datos.firmas || {};
-    ['instructor', 'coformador'].forEach(clave => {
-      const f = (estado.firmas || {})[clave];
-      if (f) g.datos.firmas[clave] = JSON.parse(JSON.stringify(f));
-      else delete g.datos.firmas[clave];
-    });
+    volcarInstructoresEn(g.datos);
     g.actualizado = new Date().toISOString();
   });
   try { escribirGrupos(grupos); }
   catch (e) { decir('No se pudo guardar: ' + e.message); return 0; }
-  decir(`✓ ${grupos.length} ${grupos.length === 1 ? 'grupo actualizado' : 'grupos actualizados'}.`);
+
+  const borradores = aplicarInstructoresABorradores();
+  decir(`✓ ${grupos.length} ${grupos.length === 1 ? 'grupo actualizado' : 'grupos actualizados'}` +
+        (borradores ? `, y ${borradores} ${borradores === 1 ? 'formulario' : 'formularios'} a medio llenar.` : '.'));
   return grupos.length;
 }
 

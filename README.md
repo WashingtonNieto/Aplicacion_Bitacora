@@ -28,6 +28,10 @@ demás grupos guardados siguen con el anterior —nombre **y firma**—. Para es
 **«Aplicar estos instructores a todos mis grupos guardados»**, al pie de la tarjeta: copia los dos
 instructores, con su firma, a todos los grupos de una vez.
 
+> También corrige **lo que esté a medio llenar en los cinco formatos**. Cada página guarda aparte
+> su propio borrador, y al abrirla el borrador manda sobre el grupo guardado: si solo se arreglaran
+> los grupos, el instructor anterior reaparecería al entrar al siguiente formato.
+
 > Copia la firma **tal como esté, incluso vacía**. Es a propósito: dejar la firma del instructor
 > anterior junto al nombre del nuevo sería un documento falso; un espacio en blanco para firmar a
 > mano, no. Si falta alguna firma, el aviso de confirmación lo dice antes de hacer nada.
