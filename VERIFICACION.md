@@ -171,6 +171,7 @@ contra los que los aprendices habían llenado a mano:
 | **Momento 2**: la etiqueta de protección respeta el orden que exige el esquema de Word | ✅ |
 | **Momento 2**: sin pedir bloqueo, el documento sigue saliendo editable | ✅ |
 | **Momento 3**: los 13 factores empiezan en «S» y el juicio de evaluación, **sin marcar** | ✅ |
+| **Momento 3**: no pide observaciones —ni campo ni botón de sugerencia— y esa columna del formato se entrega en blanco | ✅ |
 | **Momento 3**: cada «S»/«M» cae en la columna exacta de su aprendiz, en las dos tablas | ✅ |
 | **Momento 3**: sin el juicio de algún aprendiz no deja generar, y dice de quién se trata | ✅ |
 | **Momento 3**: el juicio marca la casilla elegida y deja la otra vacía | ✅ |

@@ -468,7 +468,7 @@ function rotuloFila(indice, aprendiz) {
 /* La plantilla no es coherente consigo misma: unas casillas de valoración
    vienen centradas y en negrita y otras a la izquierda y más pequeñas, así que
    respetando cada celda tal cual la columna de «S»/«M» sale desordenada. Se
-   fuerza el mismo formato en las trece. Los textos largos —observaciones y
+   fuerza el mismo formato en las trece. Los textos largos —las
    retroalimentaciones— van a la izquierda: centrados se leen mal. */
 const FORMATO_VALORACION = { alinear: 'center', negrita: true, tamano: 18 };
 const FORMATO_TEXTO = { alinear: 'left' };
@@ -477,7 +477,11 @@ const FORMATO_TEXTO = { alinear: 'left' };
    que es el caso normal, pero el juicio empieza SIN marcar: aprobar o no
    aprobar la etapa productiva es una decisión, no un valor por omisión. */
 function evaluacionVacia() {
-  const v = valoracionVacia();           // los 13 factores en «S» + observaciones
+  const v = valoracionVacia();           // los 13 factores en «S»
+  /* El Momento 3 no pide observaciones: la columna del formato se deja en
+     blanco para escribirla a mano. La valoración compartida con el Momento 2
+     sí las trae, así que aquí se quita la clave en lugar de arrastrarla. */
+  delete v.observaciones;
   v.retroProceso = '';
   v.retroDesempeno = '';
   v.juicio = '';
@@ -502,7 +506,9 @@ function filasDeEvaluacion(equipo, evaluaciones) {
     const act = FILAS_ACTITUDINALES_EV[i];
     celdas[act[0]] = rotulo;
     FACTORES_ACTITUDINALES.forEach(([clave], k) => { celdas[act[k + 1]] = marca(v[clave] === 'M' ? 'M' : 'S'); });
-    celdas[act[FACTORES_ACTITUDINALES.length + 1]] = parrafo(v.observaciones);
+    /* La última columna —«Observaciones / Compromisos de mejora»— no se toca:
+       el formulario ya no la pide y se entrega en blanco, para escribirla a
+       mano si hace falta. */
 
     const ret = FILAS_RETRO_EV[i];
     celdas[ret[0]] = rotulo;
@@ -597,22 +603,6 @@ function enumerar(lista) {
   return lista.slice(0, -1).join(', ') + ' y ' + lista[lista.length - 1];
 }
 
-/* Primera frase de la observación, armada con los factores marcados «M». El
-   resto —la evidencia, el compromiso— lo escribe el instructor. */
-function redaccionSugerida(v) {
-  const val = v || evaluacionVacia();
-  const tec = FACTORES_TECNICOS.filter(([c]) => val[c] === 'M').map(([, r]) => r.toLowerCase());
-  const act = FACTORES_ACTITUDINALES.filter(([c]) => val[c] === 'M').map(([, r]) => r.toLowerCase());
-  if (!tec.length && !act.length) {
-    return 'Culmina su etapa productiva con valoración satisfactoria (S) en todos los factores ' +
-           'técnicos y actitudinales. Se destaca por ';
-  }
-  const partes = [];
-  if (tec.length) partes.push(`${tec.length === 1 ? 'el factor técnico' : 'los factores técnicos'} de ${enumerar(tec)}`);
-  if (act.length) partes.push(`${act.length === 1 ? 'el factor actitudinal' : 'los factores actitudinales'} de ${enumerar(act)}`);
-  return `Culmina su etapa productiva con valoración por mejorar (M) en ${partes.join(' y en ')}. ` +
-         `Al cierre de la etapa, `;
-}
 /* ==== FIN NUCLEO EVALUACION ==== */
 
 
@@ -752,13 +742,6 @@ function pintarEvaluaciones() {
       <div class="factores">${fila(FACTORES_TECNICOS)}</div>
       <div class="grupo-factores">Factores actitudinales y comportamentales</div>
       <div class="factores">${fila(FACTORES_ACTITUDINALES)}</div>
-      <div class="campo" style="margin-top:14px">
-        <label for="obs-${indice}">Observaciones</label>
-        <textarea id="obs-${indice}" data-obs="${indice}">${esc(v.observaciones)}</textarea>
-        <button type="button" class="btn-liga" data-sugerir="${indice}"
-          style="align-self:flex-start">Sugerir redacción a partir de las «M»</button>
-        <span class="msj-error" data-error="obs-${indice}"></span>
-      </div>
       <div class="grupo-factores" style="margin-top:16px">Retroalimentación del aprendiz</div>
       <p class="pista" style="margin:0 0 8px">Lo que escribe el aprendiz sobre su propia etapa
         productiva. Puede quedar en blanco y escribirse a mano.</p>
@@ -897,7 +880,6 @@ function validar() {
   quienes.forEach(({ aprendiz, indice }) => {
     const v = evaluacionDe(indice);
     const quien = normalizar(aprendiz.nombre);
-    if (!normalizar(v.observaciones)) err('obs-' + indice, `Escribe la observación de ${quien}.`);
     if (v.juicio !== 'aprobado' && v.juicio !== 'noAprobado')
       err('juicio-' + indice, `Marca el juicio de evaluación de ${quien}: aprobado o no aprobado.`);
     if (!estado.firmas['aprendiz' + indice])
@@ -922,12 +904,6 @@ document.addEventListener('input', ev => {
   if (t.id === 'claveBloqueo') {          // no se guarda: solo vive en memoria
     claveBloqueo = t.value;
     marcarError('claveBloqueo', '');
-    return;
-  }
-  if (t.dataset.obs !== undefined) {
-    evaluacionDe(Number(t.dataset.obs)).observaciones = t.value;
-    marcarError('obs-' + t.dataset.obs, '');
-    guardarBorrador();
     return;
   }
   if (t.dataset.retroProceso !== undefined) {
@@ -1008,17 +984,6 @@ document.addEventListener('click', ev => {
   if (q !== undefined) {
     delete estado.firmas[q]; pintarFirmas(); pintarResumen(); guardarBorrador();
     return;
-  }
-  const s = ev.target.dataset.sugerir;
-  if (s !== undefined) {
-    const caja = $('#obs-' + s);
-    const v = evaluacionDe(Number(s));
-    v.observaciones = redaccionSugerida(v);
-    caja.value = v.observaciones;
-    caja.focus();
-    caja.setSelectionRange(caja.value.length, caja.value.length);
-    marcarError('obs-' + s, '');
-    guardarBorrador();
   }
 });
 

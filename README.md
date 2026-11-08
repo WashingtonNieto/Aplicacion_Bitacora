@@ -259,7 +259,7 @@ casillas vienen centradas y en negrita y otras alineadas a la izquierda y más p
 cada celda tal cual, la columna de S/M sale desordenada. La app fuerza el mismo formato en las
 trece, y alinea la observación a la izquierda (el formato la trae centrada, y un párrafo largo
 centrado se lee mal). Es la única excepción a la regla de conservar el formato oficial.
-El Momento 3 tiene el mismo problema y la misma corrección.
+El Momento 3 tiene el mismo problema y la misma corrección, aplicada a sus retroalimentaciones.
 
 ---
 
@@ -276,6 +276,11 @@ depende del grado**. Lo que sí trae, y los otros no:
 - La **retroalimentación del ente co-formador** y la **del instructor de seguimiento**, una para
   todo el equipo.
 - El **juicio de evaluación**: «Aprobado ☐  No aprobado ☐», con casillas de verificación de verdad.
+
+Y una cosa que el Momento 2 sí pide y este **no**: la **observación por aprendiz**. La columna
+«Observaciones / Compromisos de mejora» existe en el formato, pero el formulario no la pide y el
+documento se entrega con esa columna **en blanco**, para escribirla a mano si hace falta. Al cierre
+de la etapa, lo que hay que decir de cada aprendiz ya va en las tres retroalimentaciones.
 
 **El juicio empieza sin marcar, a propósito.** Las trece valoraciones S/M arrancan en S porque ese
 es el caso normal y se baja lo que haga falta; aprobar o no aprobar una etapa productiva, en
