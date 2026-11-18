@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Momento 3 — Evaluación GFPI-F-023 · Etapa productiva</title>
+<title>Evaluación GFPI-F-023 · Etapa productiva</title>
 <script src="comun.js"></script>
 <script src="fflate.min.js"></script>
 <script src="docx.js"></script>
@@ -100,8 +100,9 @@
 
 <header>
   <a class="volver" href="index.html">← Menú de formatos</a>
-  <h1>Momento 3 — Evaluación de la Etapa Productiva</h1>
-  <p>Formato GFPI-F-023 v06 · Se diligencia una sola vez, al finalizar la etapa · Articulación con la Educación Media · SENA</p>
+  <a class="volver" id="otroMomento" href="evaluacion.html" style="margin-left:18px"></a>
+  <h1 id="tituloMomento">Evaluación de la Etapa Productiva</h1>
+  <p>Formato GFPI-F-023 v06 · Articulación con la Educación Media · SENA</p>
 </header>
 
 <main>
@@ -134,7 +135,7 @@
 
   <section class="tarjeta">
     <h2>Datos de la evaluación</h2>
-    <p class="sub">La cabecera del Momento 3. Se refiere a toda la etapa productiva, no a una visita.</p>
+    <p class="sub">La cabecera del formato. Se refiere a toda la etapa productiva, no a una visita.</p>
     <div class="rejilla">
       <div class="campo"><label for="grado">Grado escolar</label>
         <select id="grado"></select></div>
@@ -155,10 +156,11 @@
         </select></div>
       <div class="campo"><label for="ciudad">Ciudad de diligenciamiento</label>
         <input type="text" id="ciudad"></div>
-      <div class="campo"><label for="fechaDiligenciamiento">Fecha de diligenciamiento</label>
-        <input type="date" id="fechaDiligenciamiento">
-        <span class="msj-error" data-error="fechaDiligenciamiento"></span></div>
-      <div class="campo ancho" id="campoEnlace"><label for="enlaceGrabacion">Enlace de grabación del Momento 3
+      <div class="campo"><label for="fechaElaboracion">Fecha de elaboración
+          <span class="pista">(la que va en el renglón de cierre)</span></label>
+        <input type="date" id="fechaElaboracion">
+        <span class="msj-error" data-error="fechaElaboracion"></span></div>
+      <div class="campo ancho" id="campoEnlace"><label for="enlaceGrabacion">Enlace de grabación de la evaluación
           <span class="pista">(solo si la evaluación fue virtual)</span></label>
         <input type="text" id="enlaceGrabacion" placeholder="https://…">
         <span class="msj-error" data-error="enlaceGrabacion"></span></div>
@@ -205,7 +207,7 @@
 
   <section class="tarjeta">
     <h2>Colegio e instructores</h2>
-    <p class="sub">El Momento 3 no trae el apartado «Información general», así que estos datos no se
+    <p class="sub">Este formato no trae el apartado «Información general», así que estos datos no se
       imprimen en el documento; se piden porque la ficha es obligatoria en todos los formatos y
       porque de aquí salen los nombres de las firmas.</p>
     <div class="rejilla">
@@ -229,13 +231,13 @@
     </div>
 
     <h2 style="margin-top:26px">Instructores</h2>
-    <p class="sub">Se guardan con el grupo: quedan puestos en los cinco formatos.</p>
+    <p class="sub">Se guardan con el grupo: quedan puestos en todos los formatos.</p>
     <div id="tarjetaInstructores"></div>
   </section>
 
   <section class="tarjeta">
     <h2>Firmas</h2>
-    <p class="sub">La plantilla del Momento 3 viene <strong>sin ninguna firma</strong>. Debajo de cada
+    <p class="sub">La plantilla viene <strong>sin ninguna firma</strong>. Debajo de cada
       una la app escribe el nombre, porque el formato rotula ese espacio como
       «Nombre y Firma». Si ya cargaste las firmas en otro formato, aparecen puestas.</p>
     <div id="listaFirmas"></div>
@@ -273,7 +275,7 @@
 
   <section class="tarjeta">
     <h2>Generar los formatos</h2>
-    <p class="sub">El Momento 3 evalúa a todo el equipo en un solo documento, así que las copias son
+    <p class="sub">El formato evalúa a todo el equipo en un solo documento, así que las copias son
       <strong>idénticas</strong>: sale una por aprendiz, con su nombre en el archivo, para que cada
       uno conserve la suya.</p>
     <div id="resumen"></div>
@@ -315,6 +317,28 @@
    ========================================================================= */
 
 /* ==== INICIO NUCLEO EVALUACION ==== */
+
+/* El mismo formato se diligencia en dos momentos: el 3 y el 4. La plantilla
+   oficial es la misma —el SENA publicó una sola— y entre un documento y otro
+   solo cambian tres cosas: el número del título, el del rótulo del enlace de
+   grabación y el del renglón de cierre. Por eso no hay dos páginas casi
+   iguales, que habría que arreglar dos veces cada vez que algo falla: hay una
+   sola, y el momento entra por la dirección (evaluacion.html?momento=4). */
+const MOMENTOS = {
+  3: { numero: 3, reemplazos: [] },
+  4: { numero: 4, reemplazos: [
+         // El título va en letra clara sobre fondo oscuro: solo se cambia el
+         // número, sin tocar el formato (ver reemplazarEnParrafo en docx.js).
+         { paraId: '69CC3813', buscar: ' 3 - ', poner: ' 4 - ' },
+         { paraId: '0A580541', buscar: 'momento 3', poner: 'momento 4' }
+       ] }
+};
+const MOMENTO_PREDETERMINADO = 3;
+
+function momentoPedido(direccion) {
+  const n = Number(new URLSearchParams(direccion || '').get('momento'));
+  return MOMENTOS[n] ? n : MOMENTO_PREDETERMINADO;
+}
 
 const MAPA_EVALUACION = {
   // — Cabecera —
@@ -428,11 +452,11 @@ function fechaDdMmAaaa(iso) {
   return `${dd}/${mm}/${f.getUTCFullYear()}`;
 }
 
-function nombreArchivoEvaluacion(nombreAprendiz, grado) {
+function nombreArchivoEvaluacion(nombreAprendiz, grado, momento) {
   const limpio = nombrePropio(nombreAprendiz).replace(/[\\/:*?"<>|]/g, '').replace(/\s+/g, ' ').trim();
   const g = CONFIG.grados[grado] || CONFIG.grados[CONFIG.gradoPredeterminado];
   return `GFPI-F-023_V06.__Formato_de_Planeación_Seguimiento_y_Evaluación_de_Etapa_Productiva_` +
-         `Momento3_${g.etiquetaArchivo}_${limpio || 'Aprendiz'}.docx`;
+         `Momento${momento || MOMENTO_PREDETERMINADO}_${g.etiquetaArchivo}_${limpio || 'Aprendiz'}.docx`;
 }
 
 /* Los campos vacíos NO se escriben: la plantilla ya trae valores propios en
@@ -447,15 +471,17 @@ function soloConValor(valores) {
   return limpio;
 }
 
-/* El renglón final: «El momento 3 – Evaluación se llevó a cabo en la ciudad
+/* El renglón final: «El momento N – Evaluación se llevó a cabo en la ciudad
    ____ con fecha de diligenciamiento: __/__/____ de forma presencial ___ o
-   virtual ___», con la X donde corresponda. */
-function textoCiudadFecha(datos) {
+   virtual ___», con la X donde corresponda. La fecha que va aquí es la que el
+   formulario llama «fecha de elaboración»: es la única del formato que se
+   escribe suelta, y es el día en que se elabora el documento. */
+function textoCiudadFecha(datos, momento) {
   const ciudad = normalizar(datos.ciudad);
-  const fecha = fechaDdMmAaaa(datos.fechaDiligenciamiento);
+  const fecha = fechaDdMmAaaa(datos.fechaElaboracion);
   if (!ciudad && !fecha) return '';
   const presencial = normalizar(datos.modalidadEvaluacion).toLowerCase() !== 'virtual';
-  return `El momento 3 – Evaluación se llevó a cabo en la ciudad ${ciudad || '____________'} ` +
+  return `El momento ${momento || MOMENTO_PREDETERMINADO} – Evaluación se llevó a cabo en la ciudad ${ciudad || '____________'} ` +
          `con fecha de diligenciamiento: ${fecha || '___/___/____'} ` +
          `de forma presencial ${presencial ? 'X' : '___'} o virtual ${presencial ? '___' : 'X'}`;
 }
@@ -537,7 +563,7 @@ function casillasDeJuicio(equipo, evaluaciones) {
 
 /* Todos los valores del documento. Son los mismos en las copias de todos los
    aprendices: el Momento 3 evalúa al equipo completo en un solo formato. */
-function valoresDeEvaluacion(datos) {
+function valoresDeEvaluacion(datos, momento) {
   const M = MAPA_EVALUACION;
   const equipo = (datos.aprendices || []).filter(a => normalizar(a.nombre));
   const parrafo = texto => Object.assign({ texto: normalizar(texto) }, FORMATO_TEXTO);
@@ -551,7 +577,7 @@ function valoresDeEvaluacion(datos) {
     [M.coformadorDesempeno]: parrafo(datos.coformadorDesempeno),
     [M.instructorProceso]: parrafo(datos.instructorProceso),
     [M.instructorDesempeno]: parrafo(datos.instructorDesempeno),
-    [M.ciudadFecha]: textoCiudadFecha(datos)
+    [M.ciudadFecha]: textoCiudadFecha(datos, momento)
   }, filasDeEvaluacion(equipo, datos.evaluaciones)));
 }
 
@@ -609,7 +635,10 @@ function enumerar(lista) {
 /* =========================================================================
    INTERFAZ
    ========================================================================= */
-const CLAVE_BORRADOR = 'evaluacion-gfpi-f023-m3-borrador';
+/* Cada momento guarda su propio borrador: se puede tener el 3 terminado y el
+   4 a medio llenar sin que uno pise al otro. */
+const MOMENTO = momentoPedido(location.search);
+const CLAVE_BORRADOR = `evaluacion-gfpi-f023-m${MOMENTO}-borrador`;
 const $ = s => document.querySelector(s);
 let bufferPlantilla = null;
 
@@ -617,7 +646,7 @@ let estado = {
   grupoGuardado: '', grado: CONFIG.gradoPredeterminado,
   fechaInicioEP: '', fechaFinEP: '', numeroVisitas: '',
   modalidadEvaluacion: 'Presencial', enlaceGrabacion: '',
-  ciudad: CONFIG.ciudadPredeterminada, fechaDiligenciamiento: '',
+  ciudad: CONFIG.ciudadPredeterminada, fechaElaboracion: '',
   coformadorProceso: '', coformadorDesempeno: '',
   instructorProceso: '', instructorDesempeno: '',
   bloquear: true,
@@ -634,7 +663,7 @@ CAMPOS_GRUPO.forEach(c => { if (estado[c] === undefined) estado[c] = CONFIG.pred
 
 const CAMPOS_PAGINA = ['grado', 'colegio', 'grupo', 'entidad', 'direccionEntidad', 'nit',
   'correoEntidad', 'fechaInicioEP', 'fechaFinEP', 'numeroVisitas',
-  'modalidadEvaluacion', 'enlaceGrabacion', 'ciudad', 'fechaDiligenciamiento',
+  'modalidadEvaluacion', 'enlaceGrabacion', 'ciudad', 'fechaElaboracion',
   'coformadorProceso', 'coformadorDesempeno', 'instructorProceso', 'instructorDesempeno'];
 
 function leerCampos() {
@@ -810,7 +839,7 @@ function pintarResumen() {
     filas.map(([k, v]) => `<tr><th>${k}</th><td>${v}</td></tr>`).join('') + '</table>';
   $('#nombresPrevios').innerHTML = quienes.length
     ? quienes.map(({ aprendiz }) =>
-        `<li>${esc(nombreArchivoEvaluacion(aprendiz.nombre, estado.grado))}</li>`).join('')
+        `<li>${esc(nombreArchivoEvaluacion(aprendiz.nombre, estado.grado, MOMENTO))}</li>`).join('')
     : '<li>—</li>';
 
   // Las firmas de los instructores no bloquean: pueden firmarse en papel.
@@ -864,10 +893,10 @@ function validar() {
   if (!estado.fechaFinEP) err('fechaFinEP', 'Indica la fecha de fin de la ejecución de la etapa productiva.');
   if (estado.fechaInicioEP && estado.fechaFinEP && estado.fechaFinEP < estado.fechaInicioEP)
     err('fechaFinEP', 'La fecha de fin no puede ser anterior a la de inicio.');
-  if (!estado.fechaDiligenciamiento) err('fechaDiligenciamiento', 'Indica la fecha de diligenciamiento.');
-  if (estado.fechaDiligenciamiento && estado.fechaInicioEP &&
-      estado.fechaDiligenciamiento < estado.fechaInicioEP)
-    err('fechaDiligenciamiento', 'La evaluación no puede ser anterior al inicio de la etapa productiva.');
+  if (!estado.fechaElaboracion) err('fechaElaboracion', 'Indica la fecha de elaboración.');
+  if (estado.fechaElaboracion && estado.fechaInicioEP &&
+      estado.fechaElaboracion < estado.fechaInicioEP)
+    err('fechaElaboracion', 'La evaluación no puede ser anterior al inicio de la etapa productiva.');
   const visitas = Number(estado.numeroVisitas);
   if (!normalizar(estado.numeroVisitas)) err('numeroVisitas', 'Indica cuántas visitas se realizaron.');
   else if (!Number.isInteger(visitas) || visitas < 1)
@@ -1048,21 +1077,22 @@ $('#btnGenerar').addEventListener('click', async () => {
        descarga tantas veces como aprendices haya, cada una con su nombre. */
     const equipo = quienes.map(x => x.aprendiz);
     const { datos, faltantes } = generarDocx(fflate, bufferPlantilla,
-      valoresDeEvaluacion(estado),
+      valoresDeEvaluacion(estado, MOMENTO),
       firmasDeEvaluacion(estado),
       null,
       { proteccion,
+        reemplazos: MOMENTOS[MOMENTO].reemplazos,
         casillas: casillasDeJuicio(equipo, estado.evaluaciones),
         borrar: sobrantesDeEvaluacion(estado),
         achicar: [SEPARADOR_TABLAS] });
     if (faltantes.length) {
       msj.textContent = 'La plantilla no coincide con la esperada: no se encontraron ' +
-                        faltantes.length + ' campos. Verifica que sea el modelo oficial del Momento 3.';
+                        faltantes.length + ' campos. Verifica que sea el modelo oficial de la evaluación.';
       return;
     }
 
     for (let i = 0; i < quienes.length; i++) {
-      descargar(datos, nombreArchivoEvaluacion(quienes[i].aprendiz.nombre, estado.grado),
+      descargar(datos, nombreArchivoEvaluacion(quienes[i].aprendiz.nombre, estado.grado, MOMENTO),
         'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
       if (i < quienes.length - 1) await new Promise(r => setTimeout(r, 600));
     }
@@ -1079,7 +1109,19 @@ $('#btnGenerar').addEventListener('click', async () => {
   }
 });
 
+/* El número del momento en todo lo que se ve: la pestaña, el encabezado y el
+   enlace para pasar de un momento al otro sin volver al menú. */
+function pintarMomento() {
+  document.title = `Momento ${MOMENTO} — Evaluación GFPI-F-023 · Etapa productiva`;
+  $('#tituloMomento').textContent = `Momento ${MOMENTO} — Evaluación de la Etapa Productiva`;
+  const otro = MOMENTO === 3 ? 4 : 3;
+  $('#otroMomento').textContent = `Ir al Momento ${otro}`;
+  $('#otroMomento').href = otro === MOMENTO_PREDETERMINADO
+    ? 'evaluacion.html' : `evaluacion.html?momento=${otro}`;
+}
+
 (function iniciar() {
+  pintarMomento();
   cargarBorrador();
   $('#topeFilas').textContent = MAX_FILAS_EVALUACION;
   pintarSelectorGrado();

@@ -10,6 +10,7 @@ aprendices de Articulación con la Educación Media:
 | 3 | **GFPI-F-147 v05** | Bitácora de seguimiento de etapa productiva | **Grupal**: el documento lleva a todo el equipo | Una copia por integrante, **idénticas** |
 | 4 | **GFPI-F-023 v06 · Momento 2** | Seguimiento de la etapa productiva. **Lo diligencia el instructor** | **Mixto**: el encabezado es del aprendiz que recibe la copia; la tabla de valoración lleva a todo el equipo | Un `.docx` por aprendiz, **cada uno distinto** |
 | 5 | **GFPI-F-023 v06 · Momento 3** | Evaluación de la etapa productiva, al cerrarla. **Lo diligencia el instructor** | **Grupal**: evalúa a todo el equipo en un solo documento, con el juicio de aprobado / no aprobado de cada uno | Una copia por integrante, **idénticas** |
+| 6 | **GFPI-F-023 v06 · Momento 4** | El mismo formato de evaluación, diligenciado una segunda vez | Igual que el Momento 3: cambia el número del momento y la fecha de elaboración | Una copia por integrante, **idénticas** |
 
 En los formatos grupales el contenido es el mismo para todos y lo único que cambia es el nombre del
 archivo, para que cada integrante entregue el suyo. En el individual, cada documento trae los datos
@@ -47,12 +48,12 @@ el instructor y las firmas se escriben una sola vez.
 
 | Archivo | Para qué sirve |
 |---|---|
-| `index.html` | El menú con los cinco formatos |
+| `index.html` | El menú con los seis formatos |
 | `planeacion.html` | Formulario del GFPI-F-023 (Momento 1) |
 | `acta-inicio.html` | Formulario del GFPI-F-193 |
 | `bitacora.html` | Formulario del GFPI-F-147 |
 | `seguimiento.html` | Formulario del GFPI-F-023 **Momento 2** (valoración S/M del instructor) |
-| `evaluacion.html` | Formulario del GFPI-F-023 **Momento 3** (evaluación final y juicio de aprobación) |
+| `evaluacion.html` | Formulario del GFPI-F-023 **Momentos 3 y 4** (evaluación final y juicio de aprobación). El momento entra por la dirección: `evaluacion.html?momento=4` |
 | `comun.js` | **CONFIG** (colegios, grados, competencias, factores de los Momentos 2 y 3) y los grupos guardados. Lo comparten las cinco páginas: es el único sitio donde hay que editar esos datos |
 | `docx.js` | Motor que edita los formatos de Word conservando el diseño |
 | `exceljs.min.js` · `fflate.min.js` | Librerías locales, para que funcione **sin internet** |
@@ -344,6 +345,31 @@ El bloqueo en solo lectura funciona igual que en el Momento 2, con las mismas ad
 viene marcado por defecto, la contraseña es opcional y no se guarda en ninguna parte, y es un
 sello, no cifrado.
 
+
+**El Momento 4 es el mismo formato, otra vez.** El SENA publicó **una sola plantilla** para la
+evaluación, y entre un documento del Momento 3 y uno del Momento 4 solo cambian tres cosas: el
+número del título, el del rótulo «Enlace de grabación del momento N» y el del renglón de cierre.
+Por eso **no hay dos páginas casi iguales** —que habría que arreglar dos veces cada vez que algo
+falla, y en este formato ya van unas cuantas—: hay una sola, y el momento entra por la dirección
+(`evaluacion.html?momento=4`). En el menú sí son dos tarjetas, y cada momento **guarda su propio
+borrador**, así que se puede tener el 3 terminado y el 4 a medio llenar sin que uno pise al otro.
+
+> **El número del título no se puede reescribir, solo retocar.** Ese renglón va en letra clara
+> sobre un fondo oscuro, y el color lo hereda de un estilo. Si se reconstruyera el párrafo —que es
+> lo que el motor hace con cualquier otro texto— saldría **negro sobre negro, invisible**. Por eso
+> `reemplazarEnParrafo()` cambia solo la palabra dentro de su `<w:t>` y deja los ocho runs del
+> título intactos. La prueba lo comprueba: que el título conserve sus runs y que **no** se le haya
+> puesto `<w:color w:val="000000"/>`.
+
+La **fecha de elaboración** es la que va en el renglón de cierre («…con fecha de diligenciamiento:
+__/__/____»). Es la única fecha suelta que el formato tiene, y es la que distingue un Momento 4 de
+un Momento 3 además del número.
+
+> Lo que **no** se toca es el subtítulo del formato: «(Este ítem solo se diligencia una vez, al
+> finalizar la etapa productiva)». Es texto del SENA y la regla de esta aplicación es escribir
+> dentro del formato sin alterar lo que el SENA publicó. Si el centro autoriza cambiarlo para los
+> documentos del Momento 4, se hace en un momento.
+
 ---
 
 ## Grupos guardados (no volver a escribir lo mismo)
@@ -393,7 +419,7 @@ de competencias:
 | Frecuencia | Dos por mes (quincenal) | Una por mes |
 | Períodos | Impar: del 1 al 15 · Par: del 15 al 30 | Del 1 al 30 del mes |
 | Bitácora 1 | Mayo de 2026 | Agosto de 2026 |
-| Total | 12 (mayo a octubre de 2026) | 12 (agosto de 2026 a septiembre de 2027) |
+| Total | **13** (mayo a noviembre de 2026) | 12 (agosto de 2026 a septiembre de 2027) |
 
 Dos reglas del calendario escolar colombiano están incorporadas:
 
@@ -402,6 +428,29 @@ Dos reglas del calendario escolar colombiano están incorporadas:
   noviembre de 2026 y la 5 es **febrero de 2027**.
 - **El cierre nunca pasa del último día real del mes.** Febrero cierra el 28 (o el 29 en año
   bisiesto), no el 30.
+
+Y una excepción escrita a mano:
+
+- **La bitácora 13 del grado 11 cubre noviembre entero**, del 1 al 30, aunque el grado sea
+  quincenal: es la que cierra el año. La regla automática habría dado «del 1 al 15 de noviembre».
+  Va en `periodosEspeciales`, que manda sobre el cálculo:
+
+  ```js
+  '11': {
+    bitacorasPorMes: 2, totalBitacoras: 13,
+    periodosEspeciales: {
+      13: { inicio: '2026-11-01', fin: '2026-11-30' }
+    }
+  }
+  ```
+
+  Para añadir otra excepción basta con escribirla ahí, con su número y sus dos fechas. La pista
+  que aparece bajo el selector las nombra sola.
+
+**La fecha de entrega es libre, dentro del período.** El calendario del navegador se abre acotado
+a los días del período (`min` y `max`), y si se escribe una fecha de fuera **se avisa pero no se
+bloquea**: una bitácora entregada tarde sigue siendo una bitácora, y quien la diligencia sabrá por
+qué puso esa fecha.
 
 Para ajustar cualquiera de las dos cosas, edita `CONFIG.grados` en el `comun.js`:
 
@@ -413,6 +462,7 @@ grados: {
     bitacorasPorMes: 1,             // 1 = mensual · 2 = quincenal
     totalBitacoras: 12,
     mesesExcluidos: [12, 1],        // vacaciones
+    periodosEspeciales: {},         // excepciones: { nº: { inicio, fin } }
     competencias: [ ... ]
   }
 }

@@ -147,7 +147,14 @@ contra los que los aprendices habían llenado a mano:
 | El texto que escribe la app queda en **negro**, no en el rojo de los textos de ejemplo | ✅ |
 | El acta exige al menos un correo por integrante | ✅ |
 | «Grupo nuevo» vacía el formulario (aprendices, colegio y firmas) y **conserva los grupos guardados** | ✅ |
-| El menú ofrece los **cinco** formatos, cada uno con su propio color | ✅ |
+| El grado 11 ofrece **13 bitácoras**, y la 13 cubre **noviembre entero** (1 al 30) pese a ser un grado quincenal | ✅ |
+| Sin la excepción, la regla habría dado «1 al 15 de noviembre»: la prueba comprueba las dos cosas | ✅ |
+| El grado 10 no cambia: sigue con 12 bitácoras mensuales | ✅ |
+| La fecha de entrega se acota al período (`min`/`max`) y, fuera de él, **avisa pero no bloquea** | ✅ |
+| El menú ofrece los **seis** formatos, cada uno con su propio color | ✅ |
+| **Momento 4**: misma plantilla y misma página; el número cambia en el título, en el rótulo del enlace y en el renglón de cierre, y no queda ningún «3» del momento | ✅ |
+| **Momento 4**: el título conserva sus runs y NO se le pone color negro —va en letra clara sobre fondo oscuro y quedaría invisible— | ✅ |
+| **Momento 4**: el archivo se llama `Momento4_…`, y cada momento guarda su propio borrador sin pisar al otro | ✅ |
 | Cambiar de instructor y pulsar «Aplicar a todos» corrige los grupos guardados **y los formularios a medio llenar** de las otras páginas | ✅ |
 | Al abrir otro formato, el instructor ya sale corregido (el borrador no resucita al anterior) | ✅ |
 | Los campos de fecha se ven en **dd/mm/aaaa** aunque el navegador esté en inglés (las pruebas corren con `locale="en-US"`, que es el caso que fallaba) | ✅ |

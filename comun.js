@@ -31,8 +31,15 @@ const CONFIG = {
   grados: {
     '11': {
       etiqueta: 'Grado 11 — dos bitácoras por mes (quincenal)',
-      anioBase: 2026, mesBase: 5, bitacorasPorMes: 2, totalBitacoras: 12,
+      anioBase: 2026, mesBase: 5, bitacorasPorMes: 2, totalBitacoras: 13,
       mesesExcluidos: [12, 1],        // vacaciones: el año escolar se retoma en febrero
+      /* Períodos que NO siguen la regla del grado. La quincenal daría «1 al 15
+         de noviembre» para la 13, pero la última bitácora cierra el año y
+         cubre el mes entero. Para añadir otra excepción basta con escribirla
+         aquí: manda sobre el cálculo automático. */
+      periodosEspeciales: {
+        13: { inicio: '2026-11-01', fin: '2026-11-30' }
+      },
       // GFPI-F-023: plantilla propia del grado y los valores que ya trae escritos
       plantillaPlaneacion: 'GFPI-F-023_V06.__Formato_de_Planeación_Seguimiento_y_Evaluación_de_Etapa_Productiva_Grado11_Modelo.docx',
       etiquetaArchivo: 'Grado11',
@@ -187,7 +194,7 @@ const PARTICULAS_NOMBRE = ['de', 'del', 'la', 'las', 'los', 'y', 'e',
 
 /* Pasa un nombre a mayúscula inicial: «SANTIAGO PINEDA MEJIA» o
    «santiago pineda mejia» → «Santiago Pineda Mejia». Se aplica a los nombres de
-   PERSONA en los cinco formatos, para que salgan iguales venga como venga el
+   PERSONA en todos los formatos, para que salgan iguales venga como venga el
    dato. No se tocan los acentos: si el nombre se escribió sin tilde, sigue sin
    tilde. Tampoco se toca el nombre de las entidades («COLEGIO TECNICO PALERMO
    I.E.D» va así en el formato) ni el cargo. */
@@ -248,12 +255,19 @@ function mesDeSecuencia(anioBase, mesBase, indice, mesesExcluidos) {
 
 /* Calendario de bitácoras, según el grado:
    - Grado 11 (dos por mes): la impar va del 1 al 15 y la par del 15 al 30 del
-     mismo mes. Bitácora 1 = mayo de 2026.
+     mismo mes. Bitácora 1 = mayo de 2026. La 13 es la excepción: cierra el año
+     y cubre noviembre entero (ver `periodosEspeciales`).
    - Grado 10 (una por mes): del 1 al 30 del mes. Bitácora 1 = agosto de 2026.
    Diciembre y enero se saltan (vacaciones escolares) y el cierre nunca pasa del
    último día real del mes: en febrero es 28, o 29 en año bisiesto, no 30. */
 function periodoDeBitacora(n, calendario) {
   const cal = calendario || {};
+  /* Una excepción escrita a mano manda sobre el cálculo: así una bitácora
+     puede cubrir un mes entero aunque el grado sea quincenal. */
+  const especial = (cal.periodosEspeciales || {})[n];
+  if (especial && aFechaUTC(especial.inicio) && aFechaUTC(especial.fin)) {
+    return { inicio: aFechaUTC(especial.inicio), fin: aFechaUTC(especial.fin) };
+  }
   const anioBase = cal.anioBase || 2026;
   const mesBase = cal.mesBase || 5;
   const porMes = cal.bitacorasPorMes === 1 ? 1 : 2;
@@ -860,7 +874,7 @@ function aplicarInstructoresATodos() {
       `  Instructor de seguimiento: ${seguimiento}\n` +
       `  Instructor técnico: ${tecnico}\n\n` +
       'Se reemplazan nombre, cédula, correo, teléfono y FIRMA en todos los grupos\n' +
-      'y en lo que esté a medio escribir en los cinco formatos.' +
+      'y en lo que esté a medio escribir en los demás formatos.' +
       (sinFirma.length
         ? `\n\nOJO: falta ${sinFirma.join(' y ')}. Esos grupos quedarán sin firma, para ` +
           'firmar a mano. Cárgala antes si quieres que vaya dentro del documento.'

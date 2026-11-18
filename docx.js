@@ -293,6 +293,27 @@ function escribirImagen(entradas, xml, paraId, firma, indice) {
 }
 
 /* -------------------------------------------------------------------------
+   RETOQUES DE TEXTO
+   Cambiar una palabra suelta sin rehacer el párrafo. Hace falta cuando el
+   renglón tiene un formato que no se puede reconstruir: el título del formato,
+   por ejemplo, va en letra clara sobre fondo oscuro y heredada de un estilo,
+   así que reescribirlo lo dejaría negro sobre negro, invisible.
+   ------------------------------------------------------------------------- */
+function reemplazarEnParrafo(xml, paraId, buscar, poner) {
+  const lim = limitesParrafo(xml, paraId);
+  if (!lim) return { xml, ok: false };
+  const original = xml.slice(lim.inicio, lim.fin);
+  let hecho = false;
+  const nuevo = original.replace(/<w:t[^>]*>[^<]*<\/w:t>/g, etiqueta => {
+    if (hecho || !etiqueta.includes(escaparXml(buscar))) return etiqueta;
+    hecho = true;
+    return etiqueta.replace(escaparXml(buscar), escaparXml(poner));
+  });
+  if (!hecho) return { xml, ok: false };
+  return { xml: xml.slice(0, lim.inicio) + nuevo + xml.slice(lim.fin), ok: true };
+}
+
+/* -------------------------------------------------------------------------
    CASILLAS DE VERIFICACIÓN
    El Momento 3 trae «Aprobado □        No aprobado □», y esos cuadros viven en
    runs propios, en Calibri de 20 puntos. Si se reescribiera el párrafo entero
@@ -642,6 +663,14 @@ function generarDocx(fflateRef, bufferPlantilla, valores, imagenes, listas, opci
   // valores y las firmas, para no invalidar las posiciones de los demás.
   const aBorrar = ((opciones || {}).borrar || []);
 
+  // Retoques de texto: [{ paraId, buscar, poner }]. Van antes que todo lo
+  // demás, porque tocan renglones que nadie más escribe.
+  ((opciones || {}).reemplazos || []).forEach(r => {
+    const res = reemplazarEnParrafo(nuevoXml, r.paraId, r.buscar, r.poner);
+    if (!res.ok) faltantes.push(r.paraId);
+    nuevoXml = res.xml;
+  });
+
   // Casillas a marcar: [{ paraId, cual }] — `cual` es la casilla dentro del
   // párrafo, empezando en 1 («Aprobado» es la 1, «No aprobado» la 2).
   ((opciones || {}).casillas || []).forEach(c => {
@@ -694,6 +723,7 @@ if (typeof module !== 'undefined' && module.exports) {
                      clonarParrafo, escribirLista, parrafoAnterior, limitesAnterior,
                      borrarParrafo, esSeparador, aNegro,
                      opcionesDeValor, conAlineacion, conNegrita, conTamano,
+                     reemplazarEnParrafo,
                      marcarCasilla, CASILLA_VACIA, CASILLA_MARCADA, FUENTE_CASILLA,
                      conFuente, normalizarTexto,
                      borrarParrafoExacto, achicarParrafo,
